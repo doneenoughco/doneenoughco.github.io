@@ -116,6 +116,7 @@ button { cursor: pointer; }
   overflow-wrap: anywhere; }
 .hero-amount.l1 { font-size: 52px; } .hero-amount.l2 { font-size: 40px; } .hero-amount.l3 { font-size: 30px; }
 .hero-amount.over { color: var(--over-ink); }
+.hero-amount { white-space: nowrap; overflow: hidden; }
 .status { display: inline-flex; align-items: center; gap: 7px; border-radius: 99px; padding: 6px 12px; font-weight: 800; font-size: 14px; }
 .status.good { background: var(--ok-soft); color: var(--ok-ink); }
 .status.zero { background: var(--warn-soft); color: var(--warn-ink); }
@@ -329,6 +330,10 @@ footer.foot { text-align: center; color: var(--ink-3); font-size: 13px; font-wei
   .toast { bottom: 84px; }
   .onb .panel { padding: 20px; }
   .onb h2 { font-size: 26px; }
+}
+@media (max-width: 359px) {
+  .two, .onb-bill .three { grid-template-columns: 1fr; }
+  .onb-bill .three .field:first-child { grid-column: auto; }
 }
 @media (min-width: 761px) {
   .modal { align-items: center; padding: 20px; }
@@ -1124,6 +1129,16 @@ window.DEB_STR = {
     else view = ({ home: homeView, bills: billsView, spending: spendingView, goals: goalsView, debt: debtView, settings: settingsView }[UI.tab] || homeView)();
     $("app").innerHTML = `<div class="wrap">${topBar()}${banners()}${!inOnb && !low ? navBar() : ""}<main id="view" tabindex="-1">${view}</main>${footer()}</div>`;
     if (key) { const el = document.querySelector(key); if (el) el.focus({ preventScroll: true }); }
+    fitAmounts();
+  }
+
+  // The big number stays on one line: on narrow phones it shrinks until it fits instead of breaking mid-number.
+  function fitAmounts() {
+    document.querySelectorAll(".hero-amount").forEach((el) => {
+      el.style.fontSize = "";
+      let fs = parseFloat(getComputedStyle(el).fontSize);
+      while (el.scrollWidth > el.clientWidth + 1 && fs > 18) { fs -= 2; el.style.fontSize = fs + "px"; }
+    });
   }
 
   function focusKey(el) {
@@ -1952,6 +1967,7 @@ window.DEB_STR = {
     document.addEventListener("visibilitychange", refresh);
     window.addEventListener("storage", (ev) => { if (ev.key === KEY && ev.newValue && $("modal").hidden) { const r = C.sanitizeState(JSON.parse(ev.newValue), today()); if (r.ok) { S = r.state; render(); } } });
     if (window.matchMedia) { const mq = window.matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", render); }
+    window.addEventListener("resize", fitAmounts);
   }
 
   // test + video hooks (read-only helpers, no network)
