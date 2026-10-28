@@ -76,7 +76,7 @@ button { cursor: pointer; }
 .chip-btn { display: inline-flex; align-items: center; gap: 7px; border: 0; background: var(--surface); color: var(--ink); border-radius: 99px;
   padding: 9px 14px; font-weight: 800; font-size: 14px; box-shadow: var(--shadow); min-height: 42px; }
 .chip-btn[aria-pressed="true"] { background: var(--butter); color: #2F3437; }
-.icon-btn { width: 42px; height: 42px; padding: 0; justify-content: center; }
+.icon-btn { width: 44px; height: 44px; padding: 0; justify-content: center; flex: 0 0 auto; }
 .show-phone { display: none; }
 .lbl-short { display: none; }
 @supports (-webkit-touch-callout: none) {
@@ -113,7 +113,7 @@ button { cursor: pointer; }
 .stack { display: flex; flex-direction: column; gap: 10px; }
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .spacer { flex: 1; }
-.link-btn { border: 0; background: none; color: var(--primary-text); font-weight: 800; padding: 6px 2px; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn { border: 0; background: none; color: var(--primary-text); font-weight: 800; padding: 6px 2px; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- hero */
 .hero { padding: 24px 24px 20px; position: relative; overflow: hidden; }
@@ -144,7 +144,7 @@ button { cursor: pointer; }
 .btn.big { min-height: 60px; font-size: 18px; border-radius: 16px; }
 .btn.ghost { background: transparent; box-shadow: inset 0 0 0 2px var(--line-2); color: var(--ink); }
 .btn.danger { background: var(--over-soft); color: var(--over-ink); }
-.btn.sm { min-height: 40px; padding: 8px 14px; font-size: 14.5px; border-radius: 12px; }
+.btn.sm { min-height: 44px; padding: 8px 14px; font-size: 14.5px; border-radius: 12px; }
 .btn:disabled { opacity: .5; cursor: default; }
 .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
@@ -156,13 +156,13 @@ button { cursor: pointer; }
 .item .ic .ico { width: 22px; height: 22px; }
 .item .main { flex: 1; min-width: 0; display: block; }
 #view:focus { outline: none; }
-.item .name { display: block; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item .name { display: block; font-weight: 800; overflow-wrap: anywhere; }
 .item .meta { font-size: 13.5px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .item .amt { font-weight: 900; white-space: nowrap; text-align: right; }
 .amt-inline { display: none; font-weight: 900; color: var(--ink); }
 .item.is-paid .name, .item.is-paid .amt, .item.is-skipped .name, .item.is-skipped .amt { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .item .acts { display: flex; gap: 6px; align-items: center; }
-.item-btn { border: 0; background: none; padding: 0; text-align: left; display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; color: inherit; }
+.item-btn { border: 0; background: none; padding: 0; min-height: 44px; text-align: left; display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; color: inherit; }
 .tag { display: inline-flex; align-items: center; gap: 4px; border-radius: 99px; padding: 2px 9px; font-size: 12.5px; font-weight: 800; }
 .tag .ico { width: 15px; height: 15px; }
 .tag.over { background: var(--over-soft); color: var(--over-ink); }
@@ -226,10 +226,10 @@ button { cursor: pointer; }
 .toggle { display: flex; align-items: center; gap: 12px; font-weight: 800; padding: 6px 0; }
 .toggle input { width: 24px; height: 24px; accent-color: var(--primary); flex: 0 0 auto; }
 .seg { display: inline-flex; background: var(--surface-2); border: 1.5px solid var(--line); border-radius: 99px; padding: 4px; gap: 4px; }
-.seg button { border: 0; background: none; border-radius: 99px; padding: 8px 16px; font-weight: 800; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center; min-height: 40px; }
+.seg button { border: 0; background: none; border-radius: 99px; padding: 8px 16px; font-weight: 800; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center; min-height: 44px; }
 .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px; }
-.chips button { border: 2px solid var(--line-2); background: var(--surface); border-radius: 99px; padding: 8px 14px; font-weight: 800; min-height: 42px; display: inline-flex; gap: 6px; align-items: center; }
+.chips button { border: 2px solid var(--line-2); background: var(--surface); border-radius: 99px; padding: 8px 14px; font-weight: 800; min-height: 44px; display: inline-flex; gap: 6px; align-items: center; }
 .chips button[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-text); }
 
 /* ---------- quick add */
@@ -260,12 +260,15 @@ button { cursor: pointer; }
 
 /* ---------- modal + toast */
 .modal { position: fixed; inset: 0; background: rgba(20,24,26,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 50; padding: 0; }
-.sheet { background: var(--bg); width: 100%; max-width: 560px; max-height: 92vh; overflow: auto; border-radius: 24px 24px 0 0; padding: 18px 18px 24px; box-shadow: 0 -10px 40px rgba(0,0,0,.2); }
+.sheet { background: var(--bg); width: 100%; max-width: 560px; max-height: 92vh; max-height: 92dvh; overflow: auto; border-radius: 24px 24px 0 0; padding: 18px 18px 24px; box-shadow: 0 -10px 40px rgba(0,0,0,.2); }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
 .sheet-head h2 { font-size: 23px; }
 .sheet .panel { padding: 16px; }
-.sheet-foot { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+/* Save/Cancel stay in view at the bottom of a tall sheet, also with the phone keyboard open */
+.sheet-foot { display: flex; gap: 10px; margin: 16px 0 -24px; flex-wrap: wrap; position: sticky; bottom: -24px; z-index: 2;
+  background: var(--bg); padding: 12px 0 24px; box-shadow: 0 -10px 12px -10px rgba(0,0,0,.18); }
 .sheet-foot .btn { flex: 1 1 140px; }
+.sheet-extra { margin-top: 16px; } .sheet-extra .btn { width: 100%; }
 .toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); background: #2F3437; color: #fff; border-radius: 14px; padding: 12px 14px 12px 18px;
   display: flex; gap: 14px; align-items: center; z-index: 60; box-shadow: 0 10px 30px rgba(0,0,0,.25); width: max-content; max-width: calc(100vw - 32px); font-weight: 700; }
 .toast button { border: 0; background: #F2D98B; color: #2F3437; border-radius: 10px; padding: 8px 14px; font-weight: 900; }
@@ -1632,7 +1635,7 @@ window.DEB_STR = {
     el.focus();
   }
   const val = (id) => { const el = $(id); return el ? el.value : ""; };
-  const foot = (extra) => `<div class="sheet-foot">${extra || ""}<button type="button" class="btn ghost" data-act="close">${te("cancel")}</button><button type="submit" class="btn primary">${te("save")}</button></div>`;
+  const foot = (extra) => `${extra ? `<div class="sheet-extra">${extra}</div>` : ""}<div class="sheet-foot"><button type="button" class="btn ghost" data-act="close">${te("cancel")}</button><button type="submit" class="btn primary">${te("save")}</button></div>`;
 
   function confirmBox(text, yesLabel, onYes, danger) {
     openModal(t("yes") + "?", `<p>${esc(text)}</p><div class="sheet-foot"><button type="button" class="btn ghost" data-act="close">${te("cancel")}</button>
