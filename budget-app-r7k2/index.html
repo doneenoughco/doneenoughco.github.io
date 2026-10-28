@@ -78,6 +78,12 @@ button { cursor: pointer; }
 .chip-btn[aria-pressed="true"] { background: var(--butter); color: #2F3437; }
 .icon-btn { width: 42px; height: 42px; padding: 0; justify-content: center; }
 .show-phone { display: none; }
+.lbl-short { display: none; }
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari draws date inputs with its own minimum width and centred text, so they spill out of the card */
+  input[type="date"].input { -webkit-appearance: none; appearance: none; display: block; min-width: 0; max-width: 100%; text-align: left; }
+  input[type="date"].input::-webkit-date-and-time-value { text-align: left; margin: 0; }
+}
 .saved-state { font-size: 12.5px; color: var(--ink-3); font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
 
 .banner { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; border-radius: 14px; padding: 11px 14px; margin: 4px 0 12px;
@@ -308,8 +314,12 @@ footer.foot { text-align: center; color: var(--ink-3); font-size: 13px; font-wei
   .hero-amount { font-size: 56px; } .hero-amount.l1 { font-size: 44px; } .hero-amount.l2 { font-size: 34px; } .hero-amount.l3 { font-size: 26px; }
   .low-wrap .hero-amount { font-size: 64px; }
   .panel { padding: 16px; }
-  .logo h1 { font-size: 18px; }
+  .logo, .logo > div { min-width: 0; }
+  .logo h1 { font-size: 17px; white-space: normal; line-height: 1.1; }
+  .logo small { display: none; }
   .chip-btn .lbl-long { display: none; }
+  .top-actions .chip-btn { flex-direction: column; gap: 2px; width: auto; height: auto; min-height: 48px; padding: 5px 9px; border-radius: 14px; }
+  .top-actions .chip-btn .lbl-short { display: block; font-size: 10.5px; line-height: 1.1; white-space: nowrap; }
   .show-phone { display: inline-flex; }
   .saved-state { display: none; }
   .hero-actions { grid-template-columns: 1fr; }
@@ -362,7 +372,7 @@ window.DEB_STR = {
   // navigation
   tabHome: "Home", tabBills: "Bills", tabSpending: "Spending", tabGoals: "Goals", tabDebt: "Debt", tabSettings: "Settings",
   navLabel: "Main", settingsBtn: "Settings",
-  lowOn: "Low-energy mode", lowOff: "Show everything", lowHint: "Only the essentials: safe to spend and your next bills.",
+  lowOn: "Low-energy mode", lowOff: "Show everything", lowShort: "Low energy", lowShortOff: "Show all", lowHint: "Only the essentials: safe to spend and your next bills.",
 
   // home
   safeLabel: "Safe to spend until payday",
@@ -1133,10 +1143,10 @@ window.DEB_STR = {
 
   function topBar() {
     const low = S.settings.low;
-    const lowBtn = S.setupDone ? `<button class="chip-btn" data-act="low" aria-pressed="${low ? "true" : "false"}">${icon(low ? "batFull" : "batLow")}<span class="lbl-long">${te(low ? "lowOff" : "lowOn")}</span><span class="sr">${low ? "" : te("lowHint")}</span></button>` : "";
+    const lowBtn = S.setupDone ? `<button class="chip-btn" data-act="low" aria-pressed="${low ? "true" : "false"}">${icon(low ? "batFull" : "batLow")}<span class="lbl-long">${te(low ? "lowOff" : "lowOn")}</span><span class="lbl-short" aria-hidden="true">${te(low ? "lowShortOff" : "lowShort")}</span><span class="sr">${low ? "" : te("lowHint")}</span></button>` : "";
     const saved = DEMO ? te("notSaved") : STORAGE_OK ? te("savedHere") : "";
     return `<header class="top"><div class="logo"><span class="mark">${icon("check")}<i></i></span><div><h1>${te("appName")}</h1><small>${te("tagline")}</small></div></div>
-      <div class="top-actions"><span class="saved-state hide-low" aria-live="polite">${saved ? icon(DEMO ? "alert" : "lock") + saved : ""}</span>${lowBtn}${S.setupDone ? `<button class="chip-btn icon-btn show-phone hide-low" data-act="tab" data-tab="settings" aria-label="${te("settingsBtn")}">${icon("gear")}</button>` : ""}</div></header>`;
+      <div class="top-actions"><span class="saved-state hide-low" aria-live="polite">${saved ? icon(DEMO ? "alert" : "lock") + saved : ""}</span>${lowBtn}${S.setupDone ? `<button class="chip-btn icon-btn show-phone hide-low" data-act="tab" data-tab="settings" aria-label="${te("settingsBtn")}">${icon("gear")}<span class="lbl-short" aria-hidden="true">${te("settingsBtn")}</span></button>` : ""}</div></header>`;
   }
 
   function banners() {
