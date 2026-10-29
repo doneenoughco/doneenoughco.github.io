@@ -351,6 +351,10 @@ footer.foot { text-align: center; color: var(--ink-3); font-size: 13px; font-wei
   .tabs, .top-actions, .modal, .toast, .hero-actions, .acts { display: none !important; }
   body { background: #fff; }
 }
+
+.paycard { border: 1.5px solid var(--line); background: var(--surface-2); border-radius: 16px; padding: 14px; margin-top: 12px; }
+.csv-block { border-top: 1.5px dashed var(--line-2); margin-top: 14px; padding-top: 14px; }
+.chips button svg.ico { width: 16px; height: 16px; opacity: .7; }
 </style>
 </head>
 <body>
@@ -474,10 +478,20 @@ window.DEB_STR = {
   debtDelete: "Delete this debt", debtDeleteConfirm: "Delete “{name}”?",
 
   // settings
-  setPay: "Pay", setFreq: "How often you're paid", freqWeekly: "Every week", freqBiweekly: "Every 2 weeks", freqSemimonthly: "Twice a month", freqMonthly: "Once a month",
+  setPay: "Pay", setFreq: "How often you're paid", freqWeekly: "Every week", freqBiweekly: "Every 2 weeks", freqFourweekly: "Every 4 weeks", freqIrregular: "Irregular: I type each payday", freqSemimonthly: "Twice a month", freqMonthly: "Once a month",
   setNextPayday: "Next payday", setDay1: "First payday of the month", setDay2: "Second payday of the month", setDay: "Payday of the month",
   lastDay: "Last day of the month", setPayAmount: "One paycheck (after tax)", setWeekend: "If payday is on a weekend",
   weekendKeep: "Keep the date", weekendBefore: "Paid the Friday before", weekendAfter: "Paid the Monday after",
+  irrLabel: "Paydays you've typed", irrDate: "A payday", irrAdd: "Add this payday", irrRemove: "Remove {date}",
+  irrNone: "No upcoming payday typed yet.", irrHint: "The app counts down to the next one. Type each new payday when you know it; the pay is added on the day.",
+  irrNeedDate: "Pick the date of a payday.",
+  noteNoNext: "No next payday typed yet, so the app is counting the next 30 days.", noteNoNextBtn: "Add next payday", nextPayTitle: "Add a payday", nextPayWhich: "Which paycheck?",
+  paydayUnknown: "No next payday typed yet. Counting 30 days.",
+  payMain: "Main paycheck", payExtraN: "Paycheck {n}", payName: "Whose or what is it? (optional)", payNameHint: "For example “Sam’s job” or “Side job”.",
+  setOtherPays: "Other paychecks", setOtherPaysHint: "A second earner or a side job. Each has its own amount and schedule. Safe to spend counts down to whichever payday comes first.",
+  payAdd: "Add another paycheck", payRemove: "Remove this paycheck", payRemoveConfirm: "Remove “{name}”? Pay it already added stays in your history.",
+  payLimit: "That's the most the app keeps: {n} extra paychecks.", noOtherPays: "Just one paycheck so far.",
+  notePendingNamed: "Did “{name}” arrive on {date}?",
   setAutoPay: "Add my pay by itself on payday", setAutoPayHint: "Turn off if your pay changes a lot; the app will ask each payday instead.",
   setMoney: "Money format", setCurrency: "Currency", curCustom: "Other (type a symbol)", setSymbol: "Symbol", setNumFmt: "Number style",
   setSymPos: "Symbol position", symAuto: "Usual for this currency", symBefore: "Before the number", symAfter: "After the number",
@@ -494,6 +508,9 @@ window.DEB_STR = {
   backupPasteHint: "Paste the backup text here.", backupCopied: "Copied", copyBtn: "Copy",
   dataClear: "Clear everything", dataClearConfirm: "Delete all your numbers from this browser? Save a backup first if you might want them back.", dataCleared: "Everything cleared",
   dataSample: "Load sample data", dataSampleConfirm: "Replace your numbers with sample data? Save a backup first if you want to keep them.",
+  csvSave: "Export entries as CSV", csvHint: "A spreadsheet file with every entry you logged: spending, bills paid, money in and goal moves. Opens in Excel, Numbers and Google Sheets.",
+  csvSaved: "CSV file saved.", csvEmpty: "Nothing logged yet, so there is nothing to export.",
+  csvCols: ["Date", "Type", "Category", "Name or note", "Amount"],
   demoNoSave: "Saving and backup files are in the full app. This demo forgets everything when you close it.",
   setAbout: "About", aboutText: "Done Enough Budget {version}. One file that works offline in your browser: no account, no subscription, no bank login. It never sends your data anywhere.",
   aboutAdvice: "A planning tool, not financial advice.", aboutFonts: "Fonts: Nunito and Fraunces (SIL Open Font License 1.1).",
@@ -503,6 +520,7 @@ window.DEB_STR = {
   onbWelcome: "Let's set up your budget", onbWelcomeText: "Four short questions, about 3 minutes. You can change everything later.",
   onbStart: "Start setup", onbSample: "Look around with sample data first", onbStep: "Step {n} of {total}",
   onbQFreq: "How often do you get paid?", onbQNext: "When is your next payday?",
+  onbIrrHint: "After this one, you type each new payday (the app reminds you) and the pay is added on the day.",
   onbQPay: "How much is one paycheck, after tax?", onbQPayHint: "If it changes, use a typical one. You can fix it each payday.",
   onbQBalance: "How much is in your everyday account right now?", onbQBalanceHint: "The account you spend from. Check your banking app. If you're paid today and it has arrived, include it.",
   onbQCushion: "Keep a small cushion? (optional)", onbNoCushion: "No cushion",
@@ -622,8 +640,14 @@ window.DEB_STR = {
   }
 
   // ------------------------------------------------------------------ pay schedule
-  /* pay: { freq: "weekly" | "biweekly" | "semimonthly" | "monthly", anchor: "YYYY-MM-DD" (a real payday, weekly/biweekly),
-            day1, day2 (semimonthly; 31 = last day), day (monthly; 31 = last day), weekend: "keep" | "before" | "after" } */
+  /* pay: { freq: "weekly" | "fourweekly" | "biweekly" | "semimonthly" | "monthly" | "irregular",
+            anchor: "YYYY-MM-DD" (a real payday, weekly/fourweekly/biweekly), dates: ["YYYY-MM-DD", ...] (irregular: each payday typed by hand),
+            day1, day2 (semimonthly; 31 = last day), day (monthly; 31 = last day), weekend: "keep" | "before" | "after" }
+     A second earner or a side job is one more pay object in state.extraPays (same fields plus id and name). */
+  var FREQS = ["weekly", "biweekly", "fourweekly", "semimonthly", "monthly", "irregular"];
+  var STEP_DAYS = { weekly: 7, biweekly: 14, fourweekly: 28 };
+  var NO_NEXT_DAYS = 30; // an irregular schedule with no typed payday ahead: count the next 30 days and say so
+
   function shiftWeekend(n, rule) {
     var w = dow(n);
     if (rule === "before") { if (w === 6) return n - 1; if (w === 0) return n - 2; }
@@ -633,8 +657,13 @@ window.DEB_STR = {
 
   function rawPaydays(pay, from, to) {
     var out = [], k, n, y, m, p;
-    if (pay.freq === "weekly" || pay.freq === "biweekly") {
-      var step = pay.freq === "weekly" ? 7 : 14, a = parse(pay.anchor);
+    if (pay.freq === "irregular") {
+      var list = Array.isArray(pay.dates) ? pay.dates : [];
+      for (var i = 0; i < list.length; i++) { n = parse(list[i]); if (!isNaN(n) && n >= from && n <= to && out.indexOf(n) === -1) out.push(n); }
+      return out.sort(function (a, b) { return a - b; });
+    }
+    if (STEP_DAYS[pay.freq]) {
+      var step = STEP_DAYS[pay.freq], a = parse(pay.anchor);
       if (isNaN(a)) return out;
       k = Math.ceil((from - a) / step);
       for (n = a + k * step; n <= to; n += step) out.push(n);
@@ -644,8 +673,8 @@ window.DEB_STR = {
     var days = pay.freq === "semimonthly" ? [Math.min(+pay.day1 || 1, 31), Math.min(+pay.day2 || 15, 31)] : [Math.min(+pay.day || 1, 31)];
     days.sort(function (a, b) { return a - b; });
     while (cur.y < end.y || (cur.y === end.y && cur.m <= end.m)) {
-      for (var i = 0; i < days.length; i++) {
-        n = clampDay(cur.y, cur.m, days[i]);
+      for (var i2 = 0; i2 < days.length; i2++) {
+        n = clampDay(cur.y, cur.m, days[i2]);
         if (out.length && out[out.length - 1] === n) continue;
         if (n >= from && n <= to) out.push(n);
       }
@@ -656,7 +685,7 @@ window.DEB_STR = {
 
   function paydays(pay, from, to) {
     if (!pay || !pay.freq) return [];
-    var rule = pay.weekend || "keep";
+    var rule = pay.freq === "irregular" ? "keep" : (pay.weekend || "keep"); // a typed payday is the real payday
     var raw = rawPaydays(pay, from - 3, to + 3), out = [];
     for (var i = 0; i < raw.length; i++) {
       var n = shiftWeekend(raw[i], rule);
@@ -664,8 +693,38 @@ window.DEB_STR = {
     }
     return out;
   }
-  function nextPayday(pay, today) { var l = paydays(pay, today + 1, today + 45); return l.length ? l[0] : today + 1; }
-  function prevPayday(pay, today) { var l = paydays(pay, today - 45, today); return l.length ? l[l.length - 1] : today; }
+  function nextKnown(pay, today) { var l = paydays(pay, today + 1, today + 45); return l.length ? l[0] : null; }
+  function prevKnown(pay, today) { var l = paydays(pay, today - 45, today); return l.length ? l[l.length - 1] : null; }
+  function nextPayday(pay, today) { var n = nextKnown(pay, today); return n != null ? n : today + (pay && pay.freq === "irregular" ? NO_NEXT_DAYS : 1); }
+  function prevPayday(pay, today) { var n = prevKnown(pay, today); return n != null ? n : today; }
+
+  /* Every paycheck in the plan: the main one first, then second earner / side jobs. */
+  function allPays(state) { return state && state.pay && state.pay.freq ? [state.pay].concat(Array.isArray(state.extraPays) ? state.extraPays : []) : []; }
+  /* The next payday of any paycheck: safe to spend counts down to whichever lands first. */
+  function nextPaydayAll(state, today) {
+    var best = null, pays = allPays(state);
+    for (var i = 0; i < pays.length; i++) { var n = nextKnown(pays[i], today); if (n != null && (best == null || n < best)) best = n; }
+    return best != null ? best : today + (pays.length && pays.every(function (p) { return p.freq === "irregular"; }) ? NO_NEXT_DAYS : 1);
+  }
+  function nextPaydayKnown(state, today) {
+    var pays = allPays(state);
+    for (var i = 0; i < pays.length; i++) if (nextKnown(pays[i], today) != null) return true;
+    return false;
+  }
+  function prevPaydayAll(state, today) {
+    var best = null, pays = allPays(state);
+    for (var i = 0; i < pays.length; i++) { var n = prevKnown(pays[i], today); if (n != null && (best == null || n > best)) best = n; }
+    return best != null ? best : today;
+  }
+  /* All paydays of all paychecks between from and to, sorted, one entry per calendar day. */
+  function allPaydays(state, from, to) {
+    var pays = allPays(state), out = [];
+    for (var i = 0; i < pays.length; i++) {
+      var l = paydays(pays[i], from, to);
+      for (var j = 0; j < l.length; j++) if (out.indexOf(l[j]) === -1) out.push(l[j]);
+    }
+    return out.sort(function (a, b) { return a - b; });
+  }
 
   // ------------------------------------------------------------------ bills
   /* bill: { id, name, amount, start: "YYYY-MM-DD" (first due date), repeat: "month" | "week" | "once", every: n, skips: [] } */
@@ -721,37 +780,50 @@ window.DEB_STR = {
     return s;
   }
 
-  /* Paydays that have arrived since we last counted pay. With autoPay on, the app adds them as income. */
-  function duePaydays(state, today) {
-    var pay = state.pay;
+  /* Paydays of one paycheck that have arrived since we last counted it. With autoPay on, the app adds them as income. */
+  function duePaydaysOf(pay, today) {
     if (!pay || !pay.freq) return [];
     var last = parse(pay.lastProcessed);
     if (isNaN(last)) return [];
     return paydays(pay, last + 1, today).slice(-12);
   }
+  function duePaydays(state, today) { return duePaydaysOf(state.pay, today); } // the main paycheck
+  /* Unconfirmed paydays of every paycheck (auto-pay off): [{ date, pay, payId ("" = the main one), name, amount }], oldest first. */
+  function pendingPays(state, today) {
+    var out = [], pays = allPays(state);
+    for (var i = 0; i < pays.length; i++) {
+      if (i > 0 && !(pays[i].amount > 0)) continue; // an extra paycheck with no amount yet has nothing to confirm
+      var due = duePaydaysOf(pays[i], today);
+      for (var j = 0; j < due.length; j++) out.push({ date: due[j], pay: pays[i], payId: i === 0 ? "" : pays[i].id, name: i === 0 ? "" : (pays[i].name || ""), amount: pays[i].amount || 0 });
+    }
+    return out.sort(function (a, b) { return a.date - b.date; });
+  }
   /* Returns { added: [income events], stale: bool }. After a long break (over 62 days) we don't guess: we stop
      counting old paydays and ask the person to type their balance again. */
   function materializePay(state, today, nowMs) {
-    var res = { added: [], stale: false }, pay = state.pay;
-    if (!pay || !pay.freq) return res;
-    var last = parse(pay.lastProcessed);
-    if (!isNaN(last) && today - last > 62) {
-      pay.lastProcessed = fmt(prevPayday(pay, today));
-      res.stale = true;
-      return res;
+    var res = { added: [], stale: false }, pays = allPays(state), seq = 0;
+    for (var k = 0; k < pays.length; k++) {
+      var pay = pays[k], last = parse(pay.lastProcessed);
+      if (!isNaN(last) && today - last > 62) {
+        pay.lastProcessed = fmt(prevPayday(pay, today));
+        res.stale = true;
+        continue;
+      }
+      var due = duePaydaysOf(pay, today);
+      if (!due.length || (state.settings && state.settings.autoPay === false)) continue;
+      if (k > 0 && !(pay.amount > 0)) { pay.lastProcessed = fmt(due[due.length - 1]); continue; } // no amount yet: nothing to add
+      for (var i = 0; i < due.length; i++, seq++) {
+        var e = { id: "pay-" + fmt(due[i]) + "-" + (nowMs + seq).toString(36), type: "income", amount: pay.amount || 0, date: fmt(due[i]), t: nowMs + seq, auto: true };
+        if (k > 0 && pay.name) e.note = pay.name;
+        state.events.push(e); res.added.push(e);
+      }
+      pay.lastProcessed = fmt(due[due.length - 1]);
     }
-    var due = duePaydays(state, today);
-    if (!due.length || (state.settings && state.settings.autoPay === false)) return res;
-    for (var i = 0; i < due.length; i++) {
-      var e = { id: "pay-" + fmt(due[i]) + "-" + (nowMs + i).toString(36), type: "income", amount: pay.amount || 0, date: fmt(due[i]), t: nowMs + i, auto: true };
-      state.events.push(e); res.added.push(e);
-    }
-    pay.lastProcessed = fmt(due[due.length - 1]);
     return res;
   }
 
   function compute(state, today) {
-    var pay = state.pay || {}, start = prevPayday(pay, today), next = nextPayday(pay, today);
+    var start = prevPaydayAll(state, today), next = nextPaydayAll(state, today);
     var bal = balance(state), bills = state.bills || [], list = [], reserved = 0, i, j;
     for (i = 0; i < bills.length; i++) {
       var b = bills[i], occ = occurrences(b, parse(b.start), next + 62);
@@ -792,7 +864,9 @@ window.DEB_STR = {
       today: today, periodStart: start, nextPayday: next, daysLeft: daysLeft, balance: bal, billsReserved: reserved,
       goalsReserved: goalsReserved, cushion: cushion, safe: safe, perDay: safe > 0 ? Math.floor(safe / daysLeft) : 0,
       bills: list, goals: goalInfo, spent: spent, byCat: byCat, incomeThisPeriod: income,
-      pendingPaydays: (state.settings && state.settings.autoPay === false) ? duePaydays(state, today) : []
+      payKnown: nextPaydayKnown(state, today),
+      pendingItems: (state.settings && state.settings.autoPay === false) ? pendingPays(state, today) : [],
+      pendingPaydays: (state.settings && state.settings.autoPay === false) ? pendingPays(state, today).map(function (x) { return x.date; }) : []
     };
   }
 
@@ -840,6 +914,20 @@ window.DEB_STR = {
   function cents(v, allowNeg) { var n = Math.round(+v); if (!isFinite(n)) return 0; n = Math.max(allowNeg ? -MAX_CENTS : 0, Math.min(MAX_CENTS, n)); return n; }
   function dateStr(v, fallback) { return isNaN(parse(v)) ? fallback : v; }
 
+  var MAX_EXTRA_PAYS = 4;
+  var MAX_IRREGULAR_DATES = 60;
+  function cleanPay(p, t) {
+    var dates = [];
+    (Array.isArray(p.dates) ? p.dates : []).forEach(function (x) { if (!isNaN(parse(x)) && dates.indexOf(x) === -1) dates.push(x); });
+    dates.sort();
+    return {
+      freq: FREQS.indexOf(p.freq) !== -1 ? p.freq : "biweekly",
+      anchor: dateStr(p.anchor, t), dates: dates.slice(-MAX_IRREGULAR_DATES), day1: Math.min(31, Math.max(1, +p.day1 || 1)), day2: Math.min(31, Math.max(1, +p.day2 || 15)),
+      day: Math.min(31, Math.max(1, +p.day || 1)), weekend: ["keep", "before", "after"].indexOf(p.weekend) !== -1 ? p.weekend : "keep",
+      amount: cents(p.amount), lastProcessed: dateStr(p.lastProcessed, t)
+    };
+  }
+
   /* Validates and cleans a parsed backup (or stored state). Returns { ok, state } or { ok: false, error }. */
   function sanitizeState(raw, today) {
     var src = raw && raw.app === APP_ID && raw.state ? raw.state : raw;
@@ -848,7 +936,7 @@ window.DEB_STR = {
     var st = {
       v: 1, setupDone: !!src.setupDone, sample: !!src.sample,
       settings: {}, pay: {}, anchor: { amount: cents(src.anchor && src.anchor.amount, true), t: +(src.anchor && src.anchor.t) || 0, date: dateStr(src.anchor && src.anchor.date, t) },
-      bills: [], events: [], goals: [], debts: [], cats: [],
+      bills: [], events: [], goals: [], debts: [], cats: [], extraPays: [],
       debtExtra: cents(src.debtExtra), debtMethod: src.debtMethod === "avalanche" ? "avalanche" : "snowball",
       flags: { stale: !!(src.flags && src.flags.stale), payNote: str(src.flags && src.flags.payNote, 60), payNoteUntil: dateStr(src.flags && src.flags.payNoteUntil, "") }
     };
@@ -860,13 +948,14 @@ window.DEB_STR = {
       dateStyle: s.dateStyle === "dm" ? "dm" : "md", theme: ["auto", "light", "dark"].indexOf(s.theme) !== -1 ? s.theme : "auto",
       low: !!s.low, autoPay: s.autoPay !== false, cushion: cents(s.cushion), lastBackup: +s.lastBackup || 0, weekStart: s.weekStart === 1 ? 1 : 0
     };
-    var p = src.pay;
-    st.pay = {
-      freq: ["weekly", "biweekly", "semimonthly", "monthly"].indexOf(p.freq) !== -1 ? p.freq : "biweekly",
-      anchor: dateStr(p.anchor, t), day1: Math.min(31, Math.max(1, +p.day1 || 1)), day2: Math.min(31, Math.max(1, +p.day2 || 15)),
-      day: Math.min(31, Math.max(1, +p.day || 1)), weekend: ["keep", "before", "after"].indexOf(p.weekend) !== -1 ? p.weekend : "keep",
-      amount: cents(p.amount), lastProcessed: dateStr(p.lastProcessed, t)
-    };
+    st.pay = cleanPay(src.pay, t);
+    st.extraPays = [];
+    (Array.isArray(src.extraPays) ? src.extraPays : []).slice(0, MAX_EXTRA_PAYS).forEach(function (x) {
+      if (!x || !x.id || !x.freq) return;
+      var c = cleanPay(x, t);
+      c.id = str(x.id, 40); c.name = str(x.name, 40);
+      st.extraPays.push(c);
+    });
     src.bills.slice(0, 500).forEach(function (b) {
       if (!b || !b.id) return;
       st.bills.push({ id: str(b.id, 40), name: str(b.name, 80) || "Bill", amount: cents(b.amount), start: dateStr(b.start, t),
@@ -899,6 +988,37 @@ window.DEB_STR = {
     return { ok: true, state: st };
   }
 
+  // ------------------------------------------------------------------ CSV export
+  /* One line per entry the person logged, oldest first. Money out is negative, money in is positive, plain numbers with a "." so any
+     spreadsheet reads them. L = { header: [5 words], type: { spend, income, pay, bill, save, unsave }, cat: function (id) -> name }. */
+  function exportRows(state, L) {
+    var evs = (state.events || []).slice().sort(function (a, b) { return parse(a.date) - parse(b.date) || a.t - b.t; });
+    var rows = [L.header.slice()];
+    function name(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i].name; return ""; }
+    evs.forEach(function (e) {
+      var type, cat = "", label = e.note || "";
+      if (e.type === "spend") { type = L.type.spend; cat = L.cat(e.cat || "other"); }
+      else if (e.type === "income") { type = e.auto ? L.type.pay : L.type.income; }
+      else if (e.type === "bill") { type = L.type.bill; label = name(state.bills || [], e.billId) + (e.note ? " · " + e.note : ""); }
+      else { type = L.type[e.type]; label = name(state.goals || [], e.goalId); }
+      var cents = SIGN[e.type] * e.amount, sign = cents < 0 ? "-" : "";
+      rows.push([e.date, type, cat, label, sign + Math.floor(Math.abs(cents) / 100) + "." + pad(Math.abs(cents) % 100)]);
+    });
+    return rows;
+  }
+  /* Rows to CSV text (CRLF, quotes where needed). A text cell that starts with = + - @ gets a leading apostrophe so a spreadsheet
+     never runs it as a formula; the last column is a number and is left alone. */
+  function toCsv(rows, numberCols) {
+    numberCols = numberCols || [];
+    return rows.map(function (r) {
+      return r.map(function (v, i) {
+        var s = String(v == null ? "" : v);
+        if (numberCols.indexOf(i) === -1 && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+        return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(",");
+    }).join("\r\n") + "\r\n";
+  }
+
   function makeBackup(state, nowMs) {
     return { app: APP_ID, version: 1, exported: new Date(nowMs || Date.now()).toISOString(), state: state };
   }
@@ -906,7 +1026,9 @@ window.DEB_STR = {
   var api = {
     fromYMD: fromYMD, ymd: ymd, dim: dim, dow: dow, fmt: fmt, parse: parse, addMonths: addMonths, todayLocal: todayLocal,
     parseMoney: parseMoney, formatMoney: formatMoney, NUMBER_FORMATS: NUMBER_FORMATS, CURRENCIES: CURRENCIES, MAX_CENTS: MAX_CENTS,
-    paydays: paydays, nextPayday: nextPayday, prevPayday: prevPayday, shiftWeekend: shiftWeekend,
+    paydays: paydays, nextPayday: nextPayday, prevPayday: prevPayday, shiftWeekend: shiftWeekend, FREQS: FREQS, MAX_EXTRA_PAYS: MAX_EXTRA_PAYS,
+    allPays: allPays, nextPaydayAll: nextPaydayAll, prevPaydayAll: prevPaydayAll, allPaydays: allPaydays, nextPaydayKnown: nextPaydayKnown,
+    pendingPays: pendingPays, duePaydaysOf: duePaydaysOf, exportRows: exportRows, toCsv: toCsv,
     occurrences: occurrences, billPaid: billPaid, balance: balance, goalSaved: goalSaved, duePaydays: duePaydays,
     materializePay: materializePay, compute: compute, debtPlan: debtPlan, sanitizeState: sanitizeState, makeBackup: makeBackup, APP_ID: APP_ID
   };
@@ -1119,7 +1241,14 @@ window.DEB_STR = {
     document.documentElement.lang = T.lang;
   }
 
+  let RENDERING = false;
   function render() {
+    // Replacing the page blurs the focused field; a browser may fire its pending "change" right then, which would render again mid-replace.
+    if (RENDERING) return;
+    RENDERING = true;
+    try { renderNow(); } finally { RENDERING = false; }
+  }
+  function renderNow() {
     applyTheme();
     const active = document.activeElement, key = active && active.getAttribute ? focusKey(active) : null;
     R = S.setupDone ? C.compute(S, today()) : null;
@@ -1192,9 +1321,9 @@ window.DEB_STR = {
     const r = R, amt = money(r.safe), st = r.safe > 0 ? "good" : r.safe === 0 ? "zero" : "over";
     const statusIcon = st === "good" ? "check" : st === "zero" ? "alert" : "heart";
     const statusTxt = st === "good" ? te("statusGood") : st === "zero" ? te("statusZero") : te("statusOver");
-    const payday = te("paydayIn", { n: r.daysLeft, date: dateLabel(r.nextPayday) });
+    const payday = r.payKnown ? te("paydayIn", { n: r.daysLeft, date: dateLabel(r.nextPayday) }) : te("paydayUnknown");
     let sub;
-    if (st === "good") sub = `<div class="hero-sub">${te("safePerDay", { amount: money(r.perDay) })}</div><div class="hero-sub2">${payday}</div>`;
+    if (st === "good") sub = r.payKnown ? `<div class="hero-sub">${te("safePerDay", { amount: money(r.perDay) })}</div><div class="hero-sub2">${payday}</div>` : `<div class="hero-sub">${payday}</div>`;
     else if (st === "zero") sub = `<div class="hero-sub">${te("safeZero")}</div><div class="hero-sub2">${payday}</div>`;
     else sub = `<div class="hero-sub">${te("safeOver", { amount: money(-r.safe) })}</div><div class="hero-sub2">${payday}</div><p class="hero-kind">${te("safeOverKind")}</p>`;
     const math = UI.showMath ? `<div class="math" id="math">
@@ -1246,10 +1375,12 @@ window.DEB_STR = {
   function notes() {
     const d = today(), out = [];
     if (S.flags.stale) out.push(`<div class="note" role="status">${icon("heart")}<div class="body"><p>${te("noteStale")}</p><button class="btn sm primary" data-act="balance">${te("updateBalance")}</button></div></div>`);
-    if (R.pendingPaydays.length) {
-      const n = R.pendingPaydays.length;
-      out.push(`<div class="note pay" role="status">${icon("coin")}<div class="body"><p>${te("notePending", { n, date: dateLabel(R.pendingPaydays[0]) })}</p>
-        <div class="btn-row"><button class="btn sm primary" data-act="payYes">${te("notePendingYes", { amount: money(S.pay.amount * n) })}</button>
+    if (!R.payKnown) out.push(`<div class="note" role="status">${icon("calendar")}<div class="body"><p>${te("noteNoNext")}</p><button class="btn sm primary" data-act="nextPay">${te("noteNoNextBtn")}</button></div></div>`);
+    if (R.pendingItems.length) {
+      const items = R.pendingItems, n = items.length, total = items.reduce((a, x) => a + x.amount, 0);
+      const ask = n === 1 && items[0].name ? te("notePendingNamed", { name: items[0].name, date: dateLabel(items[0].date) }) : te("notePending", { n, date: dateLabel(items[0].date) });
+      out.push(`<div class="note pay" role="status">${icon("coin")}<div class="body"><p>${ask}</p>
+        <div class="btn-row"><button class="btn sm primary" data-act="payYes">${te("notePendingYes", { amount: money(total) })}</button>
         <button class="btn sm" data-act="payOther">${te("notePendingOther")}</button><button class="btn sm ghost" data-act="payNo">${te("notePendingNo")}</button></div></div></div>`);
     }
     if (S.flags.payNote && C.parse(S.flags.payNoteUntil) >= d) {
@@ -1311,7 +1442,7 @@ window.DEB_STR = {
     const seg = `<div class="seg" role="group" aria-label="${te("billsTitle")}"><button data-act="billsMode" data-v="list" aria-pressed="${UI.billsMode === "list"}">${icon("list")}${te("billsList")}</button><button data-act="billsMode" data-v="cal" aria-pressed="${UI.billsMode === "cal"}">${icon("calendar")}${te("billsCalendar")}</button></div>`;
     const head = `<div class="panel-head"><h2>${te("billsTitle")}</h2><div class="row">${seg}<button class="btn sm primary" data-act="addBill">${icon("plus")}${te("addBill")}</button></div></div>`;
     if (UI.billsMode === "cal") return `<section class="panel">${head}${calendar()}</section>`;
-    const next2 = C.nextPayday(S.pay, R.nextPayday);
+    const next2 = C.nextPaydayAll(S, R.nextPayday);
     const groups = [
       ["billsNeedsLook", R.bills.filter((b) => b.status === "overdue"), te("noteOverdueHint")],
       ["billsBeforePayday", R.bills.filter((b) => b.thisPeriod && b.status !== "overdue"), te("periodRange", { from: dateLabel(today(), { noDow: true }), to: dateLabel(R.nextPayday - 1, { noDow: true }) })],
@@ -1340,7 +1471,7 @@ window.DEB_STR = {
     const { y, m } = UI.cal, first = C.fromYMD(y, m, 1), last = C.fromYMD(y, m, C.dim(y, m));
     const ws = S.settings.weekStart, lead = (C.dow(first) - ws + 7) % 7, gridStart = first - lead;
     const cells = Math.ceil((lead + (last - first + 1)) / 7) * 7;
-    const pays = new Set(C.paydays(S.pay, gridStart, gridStart + cells - 1));
+    const pays = new Set(C.allPaydays(S, gridStart, gridStart + cells - 1));
     const byDay = {};
     S.bills.forEach((b) => C.occurrences(b, gridStart, gridStart + cells - 1).forEach((o) => {
       const ds = C.fmt(o), paid = C.billPaid(S, b.id, ds), skipped = (b.skips || []).indexOf(ds) !== -1;
@@ -1368,7 +1499,7 @@ window.DEB_STR = {
   // ------------------------------------------------------------------ spending view
   function eventLabel(e) {
     if (e.type === "spend") return e.note ? `${catName(e.cat)} · ${e.note}` : catName(e.cat);
-    if (e.type === "income") return e.auto ? t("evPay") : (e.note || t("evIncome"));
+    if (e.type === "income") return e.auto ? (e.note || t("evPay")) : (e.note || t("evIncome"));
     if (e.type === "bill") { const b = S.bills.find((x) => x.id === e.billId); return `${t("evBill")}: ${b ? b.name : "—"}`; }
     const g = S.goals.find((x) => x.id === e.goalId);
     return `${t(e.type === "save" ? "evSave" : "evUnsave")}: ${g ? g.name : "—"}`;
@@ -1402,7 +1533,7 @@ window.DEB_STR = {
     const done = g.saved >= g.goal.target && g.goal.target > 0;
     let hint = "";
     if (!mini && g.goal.by && !done) {
-      const by = C.parse(g.goal.by), pd = C.paydays(S.pay, today() + 1, by).length;
+      const by = C.parse(g.goal.by), pd = C.allPaydays(S, today() + 1, by).length;
       if (pd > 0) {
         const need = Math.ceil(g.left / pd);
         hint = g.goal.per && g.goal.per * pd >= g.left ? te("goalOnTrack", { date: dateLabel(by, { noDow: true }) }) : te("goalNeedPer", { amount: money(need), date: dateLabel(by, { noDow: true }) });
@@ -1462,14 +1593,41 @@ window.DEB_STR = {
     return `<div class="money-wrap ${si.after ? "sym-after" : ""} ${o.big ? "big-wrap" : ""}"><span class="sym ${si.after ? "after" : ""}" aria-hidden="true">${esc(si.sym)}</span>
       <input class="input num ${o.big ? "big" : ""}" id="${id}" name="${o.name || id}" inputmode="${o.neg ? "text" : "decimal"}" autocomplete="off" value="${esc(v)}" ${o.set ? `data-set="${o.set}"` : ""} ${o.onb ? `data-onb="${o.onb}"` : ""} ${o.auto ? "autofocus" : ""} ${o.desc ? `aria-describedby="${o.desc}"` : ""} placeholder="${o.placeholder || "0"}"></div>`;
   }
-  function payFields(prefix, p) {
-    const freq = sel(prefix + "freq", "pay.freq", [["weekly", t("freqWeekly")], ["biweekly", t("freqBiweekly")], ["semimonthly", t("freqSemimonthly")], ["monthly", t("freqMonthly")]], p.freq);
+  const anchored = (f) => f === "weekly" || f === "biweekly" || f === "fourweekly";
+  const freqOptions = () => [["weekly", t("freqWeekly")], ["biweekly", t("freqBiweekly")], ["fourweekly", t("freqFourweekly")], ["semimonthly", t("freqSemimonthly")], ["monthly", t("freqMonthly")], ["irregular", t("freqIrregular")]];
+  const payById = (id) => (id ? S.extraPays.find((x) => x.id === id) : S.pay);
+  const payLabel = (p, i) => (i === 0 ? t("payMain") : p.name || t("payExtraN", { n: i }));
+  function irregularFields(prefix, p, id) {
+    const td = today(), dates = (p.dates || []).map(C.parse).filter((n) => !isNaN(n) && n >= td).sort((a, b) => a - b);
+    const chips = dates.length
+      ? `<div class="chips" role="group" aria-label="${te("irrLabel")}">${dates.map((n) => `<button type="button" data-act="irrRemove" data-id="${esc(id)}" data-v="${C.fmt(n)}" aria-label="${esc(t("irrRemove", { date: dateLabel(n, { noDow: true }) }))}">${esc(dateLabel(n))}${icon("x")}</button>`).join("")}</div>`
+      : `<p class="empty">${te("irrNone")}</p>`;
+    return `<div class="field"><span class="lbl">${te("irrLabel")}</span>${chips}
+      <div class="row"><input type="date" class="input" id="${prefix}irr-new" aria-label="${te("irrDate")}" style="flex:1 1 150px"><button type="button" class="btn sm" data-act="irrAdd" data-id="${esc(id)}" data-input="${prefix}irr-new">${icon("plus")}${te("irrAdd")}</button></div>
+      <span class="hint">${te("irrHint")}</span></div>`;
+  }
+  function payFields(prefix, p, id) {
+    id = id || "";
+    const path = id ? "xpay." + id : "pay";
+    const freq = sel(prefix + "freq", path + ".freq", freqOptions(), p.freq);
     let when;
-    if (p.freq === "weekly" || p.freq === "biweekly") when = `<div class="field"><label for="${prefix}next">${te("setNextPayday")}</label><input type="date" class="input" id="${prefix}next" data-set="pay.anchor" value="${C.fmt(C.nextPayday(p, today() - 1))}"></div>`;
-    else if (p.freq === "semimonthly") when = `<div class="two"><div class="field"><label for="${prefix}d1">${te("setDay1")}</label>${sel(prefix + "d1", "pay.day1", dayOptions(), p.day1)}</div><div class="field"><label for="${prefix}d2">${te("setDay2")}</label>${sel(prefix + "d2", "pay.day2", dayOptions(), p.day2)}</div></div>`;
-    else when = `<div class="field"><label for="${prefix}d">${te("setDay")}</label>${sel(prefix + "d", "pay.day", dayOptions(), p.day)}</div>`;
-    return `<div class="field"><label for="${prefix}freq">${te("setFreq")}</label>${freq}</div>${when}
-      <div class="field"><label for="${prefix}wk">${te("setWeekend")}</label>${sel(prefix + "wk", "pay.weekend", [["keep", t("weekendKeep")], ["before", t("weekendBefore")], ["after", t("weekendAfter")]], p.weekend)}</div>`;
+    if (anchored(p.freq)) when = `<div class="field"><label for="${prefix}next">${te("setNextPayday")}</label><input type="date" class="input" id="${prefix}next" data-set="${path}.anchor" value="${C.fmt(C.nextPayday(p, today() - 1))}"></div>`;
+    else if (p.freq === "irregular") when = irregularFields(prefix, p, id);
+    else if (p.freq === "semimonthly") when = `<div class="two"><div class="field"><label for="${prefix}d1">${te("setDay1")}</label>${sel(prefix + "d1", path + ".day1", dayOptions(), p.day1)}</div><div class="field"><label for="${prefix}d2">${te("setDay2")}</label>${sel(prefix + "d2", path + ".day2", dayOptions(), p.day2)}</div></div>`;
+    else when = `<div class="field"><label for="${prefix}d">${te("setDay")}</label>${sel(prefix + "d", path + ".day", dayOptions(), p.day)}</div>`;
+    const weekend = p.freq === "irregular" ? "" : `<div class="field"><label for="${prefix}wk">${te("setWeekend")}</label>${sel(prefix + "wk", path + ".weekend", [["keep", t("weekendKeep")], ["before", t("weekendBefore")], ["after", t("weekendAfter")]], p.weekend)}</div>`;
+    return `<div class="field"><label for="${prefix}freq">${te("setFreq")}</label>${freq}</div>${when}${weekend}`;
+  }
+  function extraPaysPanel() {
+    const cards = S.extraPays.map((x, i) => `<div class="paycard"><h3 class="section-title" style="margin-top:0">${esc(payLabel(x, i + 1))}</h3>
+      <div class="field"><label for="x${i}-name">${te("payName")}</label><input class="input" id="x${i}-name" data-set="xpay.${esc(x.id)}.name" maxlength="40" value="${esc(x.name)}"></div>
+      <div class="field"><label for="x${i}-amt">${te("setPayAmount")}</label>${moneyInput("x" + i + "-amt", x.amount, { set: "xpay." + x.id + ".amount" })}</div>
+      ${payFields("x" + i + "-", x, x.id)}
+      <div class="btn-row"><button type="button" class="btn sm danger" data-act="payRemove" data-id="${esc(x.id)}" aria-label="${esc(t("payRemove") + ": " + payLabel(x, i + 1))}">${icon("trash")}${te("payRemove")}</button></div></div>`).join("");
+    const full = S.extraPays.length >= C.MAX_EXTRA_PAYS;
+    return `<section class="panel"><h2 style="margin-bottom:6px">${te("setOtherPays")}</h2><p class="small muted" style="margin-top:0">${te("setOtherPaysHint")}</p>
+      ${cards || `<p class="empty">${te("noOtherPays")}</p>`}
+      <div class="btn-row" style="margin-top:12px"><button type="button" class="btn" data-act="payAdd" ${full ? "aria-disabled=\"true\"" : ""}>${icon("plus")}${te("payAdd")}</button></div></section>`;
   }
   function moneyFormatFields() {
     const st = S.settings;
@@ -1485,11 +1643,13 @@ window.DEB_STR = {
     const data = DEMO ? `<p class="empty">${te("demoNoSave")}</p>` : `<p class="lead">${te("dataWhere")}</p><p class="small muted">${lb}</p>
       <div class="stack"><button class="btn primary" data-act="backupSave">${icon("download")}${te("backupSave")}</button>
       <button class="btn" data-act="backupRestore">${icon("upload")}${te("backupRestore")}</button><input type="file" id="restore-file" accept=".json,application/json,text/plain" hidden>
-      <div class="two"><button class="btn sm ghost" data-act="backupCopy">${icon("copy")}${te("backupCopy")}</button><button class="btn sm ghost" data-act="backupPaste">${te("backupPaste")}</button></div></div>`;
+      <div class="two"><button class="btn sm ghost" data-act="backupCopy">${icon("copy")}${te("backupCopy")}</button><button class="btn sm ghost" data-act="backupPaste">${te("backupPaste")}</button></div>
+      <div class="csv-block"><button class="btn" data-act="csvSave">${icon("download")}${te("csvSave")}</button><p class="small muted" style="margin:8px 0 0">${te("csvHint")}</p></div></div>`;
     return `<div class="grid"><div class="col">
       <section class="panel"><h2 style="margin-bottom:12px">${te("setPay")}</h2>${payFields("s-", p)}
         <div class="field"><label for="s-amt">${te("setPayAmount")}</label>${moneyInput("s-amt", p.amount, { set: "pay.amount" })}</div>
         <label class="toggle"><input type="checkbox" data-set="settings.autoPay" ${st.autoPay ? "checked" : ""}>${te("setAutoPay")}</label><p class="small muted" style="margin:0">${te("setAutoPayHint")}</p></section>
+      ${extraPaysPanel()}
       <section class="panel"><h2 style="margin-bottom:12px">${te("setMoney")}</h2>${moneyFormatFields()}
         <div class="field"><label for="s-sp">${te("setSymPos")}</label>${sel("s-sp", "settings.symbolPos", [["auto", t("symAuto")], ["before", t("symBefore")], ["after", t("symAfter")]], st.symbolPos)}</div>
         <div class="two"><div class="field"><label for="s-ds">${te("setDateStyle")}</label>${sel("s-ds", "settings.dateStyle", [["md", t("dateMD")], ["dm", t("dateDM")]], st.dateStyle)}</div>
@@ -1506,17 +1666,21 @@ window.DEB_STR = {
   }
 
   function setPath(path, raw, el) {
-    const [obj, key] = path.split(".");
-    const target = obj === "debtExtra" ? S : S[obj];
+    const parts = path.split("."), extra = parts[0] === "xpay";
+    const obj = parts[0], key = extra ? parts[2] : parts[1];
+    const target = extra ? S.extraPays.find((x) => x.id === parts[1]) : obj === "debtExtra" ? S : S[obj];
+    if (!target) return;
+    const isPay = obj === "pay" || extra;
     let v = raw;
     if (["amount", "cushion"].includes(key) || path === "debtExtra") {
       v = C.parseMoney(raw);
       if (v == null) { if (el) { el.setAttribute("aria-invalid", "true"); toast(t("amountInvalid")); } return; }
     } else if (["day1", "day2", "day", "weekStart"].includes(key)) v = parseInt(raw, 10);
     else if (key === "autoPay") v = !!raw;
+    else if (key === "name") v = String(raw).trim().slice(0, 40);
     else if (key === "anchor" && isNaN(C.parse(raw))) return;
     if (path === "debtExtra") S.debtExtra = v; else target[key] = v;
-    if (obj === "pay" && key !== "amount") S.pay.lastProcessed = C.fmt(C.prevPayday(S.pay, today()));
+    if (isPay && key !== "amount" && key !== "name") target.lastProcessed = C.fmt(C.prevPayday(target, today()));
     commit(true);
   }
 
@@ -1536,9 +1700,9 @@ window.DEB_STR = {
         <div class="welcome-art"><span class="tag ok">${icon("lock")}Offline</span><span class="tag ok">${icon("check")}${te("safeLabel")}</span></div>
         <div class="stack"><button class="btn primary big" data-act="onbNext">${te("onbStart")}</button><button class="btn big ghost" data-act="useSample">${te("onbSample")}</button></div>`;
     } else if (o.step === 1) {
-      const fr = [["weekly", "freqWeekly"], ["biweekly", "freqBiweekly"], ["semimonthly", "freqSemimonthly"], ["monthly", "freqMonthly"]];
+      const fr = [["weekly", "freqWeekly"], ["biweekly", "freqBiweekly"], ["fourweekly", "freqFourweekly"], ["semimonthly", "freqSemimonthly"], ["monthly", "freqMonthly"], ["irregular", "freqIrregular"]];
       let when;
-      if (p.freq === "weekly" || p.freq === "biweekly") when = `<div class="field"><label for="o-next">${te("onbQNext")}</label><input type="date" class="input" id="o-next" data-onb="next" value="${esc(o.next)}" ${o.err.next ? 'aria-invalid="true" aria-describedby="err-next"' : ""}>${err("next")}</div>`;
+      if (anchored(p.freq) || p.freq === "irregular") when = `<div class="field"><label for="o-next">${te("onbQNext")}</label><input type="date" class="input" id="o-next" data-onb="next" value="${esc(o.next)}" ${o.err.next ? 'aria-invalid="true" aria-describedby="err-next"' : ""}>${err("next")}${p.freq === "irregular" ? `<span class="hint">${te("onbIrrHint")}</span>` : ""}</div>`;
       else when = payFields("o-", p).replace(/<div class="field"><label for="o-freq">[\s\S]*?<\/select><\/div>/, "");
       h = `${prog(1)}<h2 id="q1">${te("onbQFreq")}</h2><div class="choice" role="group" aria-labelledby="q1" style="margin-top:14px">${fr.map(([v, k]) => `<button data-act="onbFreq" data-v="${v}" aria-pressed="${p.freq === v}">${icon("calendar")}${te(k)}</button>`).join("")}</div>${when}${nav(1)}`;
     } else if (o.step === 2) {
@@ -1569,8 +1733,8 @@ window.DEB_STR = {
   function onbValidate() {
     const o = onbDraft(), p = S.pay;
     o.err = {};
-    if (o.step === 1 && (p.freq === "weekly" || p.freq === "biweekly")) {
-      if (isNaN(C.parse(o.next))) o.err.next = "onbNeedDate"; else p.anchor = o.next;
+    if (o.step === 1 && (anchored(p.freq) || p.freq === "irregular")) {
+      if (isNaN(C.parse(o.next))) o.err.next = "onbNeedDate"; else if (p.freq === "irregular") p.dates = [o.next]; else p.anchor = o.next;
     }
     if (o.step === 2) { const v = C.parseMoney(o.amount); if (v == null || v <= 0) o.err.amount = "onbNeedAmount"; else p.amount = v; }
     if (o.step === 3) { const v = C.parseMoney(o.balance, { allowNegative: true }); if (v == null) o.err.balance = "onbNeedBalance"; else o.balanceC = v; }
@@ -1858,6 +2022,40 @@ window.DEB_STR = {
     toast(t("billPaidToast", { name: b.name }), () => { S.events = S.events.filter((x) => x.id !== e.id); commit(); });
   }
 
+  /* After the person answers "did your pay arrive?" every paycheck is counted up to its last pending payday. */
+  function settlePending() {
+    R.pendingItems.forEach((x) => { const l = C.fmt(x.date); if (C.parse(x.pay.lastProcessed) < x.date) x.pay.lastProcessed = l; });
+  }
+  function addPayday(p, dateStr) {
+    const keepFrom = today() - 120, set = (p.dates || []).filter((x) => C.parse(x) >= keepFrom);
+    if (set.indexOf(dateStr) === -1) set.push(dateStr);
+    p.dates = set.sort().slice(-60);
+  }
+  function nextPayDialog() {
+    const irr = C.allPays(S).map((p, i) => ({ p, i })).filter((x) => x.p.freq === "irregular");
+    const which = irr.length > 1 ? `<div class="field"><label for="np-which">${te("nextPayWhich")}</label><select class="input" id="np-which">${irr.map((x) => opt(x.i === 0 ? "" : x.p.id, payLabel(x.p, x.i), "")).join("")}</select></div>` : "";
+    openModal(t("nextPayTitle"), `<p class="lead">${te("irrHint")}</p>${which}<div class="field"><label for="np-date">${te("irrDate")}</label><input type="date" class="input" id="np-date" autofocus></div>${foot()}`,
+    { submit: () => {
+      const v = val("np-date"), id = $("np-which") ? val("np-which") : (irr[0].i === 0 ? "" : irr[0].p.id);
+      if (isNaN(C.parse(v))) { fieldErr("np-date", "dateInvalid"); return false; }
+      const p = payById(id);
+      if (!p) return false;
+      addPayday(p, v); tick(); commit(); return true;
+    } });
+  }
+  function csvSave() {
+    if (DEMO) { toast(t("demoNoSave")); return; }
+    if (!S.events.length) { toast(t("csvEmpty")); return; }
+    const rows = C.exportRows(S, { header: T.csvCols, type: { spend: t("evSpend"), income: t("evIncome"), pay: t("evPay"), bill: t("evBill"), save: t("evSave"), unsave: t("evUnsave") }, cat: catName });
+    const blob = new Blob(["\ufeff" + C.toCsv(rows, [4])], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `done-enough-budget-entries-${C.fmt(today())}.csv`;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast(t("csvSaved"));
+  }
+
   const ACT = {
     tab: (el) => { UI.tab = el.getAttribute("data-tab"); UI.showMath = false; render(); const v = $("view"); if (v) v.focus({ preventScroll: true }); window.scrollTo(0, 0); },
     low: () => { S.settings.low = !S.settings.low; commit(); },
@@ -1887,9 +2085,32 @@ window.DEB_STR = {
     backupRestore: () => { const f = $("restore-file"); if (f) { f.value = ""; f.click(); } },
     dismissBackup: () => { UI.dismissed.backup = true; render(); },
     dismissPay: () => { S.flags.payNote = ""; commit(true); },
-    payYes: () => { R.pendingPaydays.forEach((d, i) => S.events.push({ id: "pay-" + C.fmt(d) + "-" + uid(), type: "income", amount: S.pay.amount, date: C.fmt(d), t: stamp(), auto: true })); S.pay.lastProcessed = C.fmt(R.pendingPaydays[R.pendingPaydays.length - 1]); commit(); },
-    payNo: () => { S.pay.lastProcessed = C.fmt(R.pendingPaydays[R.pendingPaydays.length - 1]); commit(); },
-    payOther: () => { const last = R.pendingPaydays[R.pendingPaydays.length - 1]; S.pay.lastProcessed = C.fmt(last); persist(); incomeDialog(); },
+    payYes: () => {
+      R.pendingItems.forEach((x) => { const e = { id: "pay-" + C.fmt(x.date) + "-" + uid(), type: "income", amount: x.amount, date: C.fmt(x.date), t: stamp(), auto: true }; if (x.name) e.note = x.name; S.events.push(e); });
+      settlePending(); commit();
+    },
+    payNo: () => { settlePending(); commit(); },
+    payOther: () => { settlePending(); persist(); incomeDialog(); },
+    nextPay: () => nextPayDialog(),
+    irrAdd: (el) => {
+      const p = payById(el.getAttribute("data-id")), inp = $(el.getAttribute("data-input")), v = inp ? inp.value : "";
+      if (!p) return;
+      if (isNaN(C.parse(v))) { toast(t("irrNeedDate")); if (inp) inp.focus(); return; }
+      addPayday(p, v); tick(); commit(true);
+    },
+    irrRemove: (el) => { const p = payById(el.getAttribute("data-id")), v = el.getAttribute("data-v"); if (p) { p.dates = (p.dates || []).filter((x) => x !== v); commit(true); } },
+    payAdd: () => {
+      if (S.extraPays.length >= C.MAX_EXTRA_PAYS) { toast(t("payLimit", { n: C.MAX_EXTRA_PAYS })); return; }
+      const d = today(), x = { id: "x" + uid(), name: "", freq: "monthly", anchor: C.fmt(d + 7), dates: [], day1: 15, day2: 31, day: 1, weekend: "keep", amount: 0, lastProcessed: C.fmt(d) };
+      x.lastProcessed = C.fmt(C.prevPayday(x, d));
+      S.extraPays.push(x); commit(true);
+      const f = $("x" + (S.extraPays.length - 1) + "-name"); if (f) f.focus();
+    },
+    payRemove: (el) => {
+      const x = S.extraPays.find((y) => y.id === el.getAttribute("data-id"));
+      if (x) confirmBox(t("payRemoveConfirm", { name: payLabel(x, S.extraPays.indexOf(x) + 1) }), t("del"), () => { S.extraPays = S.extraPays.filter((y) => y !== x); commit(); }, true);
+    },
+    csvSave: csvSave,
     catHide: (el) => { const c = S.cats.find((x) => x.id === el.getAttribute("data-id")); if (c) { c.hidden = !c.hidden; commit(true); } },
     catAdd: () => { const n = val("new-cat").trim(); if (!n) { $("new-cat").focus(); return; } S.cats.push({ id: "c" + uid(), name: n.slice(0, 40), icon: "star", hidden: false }); commit(true); },
     loadSample: () => confirmBox(t("dataSampleConfirm"), t("dataSample"), () => { S = sampleState(); UI.tab = "home"; commit(); }),
