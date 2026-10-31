@@ -241,7 +241,12 @@ button { cursor: pointer; }
 
 /* ---------- calendar */
 .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-.cal-head h3 { font-size: 20px; }
+.cal-head h3, .cal-head h2 { font-size: 20px; }
+.chip-btn:disabled { opacity: .35; cursor: default; }
+.month-top { margin: -6px 0 6px; }
+.month-top .link-btn { display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
+.mtile .result-big { font-size: 26px; overflow-wrap: anywhere; }
+.result-big.over { color: var(--over-ink); }
 .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
 .cal .dn { text-align: center; font-size: 12.5px; font-weight: 900; color: var(--ink-3); padding: 4px 0; }
 .day { border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; min-height: 74px; padding: 6px 5px; text-align: left; display: flex; flex-direction: column;
@@ -419,6 +424,25 @@ window.DEB_STR = {
   demoBanner: "FREE DEMO with sample data. Nothing is saved.",
   demoBanner2: "The full app saves your numbers on your device and makes backup files.",
   storageBanner: "This browser isn't letting the app save. Your numbers will be lost when you close it, so save a backup file before you go.",
+
+  // this month (a review page, reached from Home; the default stays "safe to spend until payday")
+  monthLink: "See this month", monthTitle: "This month", monthBack: "Back to Home", monthNow: "Current month",
+  monthSub: "Everything you logged in this calendar month, in one place.",
+  monthPast: "Past months show your bills as they are today. A bill you added or changed later can look unpaid here.",
+  monthIn: "Money in logged", monthSpent: "Spending logged",
+  monthNothing: "Nothing logged yet this month. When you add spending or money in, this page fills in.",
+  monthNothingPast: "Nothing was logged in this month.",
+  monthCatTitle: "Spending by category", monthNoSpend: "No spending logged this month yet.",
+  monthNoSpendPast: "No spending was logged in this month.",
+  monthTotalsNote: "Totals only include what you logged here: spending, money in and your pay added on payday.",
+  monthBillsTitle: "Bills due this month", monthBillsOpen: "Open Bills",
+  monthToPay: "Still to pay", monthPaid: "Paid", monthSkipped: "Skipped (not counted)",
+  monthGroup_one: "{n} bill · {amount}", monthGroup_other: "{n} bills · {amount}",
+  monthNoBills: "No bills fall in this month.", monthAllPaid: "Everything due this month is marked paid.",
+  monthGone: "Deleted bill",
+  monthSafeTitle: "Safe to spend, as on Home", monthSafeNow: "Right now, until payday",
+  monthSafeNote: "This counts down to your next payday, {date}, not to the end of the month. It is a different number from the totals above.",
+  monthSafeNoNote: "This counts down to your next payday, not to the end of the month. It is a different number from the totals above.",
 
   // relative dates
   today: "today", tomorrow: "tomorrow", yesterday: "yesterday",
@@ -876,6 +900,64 @@ window.DEB_STR = {
     };
   }
 
+  // ------------------------------------------------------------------ month review
+  /* One calendar month at a glance, read only. Everything comes from what is already stored: logged income and spending
+     by their date, bills by their due date (a bill due on the 31st falls on the last day of a short month, as everywhere
+     else in the app). Bills marked paid keep the amount they were paid with. A paid bill whose bill was deleted or moved
+     is still counted in the month it was due. Skipped bills are listed but not counted. */
+  function monthSummary(state, y, m, today) {
+    var first = fromYMD(y, m, 1), last = fromYMD(y, m, dim(y, m)), evs = state.events || [], bills = state.bills || [];
+    var income = 0, incomeCount = 0, spent = 0, spentCount = 0, byCat = {}, i, j, e, d;
+    for (i = 0; i < evs.length; i++) {
+      e = evs[i]; d = parse(e.date);
+      if (!(d >= first && d <= last)) continue;
+      if (e.type === "income") { income += e.amount; incomeCount++; }
+      else if (e.type === "spend") { var c = e.cat || "other"; spent += e.amount; spentCount++; byCat[c] = (byCat[c] || 0) + e.amount; }
+    }
+    var cats = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a] || (a < b ? -1 : 1); });
+    var items = [], matched = {};
+    for (i = 0; i < bills.length; i++) {
+      var b = bills[i], occ = occurrences(b, first, last);
+      for (j = 0; j < occ.length; j++) {
+        var ds = fmt(occ[j]), paid = billPaid(state, b.id, ds), skipped = billSkipped(b, ds);
+        if (paid) matched[paid.id] = true;
+        items.push({ bill: b, id: b.id, name: b.name, due: occ[j], dueStr: ds, amount: paid ? paid.amount : b.amount,
+          status: paid ? "paid" : skipped ? "skipped" : occ[j] < today ? "overdue" : occ[j] === today ? "today" : "upcoming" });
+      }
+    }
+    for (i = 0; i < evs.length; i++) {
+      e = evs[i];
+      if (e.type !== "bill" || matched[e.id]) continue;
+      d = parse(e.due);
+      if (!(d >= first && d <= last)) continue;
+      var known = null;
+      for (j = 0; j < bills.length; j++) if (bills[j].id === e.billId) known = bills[j];
+      items.push({ bill: known, id: e.billId, name: known ? known.name : "", gone: !known, due: d, dueStr: e.due, amount: e.amount, status: "paid" });
+    }
+    items.sort(function (x, y2) { return x.due - y2.due || (x.name < y2.name ? -1 : x.name > y2.name ? 1 : 0); });
+    var out = { y: y, m: m, first: first, last: last, income: income, incomeCount: incomeCount, spent: spent, spentCount: spentCount,
+      byCat: byCat, cats: cats, bills: items, paid: [], toPay: [], skipped: [], paidTotal: 0, toPayTotal: 0 };
+    items.forEach(function (it) {
+      if (it.status === "paid") { out.paid.push(it); out.paidTotal += it.amount; }
+      else if (it.status === "skipped") out.skipped.push(it);
+      else { out.toPay.push(it); out.toPayTotal += it.amount; }
+    });
+    out.logged = incomeCount + spentCount > 0;
+    return out;
+  }
+  /* The oldest month the review can go back to: the month of the oldest logged entry (never more than 24 months back), or this month. */
+  function earliestMonth(state, today) {
+    var t = ymd(today), best = t.y * 12 + (t.m - 1), evs = state.events || [];
+    for (var i = 0; i < evs.length; i++) {
+      var d = parse(evs[i].date);
+      if (isNaN(d)) continue;
+      var p = ymd(d), k = p.y * 12 + (p.m - 1);
+      if (k < best) best = k;
+    }
+    best = Math.max(best, t.y * 12 + (t.m - 1) - 24);
+    return { y: Math.floor(best / 12), m: best % 12 + 1 };
+  }
+
   // ------------------------------------------------------------------ debt payoff (estimate)
   /* debts: [{ id, name, balance (cents), apr (percent), min (cents) }], extra (cents per month), method "snowball" | "avalanche" */
   function debtPlan(debts, extra, method) {
@@ -1036,7 +1118,7 @@ window.DEB_STR = {
     allPays: allPays, nextPaydayAll: nextPaydayAll, prevPaydayAll: prevPaydayAll, allPaydays: allPaydays, nextPaydayKnown: nextPaydayKnown,
     pendingPays: pendingPays, duePaydaysOf: duePaydaysOf, exportRows: exportRows, toCsv: toCsv,
     occurrences: occurrences, billPaid: billPaid, balance: balance, goalSaved: goalSaved, duePaydays: duePaydays,
-    materializePay: materializePay, compute: compute, debtPlan: debtPlan, sanitizeState: sanitizeState, makeBackup: makeBackup, APP_ID: APP_ID
+    materializePay: materializePay, compute: compute, monthSummary: monthSummary, earliestMonth: earliestMonth, debtPlan: debtPlan, sanitizeState: sanitizeState, makeBackup: makeBackup, APP_ID: APP_ID
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.DEB_CORE = api;
@@ -1138,7 +1220,7 @@ window.DEB_STR = {
 
   // ------------------------------------------------------------------ state
   let S = null, STORAGE_OK = true, lastT = 0;
-  const UI = { tab: "home", billsMode: "list", cal: null, calSel: null, act: "period", showMath: false, onb: null, dismissed: {} };
+  const UI = { tab: "home", billsMode: "list", cal: null, calSel: null, act: "period", month: null, showMath: false, onb: null, dismissed: {} };
 
   function stamp() { let n = Date.now(); if (n <= lastT) n = lastT + 1; lastT = n; return n; }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -1264,7 +1346,7 @@ window.DEB_STR = {
     const inOnb = !S.setupDone || !!(UI.onb && UI.onb.step === 5);
     if (inOnb) view = onboardingView();
     else if (low) view = lowView();
-    else view = ({ home: homeView, bills: billsView, spending: spendingView, goals: goalsView, debt: debtView, settings: settingsView }[UI.tab] || homeView)();
+    else view = ({ home: homeView, month: monthView, bills: billsView, spending: spendingView, goals: goalsView, debt: debtView, settings: settingsView }[UI.tab] || homeView)();
     $("app").innerHTML = `<div class="wrap">${topBar()}${banners()}${!inOnb && !low ? navBar() : ""}<main id="view" tabindex="-1">${view}</main>${footer()}</div>`;
     if (key) { const el = document.querySelector(key); if (el) el.focus({ preventScroll: true }); }
     fitAmounts();
@@ -1306,7 +1388,7 @@ window.DEB_STR = {
 
   function navBar() {
     const tabs = [["home", "home", "tabHome"], ["bills", "bills", "tabBills"], ["spending", "wallet", "tabSpending"], ["goals", "target", "tabGoals"], ["debt", "debt", "tabDebt"], ["settings", "gear", "tabSettings"]];
-    return `<nav class="tabs" aria-label="${te("navLabel")}">${tabs.map(([id, ic, lb]) => `<button class="tab t-${id}" data-act="tab" data-tab="${id}" ${UI.tab === id ? 'aria-current="page"' : ""}>${icon(ic)}<span>${te(lb)}</span></button>`).join("")}</nav>`
+    return `<nav class="tabs" aria-label="${te("navLabel")}">${tabs.map(([id, ic, lb]) => `<button class="tab t-${id}" data-act="tab" data-tab="${id}" ${(UI.tab === "month" ? "home" : UI.tab) === id ? 'aria-current="page"' : ""}>${icon(ic)}<span>${te(lb)}</span></button>`).join("")}</nav>`
       + (S.setupDone ? `<div class="sr" aria-live="polite" id="live"></div>` : "");
   }
 
@@ -1420,7 +1502,8 @@ window.DEB_STR = {
     return `<section class="panel" aria-labelledby="pp-h"><div class="panel-head"><h2 id="pp-h">${te("periodTitle")}</h2><span class="muted small">${te("periodRange", { from: dateLabel(R.periodStart, { noDow: true }), to: dateLabel(R.nextPayday - 1, { noDow: true }) })}</span></div>
       <div class="two" style="margin-bottom:10px"><div><div class="muted small">${te("periodSpent")}</div><div class="result-big num" style="font-size:26px">${esc(money(R.spent))}</div></div>
       <div><div class="muted small">${te("periodIn")}</div><div class="result-big num" style="font-size:26px">${esc(money(R.incomeThisPeriod))}</div></div></div>
-      ${rows || `<p class="empty">${te("noSpendYet")}</p>`}</section>`;
+      ${rows || `<p class="empty">${te("noSpendYet")}</p>`}
+      <button class="link-btn" data-act="tab" data-tab="month">${te("monthLink")}</button></section>`;
   }
   function catRow(id, amt, max) {
     const pct = Math.max(2, Math.round(amt * 100 / Math.max(1, max)));
@@ -1441,6 +1524,52 @@ window.DEB_STR = {
   function lowView() {
     return `<div class="low-wrap">${hero({ noMath: true, noActions: true })}${nextBillsPanel(3, { noMore: true, noSkip: true })}
       <button class="btn big ghost" data-act="low">${icon("batFull")}${te("lowOff")}</button></div>`;
+  }
+
+  // ------------------------------------------------------------------ this month (optional review page)
+  const monthIdx = (x) => x.y * 12 + x.m - 1;
+  function monthBillRow(it) {
+    if (!it.gone) return billRow(it);
+    return `<div class="item is-paid"><span class="ic">${icon("bills")}</span><span class="main"><span class="name">${te("monthGone")}</span>
+      <span class="meta"><span>${esc(dateLabel(it.due))}</span><span class="amt-inline num">${esc(money(it.amount))}</span></span></span><span class="amt num">${esc(money(it.amount))}</span>
+      <span class="acts"><span class="tag ok">${icon("check")}${te("paidDone")}</span></span></div>`;
+  }
+  function monthBillGroup(titleKey, items, total) {
+    if (!items.length) return "";
+    const sub = total == null ? "" : ` <span style="text-transform:none;letter-spacing:0;font-weight:700">· ${te("monthGroup", { n: items.length, amount: money(total) })}</span>`;
+    return `<h3 class="section-title">${te(titleKey)}${sub}</h3>
+      <div class="list">${items.map(monthBillRow).join("")}</div>`;
+  }
+  function monthView() {
+    const td = C.ymd(today()), early = C.earliestMonth(S, today());
+    let cur = UI.month || { y: td.y, m: td.m };
+    if (monthIdx(cur) > monthIdx(td)) cur = { y: td.y, m: td.m };
+    if (monthIdx(cur) < monthIdx(early)) cur = early;
+    UI.month = cur;
+    const now = monthIdx(cur) === monthIdx(td), M = C.monthSummary(S, cur.y, cur.m, today());
+    const canPrev = monthIdx(cur) > monthIdx(early), canNext = monthIdx(cur) < monthIdx(td);
+    const range = te("periodRange", { from: dateLabel(M.first, { noDow: true }), to: dateLabel(M.last, { noDow: true }) });
+    const tiles = M.logged ? `<div class="two" style="margin-top:14px"><div class="mtile"><div class="muted small">${te("monthIn")}</div><div class="result-big num" data-testid="month-in">${esc(money(M.income))}</div></div>
+      <div class="mtile"><div class="muted small">${te("monthSpent")}</div><div class="result-big num" data-testid="month-spent">${esc(money(M.spent))}</div></div></div>
+      <p class="muted small" style="margin:6px 0 0">${te("monthTotalsNote")}</p>` : `<p class="empty" style="margin-top:12px">${te(now ? "monthNothing" : "monthNothingPast")}</p>`;
+    const head = `<section class="panel" aria-labelledby="mo-h"><div class="cal-head"><button class="chip-btn icon-btn" data-act="monthMove" data-v="-1" aria-label="${te("calPrev")}" ${canPrev ? "" : "disabled"}>${icon("chevL")}</button>
+      <h2 id="mo-h" aria-live="polite" data-testid="month-title">${esc(monthYear(cur.y, cur.m))}</h2>
+      <button class="chip-btn icon-btn" data-act="monthMove" data-v="1" aria-label="${te("calNext")}" ${canNext ? "" : "disabled"}>${icon("chevR")}</button></div>
+      <div class="row" style="justify-content:center;gap:8px;margin-bottom:4px"><span class="muted small" data-testid="month-range">${range}</span>${now ? `<span class="tag ok">${te("monthNow")}</span>` : ""}</div>
+      <p class="muted small" style="text-align:center;margin:0">${te(now ? "monthSub" : "monthPast")}</p>${tiles}</section>`;
+    const cats = !M.logged ? "" : `<section class="panel" aria-labelledby="mc-h"><div class="panel-head"><h2 id="mc-h">${te("monthCatTitle")}</h2></div>
+      ${M.cats.length ? M.cats.map((id) => catRow(id, M.byCat[id], M.byCat[M.cats[0]])).join("") : `<p class="empty">${te(now ? "monthNoSpend" : "monthNoSpendPast")}</p>`}</section>`;
+    let bills;
+    if (!M.bills.length) bills = S.bills.length ? `<p class="empty">${te("monthNoBills")}</p>` : `<p class="empty">${te("noBillsYet")}</p><div class="btn-row" style="margin-top:12px"><button class="btn" data-act="addBill">${icon("plus")}${te("addFirstBill")}</button></div>`;
+    else bills = monthBillGroup("monthToPay", M.toPay, M.toPayTotal) + (!M.toPay.length ? `<p class="empty">${te("monthAllPaid")}</p>` : "")
+      + monthBillGroup("monthPaid", M.paid, M.paidTotal) + monthBillGroup("monthSkipped", M.skipped, null);
+    const billsPanel = `<section class="panel" aria-labelledby="mb-h"><div class="panel-head"><h2 id="mb-h">${te("monthBillsTitle")}</h2><button class="link-btn" data-act="tab" data-tab="bills">${te("monthBillsOpen")}</button></div>${bills}</section>`;
+    const amt = money(R.safe);
+    const safe = !now ? "" : `<section class="panel" aria-labelledby="ms-h"><div class="panel-head"><h2 id="ms-h">${te("monthSafeTitle")}</h2><span class="tag plain">${te("monthSafeNow")}</span></div>
+      <div class="result-big num ${R.safe < 0 ? "over" : ""}" data-testid="month-safe">${esc(amt)}</div>
+      <p class="muted small" style="margin:4px 0 0">${R.payKnown ? te("monthSafeNote", { date: dateLabel(R.nextPayday, { noDow: true }) }) : te("monthSafeNoNote")}</p></section>`;
+    return `<div class="month-top"><button class="link-btn" data-act="tab" data-tab="home">${icon("chevL")}${te("monthBack")}</button></div>
+      <div class="grid"><div class="col">${head}${cats}</div><div class="col">${billsPanel}${safe}</div></div>`;
   }
 
   // ------------------------------------------------------------------ bills view
@@ -1529,7 +1658,8 @@ window.DEB_STR = {
     return `<div class="grid"><div class="col"><section class="panel"><div class="panel-head"><h2>${te("spendTitle")}</h2></div>
         <div class="btn-row"><button class="btn primary big" data-act="spend" style="flex:1 1 200px">${icon("plus")}${te("addSpend")}</button><button class="btn big" data-act="income" style="flex:1 1 160px">${icon("arrowIn")}${te("addIncome")}</button></div></section>
         <section class="panel"><div class="panel-head"><h2>${te("byCategory")}</h2><span class="muted small">${te("activityPeriod")}: ${esc(money(R.spent))}</span></div>
-        ${cats.length ? cats.map((id) => catRow(id, R.byCat[id], max)).join("") : `<p class="empty">${te("noSpendYet")}</p>`}</section></div>
+        ${cats.length ? cats.map((id) => catRow(id, R.byCat[id], max)).join("") : `<p class="empty">${te("noSpendYet")}</p>`}
+        <button class="link-btn" data-act="tab" data-tab="month">${te("monthLink")}</button></section></div>
       <section class="panel"><div class="panel-head"><h2>${te("activity")}</h2>${seg}</div>
         ${evs.length ? `<div class="list">${evs.map(eventRow).join("")}</div>${total > 300 ? `<p class="muted small">300 / ${total}</p>` : ""}` : `<p class="empty">${te("activityNone")}</p>`}</section></div>`;
   }
@@ -2063,7 +2193,7 @@ window.DEB_STR = {
   }
 
   const ACT = {
-    tab: (el) => { UI.tab = el.getAttribute("data-tab"); UI.showMath = false; render(); const v = $("view"); if (v) v.focus({ preventScroll: true }); window.scrollTo(0, 0); },
+    tab: (el) => { UI.tab = el.getAttribute("data-tab"); UI.showMath = false; if (UI.tab === "month") UI.month = null; render(); const v = $("view"); if (v) v.focus({ preventScroll: true }); window.scrollTo(0, 0); },
     low: () => { S.settings.low = !S.settings.low; commit(); },
     math: () => { UI.showMath = !UI.showMath; render(); },
     spend: spendDialog, income: incomeDialog, balance: balanceDialog,
@@ -2075,6 +2205,12 @@ window.DEB_STR = {
     delBill: (el) => { const b = S.bills.find((x) => x.id === el.getAttribute("data-id")); if (b) confirmBox(t("billDeleteConfirm", { name: b.name }), t("del"), () => { S.bills = S.bills.filter((x) => x !== b); commit(); toast(t("billDeleted")); }, true); },
     billsMode: (el) => { UI.billsMode = el.getAttribute("data-v"); render(); },
     calMove: (el) => { const k = +el.getAttribute("data-v"), c = C.addMonths(UI.cal.y, UI.cal.m, k); UI.cal = c; UI.calSel = C.fromYMD(c.y, c.m, 1); render(); },
+    monthMove: (el) => {
+      const td = C.ymd(today()), early = C.earliestMonth(S, today()), c = UI.month || { y: td.y, m: td.m };
+      const n = C.addMonths(c.y, c.m, +el.getAttribute("data-v"));
+      if (monthIdx(n) > monthIdx(td) || monthIdx(n) < monthIdx(early)) return;
+      UI.month = n; render();
+    },
     calDay: (el) => { UI.calSel = +el.getAttribute("data-v"); render(); },
     actMode: (el) => { UI.act = el.getAttribute("data-v"); render(); },
     editEvent: (el) => eventDialog(el.getAttribute("data-id")),
