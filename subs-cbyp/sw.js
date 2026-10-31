@@ -1,7 +1,7 @@
 // Done Enough Subscriptions: offline cache for the home-screen copy. Your list never passes through here: it lives
 // in this browser's storage on this device. Only this app's own "subs-web-" caches are ever deleted, so other apps on
 // the same site (the budget app) keep their offline copies.
-const CACHE = "subs-web-435fd85656";
+const CACHE = "subs-web-2cc63d895b";
 const FILES = ["./", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

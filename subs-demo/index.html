@@ -347,8 +347,32 @@ footer.foot { text-align: center; color: var(--ink-3); font-size: 13px; font-wei
   .sheet { animation: up .18s ease-out; }
   @keyframes up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
 }
+/* ---------- calm hints: one quiet line, smaller and lighter than anything around the main number */
+.hint-line { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; padding: 2px 2px 2px 12px; border-radius: 14px;
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); font-size: 14.5px; font-weight: 700; line-height: 1.4; }
+.col > .hint-line { margin: -6px 0 0; }
+.panel-head + .hint-line, .lead + .hint-line { margin: 0 0 12px; }
+.sheet .hint-line { margin: 0 0 14px; }
+.hint-line > .ico { width: 18px; height: 18px; flex: 0 0 auto; margin-top: 12px; color: var(--primary-text); }
+.hint-body { flex: 1; min-width: 0; padding: 10px 0 8px; }
+.hint-body p { margin: 0; }
+.hint-body .link-btn { font-size: 14.5px; padding: 4px 0; min-height: 44px; display: inline-flex; align-items: center; }
+.hint-x { flex: 0 0 auto; width: 44px; height: 44px; border: 0; background: none; color: var(--ink-2); border-radius: 12px; display: grid; place-items: center; cursor: pointer; }
+.hint-x .ico { width: 18px; height: 18px; }
+.hint-x:hover { background: var(--line); }
+.hints-field .toggle { min-height: 44px; }
+.hints-field .btn-row { margin-top: 8px; }
+.help-row { display: flex; justify-content: center; margin-top: 18px; }
+.help-btn { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; }
+.help-btn .ico { width: 20px; height: 20px; }
+.help-list { display: grid; gap: 4px; }
+.help-item { border-top: 1.5px solid var(--line); padding: 12px 0 10px; }
+.help-item:first-child { border-top: 0; padding-top: 2px; }
+.help-item h3 { font-family: 'Nunito', sans-serif; font-size: 16.5px; font-weight: 900; margin: 0 0 4px; }
+.help-item p { margin: 0 0 8px; color: var(--ink); }
+
 @media print {
-  .tabs, .top-actions, .modal, .toast, .hero-actions, .acts { display: none !important; }
+  .tabs, .top-actions, .modal, .toast, .hero-actions, .acts, .hint-line, .help-row { display: none !important; }
   body { background: #fff; }
 }
 
@@ -730,6 +754,84 @@ window.SUB_STR = {
   demoNoSave: "Saving and backup files are in the full app. This demo forgets everything when you close it.", demoStart: "Start with my own",
   demoNotSaved: "Demo: not saved",
 
+  // calm hints (one short line written by us, picked by fixed rules; never AI, no network)
+  setHints: "Calm hints",
+  setHintsHint: "Short messages written by us that explain the screen you are on. “Help with this screen” stays when they are off.",
+  hintsReset: "Show closed hints again", hintsResetDone: "Closed hints can show again.",
+  hintClose: "Close this hint", hintShowMath: "Show the calculation", hintToRemind: "Take me to Reminders",
+  hnFirstAdded: "That's the first one in. The rest can go in whenever you like.",
+  hnReviewDone: "That's Review these looked at. It's empty for now.",
+  hnTrialPassed: "{name}: the cancel-by date you set has passed. The trial ends on {date}.",
+  hnTrialSoon: "{name}: cancel by {date} is the date you set. If you cancel with the service, tap “I cancelled it” to move it to Ended.",
+  hnRise: "A price rise shows in Review these for 120 days after its date. “Keep it” hides it; a later rise shows again.",
+  hnPlanned: "“Planned to cancel” is a note for you. The app keeps counting the charge until you tap “I cancelled it”.",
+  hnUnused: "“Not used lately” is your own mark. The app can't see how often you use anything.",
+  hnTrialEnded: "A free trial that ended shows here for 2 weeks, unless you marked it Keep.",
+  hnHow: "The big number adds every charge from today to {date}, including the first charge after a free trial.",
+  hnYearly: "Per year uses fixed counts: monthly × 12, weekly × 52, every 2 weeks × 26, yearly × 1.",
+  hnPaidBy: "“Where it goes” adds up the yearly cost per card or account, using the name typed in “Paid by”.",
+  hnAllEmpty: "Tap “Add a service” and type the next date it charges you. The dates after it follow by themselves.",
+  hnAllTrials: "Trials shows only the free trials that haven't ended yet.",
+  hnAllEnded: "Ended services wait under “Ended” with their price history. “Put it back” returns one to the list.",
+  hnAllStatus: "Keep, Review and Cancel it are your own marks. They change no dates or prices.",
+  hnAllPrint: "“Print my list” makes a paper copy (or a PDF) of the totals, trials and every service. Ended ones are left out.",
+  hnIcsSaved: "That's the calendar file made. Open it with your calendar app to add the dates.",
+  hnIcsBoxesOff: "No dates match these choices yet. “How far ahead” and the boxes under “Put in the file” decide what goes in.",
+  hnIcsChanged: "You changed the list after your last calendar file. That file doesn't update by itself; a new one has the new dates.",
+  hnIcsCancelAlarm: "A cancel-by date also gets an alarm at 9:00 that morning, whatever you pick under “Alarm”.",
+  hnIcsDouble: "Some calendars add the events again on a new import. If they're in their own calendar, deleting that calendar removes the old copies.",
+  hnIcsAllDay: "Each date becomes an all-day event, with the alarm you pick under “Alarm” (or none).",
+  hnBackup: "A backup file copies your whole list as it is when you save it. You can restore it here or on another device.",
+  hnCsv: "The CSV file is for a spreadsheet. A backup file or backup text is what restores the list here.",
+  hnDlgAdd: "Type the next date it charges you. The dates after it follow by themselves.",
+  hnDlgTrial: "Cancel by is the date you pick to decide by, on or before the trial's end. The calendar file can give it an alarm that morning.",
+  hnDlgPrice: "A new price here keeps the old one in “Price history”, so you can see every change.",
+
+  // help with this screen (short answers written by us)
+  helpBtn: "Help with this screen", helpTitle: "Help with this screen",
+  helpNote: "Short answers written by us. A tracking tool, not financial advice.",
+  hpHomeQ1: "What is the big number?",
+  hpHomeA1: "Every renewal from today to 29 days ahead, added up; a weekly one counts each time. The first charge after a free trial counts on the day the trial ends.",
+  hpHomeQ2: "Where do per year and per month come from?",
+  hpHomeA2: "Each price times how often it charges in a year: monthly × 12, weekly × 52, yearly × 1. The month figure is that total divided by 12. Ended services don't count.",
+  hpHomeQ3: "What puts a service in Review these?",
+  hpHomeA3: "You marked it Review or Cancel it, its price went up in the last 120 days, you ticked “I haven't used it lately”, or a free trial ended in the last 14 days and isn't marked Keep.",
+  hpHomeQ4: "What do “Keep it” and “I cancelled it” do?",
+  hpHomeA4: "“Keep it” marks it Keep, clears “not used lately” and hides price rises up to today. “I cancelled it” moves it to Ended, out of the totals. Neither one contacts the service.",
+  hpHomeQ5: "Does the app cancel anything for me?",
+  hpHomeA5: "No. It never connects to a service, a bank or a card. You cancel with the service itself; the note field can hold how.",
+  hpAllQ1: "What do Keep, Review and Cancel it mean?",
+  hpAllA1: "They're your own marks and change no dates or prices. Review and Cancel it put the service in Review these. Cancel it also counts in “Marked to cancel” on Home.",
+  hpAllQ2: "Where did an ended service go?",
+  hpAllA2: "Under “Ended” at the bottom of this list, with its price history. “Put it back” returns it to the totals.",
+  hpAllQ3: "How do I log a price change?",
+  hpAllA3: "Open the service and type the new price, or use “Log a price change” with the date it changed. The old price stays in “Price history”.",
+  hpAllQ4: "What does “Print my list” include?",
+  hpAllA4: "The totals, free trials, the next 30 days and every active service, with page numbers. Ended services are left out.",
+  hpAllQ5: "What about a subscription I paused?",
+  hpAllA5: "“I cancelled it” moves it out of the totals. When it starts again, use “Put it back” under Ended and type its next payment date.",
+  hpRemQ1: "Does the calendar update by itself?",
+  hpRemA1: "No. The file holds the dates you chose, as they are on the day you save it. After you add or change a service, save a new file and import it.",
+  hpRemQ2: "When do the alarms go off?",
+  hpRemA2: "At 9:00 on the day you pick under “Alarm”, or never with “No alarm”. Cancel-by dates always get a 9:00 alarm that morning. Google Calendar may use its own notification settings instead.",
+  hpRemQ3: "Why do some events show twice?",
+  hpRemA3: "Some calendars add the events again when you import a new file. If you keep them in their own calendar (for example, Subscriptions), deleting that calendar removes the old copies before the new import.",
+  hpRemQ4: "What is in the file?",
+  hpRemA4: "Names, prices, dates, “Paid by” and your notes. The file stays on your device; a calendar that syncs online keeps a copy there once you import it.",
+  hpSetQ1: "Where is my list saved?",
+  hpSetA1: "Only in this browser, on this device. Nothing is sent anywhere. Clearing this browser's site data deletes it; a backup file keeps a copy.",
+  hpSetA1Demo: "In this free demo nothing is saved. The full app saves your list in this browser on this device and can save backup files.",
+  hpSetQ2: "How do I use it on another device?",
+  hpSetA2: "Save a backup here and restore it there. The two copies don't sync on their own.",
+  hpSetQ3: "Backup file or CSV file?",
+  hpSetA3: "A backup file can be restored into the app. A CSV file opens in a spreadsheet and can't be restored.",
+  hpSetQ4: "Does changing the currency convert my prices?",
+  hpSetA4: "No. The numbers stay the same; only the symbol and number style change. A whole-number currency like yen shows them rounded.",
+  hpSetQ5: "What does “Undo” bring back?",
+  hpSetA5: "The list and settings as they were right before the last change, while the “Undo” button is on screen.",
+  hpSetQ6: "What are calm hints?",
+  hpSetA6: "Short messages written by us that explain the screen you are on. Some come back later while the thing they explain is still there. You can turn them off under “Calm hints”; this help stays.",
+
   // sample data (made up, no brand names)
   sVideo: "Video streaming", sMusic: "Music app", sCloud: "Cloud storage", sLang: "Language app", sPhoto: "Photo editor",
   sGym: "Gym membership", sNews: "Local news site", sMeal: "Meal delivery pass", sPhone: "Phone plan", sCar: "Car insurance",
@@ -1065,11 +1167,96 @@ window.SUB_STR = {
     return { text: lines.map(icsFold).join("\r\n") + "\r\n", count: events.length };
   }
 
+  // ------------------------------------------------------------------ calm hints (pre-written lines picked by fixed rules; no AI, no network)
+  /* One small line per screen at most. Kinds: "help" (closed = gone for good), "notice" (closed = back after `cool` days),
+     "warm" (only right after an action the buyer took, at most once every HINT_WARM_GAP). Rules read only what is on the
+     screen (compute() numbers, the list, the settings). Screens: home, all, remind, settings, dialog (add / edit a service).
+     c = { R: compute() result, today, now (ms), showHow, filter, notes (Home shows a note that already asks for something),
+     icsCount, dialog: { mode: "add" | "edit", trial }, after (id of a warm line an action just asked for),
+     quiet (a screen where a hint was just closed or used: nothing more until the screen is opened again), demo }. */
+  var HINT_DAY = 86400000, HINT_WARM_GAP = 3 * HINT_DAY;
+  var HINT_SCREENS = ["home", "all", "remind", "settings", "dialog"];
+  function hintCandidates(state, screen, c) {
+    var R = c.R, out = [], st = state.settings || {};
+    function add(id, kind, key, o) {
+      o = o || {};
+      out.push({ id: id, screen: screen, kind: kind, key: key, cool: o.cool || 0, act: o.act || "", slot: o.slot || "main", n: o.n, date: o.date, name: o.name });
+    }
+    if (!R) return out;
+    var items = state.items || [], act = items.filter(isActive);
+    if (screen === "home") {
+      if (!items.length) return out;
+      if (c.after === "home.firstAdded") add("home.firstAdded", "warm", "hnFirstAdded");
+      if (c.after === "home.reviewDone") add("home.reviewDone", "warm", "hnReviewDone", { slot: "review" });
+      if (c.notes) return out; // a backup or calendar note already asks for something: that is enough on its own
+      // a trial the buyer already answered with "Keep it" (ack) gets no cancel-by notice
+      var open = R.trials.filter(function (x) { return !x.item.ack; });
+      var passed = open.filter(function (x) { return x.trial.passed; })[0];
+      var soon = open.filter(function (x) { return !x.trial.passed && x.trial.toCancel <= 2; })[0];
+      if (passed) add("home.trialPassed", "notice", "hnTrialPassed", { cool: 7, slot: "trials", date: passed.trial.end, name: passed.item.name });
+      if (soon) add("home.trialSoon", "notice", "hnTrialSoon", { cool: 7, slot: "trials", date: soon.trial.cancelBy, name: soon.item.name });
+      var reasons = [];
+      R.review.forEach(function (r) { r.reasons.forEach(function (x) { reasons.push(x.k); }); });
+      if (reasons.indexOf("rise") !== -1) add("home.rise", "notice", "hnRise", { cool: 120, slot: "review" });
+      if (reasons.indexOf("cancel") !== -1) add("home.planned", "help", "hnPlanned", { slot: "review" });
+      if (reasons.indexOf("unused") !== -1) add("home.unused", "help", "hnUnused", { slot: "review" });
+      if (reasons.indexOf("trialEnded") !== -1) add("home.trialEnded", "help", "hnTrialEnded", { slot: "review" });
+      if (R.active && !c.showHow) add("home.how", "help", "hnHow", { act: "how", date: R.windowEnd });
+      if (R.active) add("home.yearly", "help", "hnYearly");
+      if (R.byPaidBy.length > 1 || (R.byPaidBy[0] && R.byPaidBy[0].name)) add("home.paidBy", "help", "hnPaidBy");
+    } else if (screen === "all") {
+      if (!act.length) { add("all.empty", "help", "hnAllEmpty"); }
+      if (c.filter === "trial") add("all.trials", "help", "hnAllTrials");
+      if (R.ended.length) add("all.ended", "help", "hnAllEnded");
+      if (act.length) add("all.status", "help", "hnAllStatus");
+      if (act.length) add("all.print", "help", "hnAllPrint");
+    } else if (screen === "remind") {
+      if (c.after === "remind.saved") add("remind.saved", "warm", "hnIcsSaved");
+      if (!c.icsCount) { if (act.length) add("remind.boxesOff", "help", "hnIcsBoxesOff"); return out; } // no services: the screen's own line says so
+      if (st.lastIcs && st.changedAt > st.lastIcs) add("remind.changed", "notice", "hnIcsChanged", { cool: 14 });
+      if (st.icsCancel !== false && R.trials.some(function (x) { return x.trial.cancelBy >= c.today; })) add("remind.cancelAlarm", "help", "hnIcsCancelAlarm");
+      if (st.lastIcs) add("remind.double", "help", "hnIcsDouble");
+      add("remind.allDay", "help", "hnIcsAllDay");
+    } else if (screen === "settings") {
+      if (!c.demo) { add("set.backup", "help", "hnBackup", { slot: "data" }); if (items.length) add("set.csv", "help", "hnCsv", { slot: "data" }); }
+    } else if (screen === "dialog") {
+      var dg = c.dialog || {};
+      if (dg.mode === "add") add("dlg.add", "help", "hnDlgAdd", { slot: "dialog" });
+      if (dg.mode === "edit" && dg.trial) add("dlg.trial", "help", "hnDlgTrial", { slot: "dialog" });
+      if (dg.mode === "edit") add("dlg.price", "help", "hnDlgPrice", { slot: "dialog" });
+    }
+    return out;
+  }
+  function hintMem(state) {
+    var f = state.flags = state.flags || {};
+    if (!f.hints) f.hints = { d: {}, w: 0 };
+    return f.hints;
+  }
+  function hintAllowed(state, h, c) {
+    if (h.kind === "warm") return c.after === h.id;
+    var closed = state.flags && state.flags.hints && state.flags.hints.d[h.id];
+    if (!closed) return true;
+    return h.kind === "notice" && h.cool > 0 && c.now - closed >= h.cool * HINT_DAY;
+  }
+  /* The one hint to show on this screen now, or null. The off switch means none, warm lines too. */
+  function pickHint(state, screen, c) {
+    if (!state.settings || state.settings.hints === false || c.quiet === screen) return null;
+    var list = hintCandidates(state, screen, c);
+    for (var i = 0; i < list.length; i++) if (hintAllowed(state, list[i], c)) return list[i];
+    return null;
+  }
+  function hintClose(state, h, now) { if (h.kind !== "warm") hintMem(state).d[h.id] = now; }
+  function hintWarmOk(state, now) { var w = state.flags && state.flags.hints ? state.flags.hints.w : 0; return !w || now - w >= HINT_WARM_GAP; }
+  function hintWarmMark(state, now) { hintMem(state).w = now; }
+  function hintsReset(state) { if (state.flags && state.flags.hints) state.flags.hints.d = {}; }
+  function hintsClosedCount(state) { return state.flags && state.flags.hints ? Object.keys(state.flags.hints.d).length : 0; }
+
   // ------------------------------------------------------------------ saved data
   var APP_ID = "done-enough-subscriptions";
   var STATUSES = ["keep", "review", "cancel"];
   var CATS = ["streaming", "music", "software", "news", "cloud", "fitness", "home", "phone", "insurance", "food", "kids", "work", "other"];
   var MAX_ITEMS = 300;
+  var HINT_ID = /^[a-z0-9.:_-]{1,60}$/i, HINT_MAX = 200;
   var PALETTE_IDS = ["default", "sky", "lilac", "rose", "sand", "moss", "graphite"];
   function str(v, max) { return typeof v === "string" ? v.slice(0, max || 200) : ""; }
   function cents(v) { var n = Math.round(+v); if (!isFinite(n)) return 0; return Math.max(0, Math.min(MAX_CENTS, n)); }
@@ -1112,10 +1299,18 @@ window.SUB_STR = {
         dateStyle: s.dateStyle === "dm" ? "dm" : "md", theme: ["auto", "light", "dark"].indexOf(s.theme) !== -1 ? s.theme : "auto",
         lead: s.lead === 2 || s.lead === "2" ? 2 : 1, alarm: ALARMS[s.alarm] !== undefined ? s.alarm : "d1",
         months: [3, 6, 12].indexOf(+s.months) !== -1 ? +s.months : 12, icsRenewals: s.icsRenewals !== false, icsCancel: s.icsCancel !== false,
-        lastBackup: num(s.lastBackup), lastIcs: num(s.lastIcs), changedAt: num(s.changedAt)
+        lastBackup: num(s.lastBackup), lastIcs: num(s.lastIcs), changedAt: num(s.changedAt), hints: s.hints !== false
       },
       items: []
     };
+    /* Calm hints memory: only which hint was closed and when (d: { id: ms }), and when the last warm line was shown (w).
+       Nothing is added for a save that has none. */
+    var fl = src.flags && typeof src.flags === "object" ? src.flags : null;
+    if (fl && fl.hints && typeof fl.hints === "object") {
+      var hd = {}, hs = fl.hints.d && typeof fl.hints.d === "object" ? fl.hints.d : {};
+      Object.keys(hs).slice(0, HINT_MAX).forEach(function (id) { var v = Math.round(+hs[id]); if (HINT_ID.test(id) && isFinite(v) && v > 0) hd[id] = v; });
+      st.flags = { hints: { d: hd, w: Math.max(0, Math.round(+fl.hints.w) || 0) } };
+    }
     var seen = {};
     src.items.slice(0, MAX_ITEMS).forEach(function (x) {
       var it = cleanItem(x, today);
@@ -1174,6 +1369,8 @@ window.SUB_STR = {
     defaultCancelBy: defaultCancelBy, trialInfo: trialInfo, changePrice: changePrice, recentRise: recentRise, compute: compute,
     icsEscape: icsEscape, icsFold: icsFold, icsEvents: icsEvents, icsBuild: icsBuild, ALARMS: ALARMS,
     sanitizeState: sanitizeState, makeBackup: makeBackup, APP_ID: APP_ID, STATUSES: STATUSES, CATS: CATS, MAX_ITEMS: MAX_ITEMS,
+    HINT_DAY: HINT_DAY, HINT_WARM_GAP: HINT_WARM_GAP, HINT_ID: HINT_ID, HINT_MAX: HINT_MAX, HINT_SCREENS: HINT_SCREENS, hintCandidates: hintCandidates,
+    hintAllowed: hintAllowed, pickHint: pickHint, hintClose: hintClose, hintWarmOk: hintWarmOk, hintWarmMark: hintWarmMark, hintsReset: hintsReset, hintsClosedCount: hintsClosedCount,
     WINDOW_DAYS: WINDOW_DAYS, TRIAL_NOTE_DAYS: TRIAL_NOTE_DAYS, PRICE_NOTE_DAYS: PRICE_NOTE_DAYS
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
@@ -1221,7 +1418,9 @@ window.SUB_STR = {
     lock: '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
     undo: '<path d="M9 7L4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/>',
     off: '<circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/>',
-    print: '<path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v6H7z"/>'
+    print: '<path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v6H7z"/>',
+    help: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.6M12 16.6h.01"/>',
+    bulb: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>'
   };
   const icon = (n, cls) => `<svg class="ico${cls ? " " + cls : ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${P[n] || P.dots}</svg>`;
   const CAT_ICON = { streaming: "play", music: "music", software: "app", news: "news", cloud: "cloud", fitness: "health", home: "bolt", phone: "phone",
@@ -1261,6 +1460,8 @@ window.SUB_STR = {
   let TODAY_OVERRIDE = NaN;
   try { const q = /[?&]today=(\d{4}-\d{2}-\d{2})/.exec(location.search); if (q) TODAY_OVERRIDE = C.parse(q[1]); } catch (e) { /* ignore */ }
   const today = () => (isNaN(TODAY_OVERRIDE) ? C.todayLocal() : TODAY_OVERRIDE);
+  /* the clock for calm-hint cooldowns follows the ?today= test date, so the tests can step days forward */
+  const nowMs = () => (isNaN(TODAY_OVERRIDE) ? Date.now() : TODAY_OVERRIDE * 86400000 + 43200000);
   function dateLabel(n, opts) {
     opts = opts || {};
     const p = C.ymd(n), dw = T.daysShort[C.dow(n)], mo = T.monthsShort[p.m - 1];
@@ -1278,13 +1479,13 @@ window.SUB_STR = {
 
   // ------------------------------------------------------------------ state
   let S = null, STORAGE_OK = true;
-  const UI = { tab: "home", filter: "all", sort: "date", dismissed: {}, showHow: false };
+  const UI = { tab: "home", filter: "all", sort: "date", dismissed: {}, showHow: false, after: "", quiet: "" };
   function uid() { return "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
   function freshState(keep) {
     const st = keep ? keep.settings : {};
     return C.sanitizeState({ items: [], settings: { currency: st.currency, symbol: st.symbol, numberFormat: st.numberFormat, symbolPos: st.symbolPos,
-      dateStyle: st.dateStyle, theme: st.theme, lead: st.lead, decimals: st.decimals, palette: st.palette } }, today()).state;
+      dateStyle: st.dateStyle, theme: st.theme, lead: st.lead, decimals: st.decimals, palette: st.palette, hints: st.hints }, flags: keep ? keep.flags : undefined }, today()).state;
   }
 
   function sampleState() {
@@ -1307,7 +1508,7 @@ window.SUB_STR = {
       mk("x-domain", T.sDomain, 1800, "y1", d + 130, "work", T.sTravel),
       mk("x-fit", T.sFit, 1499, "m1", d + 10, "fitness", T.sBlue, { ended: f(d - 20) })
     ];
-    const st = C.sanitizeState({ sample: true, items, settings: Object.assign({}, S ? S.settings : {}, { lastBackup: now, changedAt: 0, lastIcs: 0 }) }, d).state;
+    const st = C.sanitizeState({ sample: true, items, settings: Object.assign({}, S ? S.settings : {}, { lastBackup: now, changedAt: 0, lastIcs: 0 }), flags: S ? S.flags : undefined }, d).state;
     return st;
   }
 
@@ -1359,8 +1560,10 @@ window.SUB_STR = {
     applyTheme();
     const active = document.activeElement, key = active && active.getAttribute ? focusKey(active) : null;
     R = C.compute(S, today());
+    HINT = C.pickHint(S, HELP[UI.tab] ? UI.tab : "home", hintCtx());
     const view = ({ home: homeView, all: allView, remind: remindView, settings: settingsView }[UI.tab] || homeView)();
-    $("app").innerHTML = `<div class="wrap">${topBar()}${banners()}${navBar()}<main id="view" tabindex="-1">${view}</main>${footer()}</div>`;
+    const help = UI.tab === "home" && !S.items.length ? "" : helpRow();
+    $("app").innerHTML = `<div class="wrap">${topBar()}${banners()}${navBar()}<main id="view" tabindex="-1">${view}${help}</main>${footer()}</div>`;
     if (key) { const el = document.querySelector(key); if (el) el.focus({ preventScroll: true }); }
     fitAmounts();
   }
@@ -1422,6 +1625,70 @@ window.SUB_STR = {
       <span class="amt-col"><span class="amt num">${esc(money(it.amount))}</span>${sub}</span>${acts ? `<span class="acts">${acts}</span>` : ""}</div>`;
   }
 
+  // ------------------------------------------------------------------ calm hints + help with this screen
+  /* Calm hints: one short line written by us, picked by fixed rules in core.js (no AI, no network). HINT is the one hint of
+     this render; each view puts it in its slot. The add / edit dialog has its own line (DLG_HINT). Help with this screen:
+     a sheet of short answers, always there (even when hints are off), with buttons to the real places. */
+  let HINT = null, DLG_HINT = null;
+  const hintCtx = (extra) => Object.assign({ R, today: today(), now: nowMs(), showHow: UI.showHow, filter: UI.filter, notes: UI.tab === "home" && !!notes(),
+    icsCount: UI.tab === "remind" ? C.icsEvents(S, today(), icsOpts()).length : 0, after: UI.after, quiet: UI.quiet, demo: DEMO }, extra || {});
+  const HINT_ACT = { how: "hintShowMath", remind: "hintToRemind", add: "addService", backup: "backupSave", move: "moveBtn" };
+  function hintLine(h) {
+    const v = {};
+    if (h.n != null) v.n = h.n;
+    if (h.date != null) v.date = dateLabel(h.date, { noDow: true });
+    if (h.name != null) v.name = h.name;
+    const act = h.act ? `<button type="button" class="link-btn" data-act="helpGo" data-v="${h.act}" data-hint="${esc(h.id)}">${te(HINT_ACT[h.act])}</button>` : "";
+    return `<div class="hint-line ${h.kind}" role="note" data-testid="hint" data-hint="${esc(h.id)}">${icon(h.kind === "warm" ? "heart" : "bulb")}
+      <div class="hint-body"><p>${te(h.key, v)}</p>${act}</div>
+      <button type="button" class="hint-x" data-act="hintX" data-id="${esc(h.id)}" aria-label="${te("hintClose")}">${icon("x")}</button></div>`;
+  }
+  function hintHtml(slot) {
+    const h = HINT;
+    return h && h.slot === (slot || "main") ? hintLine(h) : "";
+  }
+  /* A warm line only right after the buyer did something, and not more often than once in a few days. */
+  function warmHint(id) {
+    if (S.settings.hints === false || !C.hintWarmOk(S, nowMs())) return;
+    UI.after = id; UI.quiet = "";
+    C.hintWarmMark(S, nowMs());
+  }
+  const HELP = {
+    home: [["hpHomeQ1", "hpHomeA1", ["how"]], ["hpHomeQ2", "hpHomeA2"], ["hpHomeQ3", "hpHomeA3"], ["hpHomeQ4", "hpHomeA4"], ["hpHomeQ5", "hpHomeA5"]],
+    all: [["hpAllQ1", "hpAllA1"], ["hpAllQ2", "hpAllA2"], ["hpAllQ3", "hpAllA3"], ["hpAllQ4", "hpAllA4"], ["hpAllQ5", "hpAllA5"]],
+    remind: [["hpRemQ1", "hpRemA1"], ["hpRemQ2", "hpRemA2"], ["hpRemQ3", "hpRemA3"], ["hpRemQ4", "hpRemA4"]],
+    settings: [["hpSetQ1", "hpSetA1", ["backup"]], ["hpSetQ2", "hpSetA2", ["move"]], ["hpSetQ3", "hpSetA3"], ["hpSetQ4", "hpSetA4"], ["hpSetQ5", "hpSetA5"], ["hpSetQ6", "hpSetA6"]]
+  };
+  /* The free demo saves nothing and has no backup buttons: its Settings help says so instead. */
+  const HELP_DEMO = { settings: [["hpSetQ1", "hpSetA1Demo"], ["hpSetQ4", "hpSetA4"], ["hpSetQ5", "hpSetA5"], ["hpSetQ6", "hpSetA6"]] };
+  function helpRow() {
+    const scr = HELP[UI.tab] ? UI.tab : "home";
+    return `<div class="help-row"><button type="button" class="link-btn help-btn" data-act="help" data-v="${scr}">${icon("help")}${te("helpBtn")}</button></div>`;
+  }
+  function helpDialog(scr) {
+    const items = ((DEMO && HELP_DEMO[scr]) || HELP[scr] || HELP.home).map(([q, a, acts]) => {
+      const btns = (acts || []).filter((x) => !(DEMO && (x === "backup" || x === "move"))).map((x) => `<button type="button" class="btn sm ${x === "how" || x === "remind" ? "" : "ghost"}" data-act="helpGo" data-v="${x}">${te(HINT_ACT[x])}</button>`).join("");
+      return `<div class="help-item"><h3>${te(q)}</h3><p>${te(a)}</p>${btns ? `<div class="btn-row">${btns}</div>` : ""}</div>`;
+    }).join("");
+    openModal(t("helpTitle"), `<div class="help-list" data-testid="help-${scr}">${items}</div><p class="muted small">${te("helpNote")}</p>
+      <div class="sheet-foot"><button type="button" class="btn primary" data-act="close">${te("close")}</button></div>`);
+  }
+  function goTab(tab) { UI.tab = tab; UI.showHow = false; UI.after = ""; UI.quiet = ""; closeModal(true); render(); const v = $("view"); if (v) v.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  function helpGo(el) {
+    const v = el.getAttribute("data-v");
+    if (el.getAttribute("data-hint")) UI.quiet = UI.tab;
+    closeModal(true);
+    if (v === "how") {
+      if (UI.tab !== "home") goTab("home");
+      UI.showHow = true; render();
+      const b = document.querySelector('#view [data-act="how"]');
+      if (b) { b.focus({ preventScroll: true }); b.scrollIntoView({ block: "center" }); }
+    } else if (v === "remind") goTab("remind");
+    else if (v === "add") serviceDialog(null);
+    else if (v === "backup") backupSave();
+    else if (v === "move") moveDialog();
+  }
+
   // ------------------------------------------------------------------ home
   function welcome() {
     const curOpts = curOptions();
@@ -1457,7 +1724,7 @@ window.SUB_STR = {
         <span class="main"><span class="name">${esc(it.name)}</span><span class="meta">${cb}</span><span class="meta">${te("trialThen", { amount: money(it.amount), often: howOften(it).toLowerCase() })}${tr.passed ? "" : " · " + te("trialEnds", { date: dateLabel(tr.end, { noDow: true }) })}</span></span></button>
         <span class="acts">${it.status !== "keep" ? `<button class="btn sm" data-act="keep" data-id="${esc(it.id)}">${icon("check")}${te("keepIt")}</button>` : ""}<button class="btn sm ghost" data-act="ended" data-id="${esc(it.id)}">${te("cancelledIt")}</button></span></div>`;
     }).join("");
-    return `<section class="panel trials" aria-labelledby="tr-title"><div class="panel-head"><h2 id="tr-title">${icon("hourglass")}${te("trialsTitle")}</h2><span class="small muted">${te("trialsLead")}</span></div>${rows}</section>`;
+    return `<section class="panel trials" aria-labelledby="tr-title"><div class="panel-head"><h2 id="tr-title">${icon("hourglass")}${te("trialsTitle")}</h2><span class="small muted">${te("trialsLead")}</span></div>${hintHtml("trials")}${rows}</section>`;
   }
   function upcomingPanel() {
     const list = R.upcoming.length ? R.upcoming.map((u) => row(u.item, { date: u.date, afterTrial: u.afterTrial, noUnused: true })).join("") : `<p class="empty">${te("next30None")}</p>`;
@@ -1479,7 +1746,7 @@ window.SUB_STR = {
         <span class="meta">${te("costYear", { amount: money(r.yearly) })}</span></span></button>
         <span class="acts"><button class="btn sm" data-act="keep" data-id="${esc(it.id)}">${icon("check")}${te("keepIt")}</button><button class="btn sm ghost" data-act="ended" data-id="${esc(it.id)}">${te("cancelledIt")}</button></span></div>`;
     }).join("") : `<p class="empty">${te("reviewNone")}</p>`;
-    return `<section class="panel" aria-labelledby="rv-title"><div class="panel-head"><h2 id="rv-title">${te("reviewTitle")}</h2></div><p class="lead small">${te("reviewLead")}</p><div data-testid="review">${body}</div></section>`;
+    return `<section class="panel" aria-labelledby="rv-title"><div class="panel-head"><h2 id="rv-title">${te("reviewTitle")}</h2></div><p class="lead small">${te("reviewLead")}</p>${hintHtml("review")}<div data-testid="review">${body}</div></section>`;
   }
   function wherePanel() {
     if (!R.active) return "";
@@ -1504,7 +1771,7 @@ window.SUB_STR = {
   }
   function homeView() {
     if (!S.items.length) return `<div class="onb">${welcome()}</div>`;
-    return `<div class="grid"><div class="col">${notes()}${hero()}${trialsPanel()}${upcomingPanel()}</div><div class="col">${reviewPanel()}${icsPromo()}${wherePanel()}</div></div>`;
+    return `<div class="grid"><div class="col">${notes()}${hero()}${hintHtml()}${trialsPanel()}${upcomingPanel()}</div><div class="col">${reviewPanel()}${icsPromo()}${wherePanel()}</div></div>`;
   }
 
   // ------------------------------------------------------------------ all
@@ -1527,7 +1794,7 @@ window.SUB_STR = {
     const ended = R.ended.length ? `<details class="ended"><summary>${te("endedTitle", { n: R.ended.length })}</summary><div class="list">${R.ended.map((x) => row(x, { yearly: true,
       acts: `<button class="btn sm" data-act="restore" data-id="${esc(x.id)}">${icon("undo")}${te("restore")}</button>` })).join("")}</div></details>` : "";
     return `<section class="panel"><div class="panel-head"><h2>${te("allTitle")}</h2><div class="btn-row">${act.length ? `<button class="btn sm ghost" data-act="printList">${icon("print")}${te("printBtn")}</button>` : ""}<button class="btn sm primary" data-act="add">${icon("plus")}${te("addService")}</button></div></div>
-      ${chips}<div class="row sort-row"><span class="small muted">${te("sortLabel")}</span>${sorts}</div><div class="list" data-testid="all">${body}</div>${ended}</section>`;
+      ${hintHtml()}${chips}<div class="row sort-row"><span class="small muted">${te("sortLabel")}</span>${sorts}</div><div class="list" data-testid="all">${body}</div>${ended}</section>`;
   }
 
   // ------------------------------------------------------------------ reminders (.ics)
@@ -1546,7 +1813,7 @@ window.SUB_STR = {
   function remindView() {
     const st = S.settings, n = C.icsEvents(S, today(), icsOpts()).length;
     const canShare = shareOk();
-    return `<div class="grid"><div class="col"><section class="panel" aria-labelledby="rm-title"><h2 id="rm-title">${icon("bell")}${te("remindTitle")}</h2><p class="lead">${te("remindLead")}</p>
+    return `<div class="grid"><div class="col"><section class="panel" aria-labelledby="rm-title"><h2 id="rm-title">${icon("bell")}${te("remindTitle")}</h2><p class="lead">${te("remindLead")}</p>${hintHtml()}
       <fieldset class="field plain"><legend class="lbl">${te("remindWhat")}</legend>
         <label class="toggle"><input type="checkbox" id="ics-ren" data-set="settings.icsRenewals" ${st.icsRenewals ? "checked" : ""}>${te("remindRenewals")}</label>
         <label class="toggle"><input type="checkbox" id="ics-can" data-set="settings.icsCancel" ${st.icsCancel ? "checked" : ""}>${te("remindCancel")}</label></fieldset>
@@ -1582,12 +1849,13 @@ window.SUB_STR = {
     if (!f.count) { toast(t("remindEmpty")); return; }
     download(f.name, f.text, "text/calendar;charset=utf-8");
     S.settings.lastIcs = Date.now(); UI.dismissed.ics = false;
+    if (UI.tab === "remind") warmHint("remind.saved");
     commit(true); toast(t("remindSaved"));
   }
   function icsShare() {
     const f = icsFile();
     const file = new File([f.text], f.name, { type: "text/calendar" });
-    navigator.share({ files: [file], title: t("icsCal") }).then(() => { S.settings.lastIcs = Date.now(); commit(true); }, () => { /* closed */ });
+    navigator.share({ files: [file], title: t("icsCal") }).then(() => { S.settings.lastIcs = Date.now(); if (UI.tab === "remind") warmHint("remind.saved"); commit(true); }, () => { /* closed */ });
   }
 
   // ------------------------------------------------------------------ settings
@@ -1606,10 +1874,12 @@ window.SUB_STR = {
       <div class="two"><div class="field"><label for="s-date">${te("setDates")}</label>${sel("s-date", "settings.dateStyle", [["md", t("dateMd")], ["dm", t("dateDm")]], st.dateStyle)}</div>
       <div class="field"><label for="s-theme">${te("setTheme")}</label>${sel("s-theme", "settings.theme", [["auto", t("themeAuto")], ["light", t("themeLight")], ["dark", t("themeDark")]], st.theme)}</div></div>
       <div class="field"><span class="lbl" id="pal-l">${te("setPalette")}</span><div class="pal" role="group" aria-labelledby="pal-l" aria-describedby="pal-h">${PALETTES.map(([id, k, sw]) => `<button type="button" class="pal-btn" data-act="palette" data-v="${id}" aria-pressed="${st.palette === id}"><i style="background:${sw[0]}"><b style="background:${sw[1]}"></b></i><span>${te(k)}</span></button>`).join("")}</div><span class="hint" id="pal-h">${te("palHint")}</span></div>
-      <div class="field"><label for="s-lead">${te("setLead")}</label>${sel("s-lead", "settings.lead", [[1, t("lead1")], [2, t("lead2")]], st.lead)}</div></section>
+      <div class="field"><label for="s-lead">${te("setLead")}</label>${sel("s-lead", "settings.lead", [[1, t("lead1")], [2, t("lead2")]], st.lead)}</div>
+      <div class="field plain hints-field"><label class="toggle"><input type="checkbox" id="s-hints" data-set="settings.hints" aria-describedby="s-hints-h" ${st.hints !== false ? "checked" : ""}>${te("setHints")}</label>
+        <span class="hint" id="s-hints-h">${te("setHintsHint")}</span>${st.hints !== false && C.hintsClosedCount(S) ? `<div class="btn-row"><button type="button" class="btn sm ghost" data-act="hintsReset">${te("hintsReset")}</button></div>` : ""}</div></section>
       <section class="panel" aria-labelledby="s-about"><h2 id="s-about">${te("setAbout")}</h2><p>${te("aboutText", { v: VERSION })}</p><p class="small muted">${te("aboutAdvice")}</p></section></div>
       <div class="col"><section class="panel" aria-labelledby="s-data" id="data-panel"><h2 id="s-data">${te("setData")}</h2>${DEMO ? `<p class="empty">${te("demoNoSave")}</p>` : `<p class="lead">${te("dataLead")}</p>
-      <p class="small muted">${st.lastBackup && !S.sample ? te("backupLast", { date: dateLabel(C.todayLocal(new Date(st.lastBackup))) }) : te("backupNever")}</p>`}
+      <p class="small muted">${st.lastBackup && !S.sample ? te("backupLast", { date: dateLabel(C.todayLocal(new Date(st.lastBackup))) }) : te("backupNever")}</p>${hintHtml("data")}`}
       <div class="stack">${DEMO ? "" : `<button class="btn primary" data-act="backupSave">${icon("download")}${te("backupSave")}</button>
       <button class="btn" data-act="backupRestore">${icon("upload")}${te("backupRestore")}</button><input type="file" id="restore-file" accept=".json,application/json" hidden>
       <div class="two"><button class="btn ghost" data-act="backupCopy">${icon("copy")}${te("backupCopy")}</button><button class="btn ghost" data-act="backupPaste">${te("backupPaste")}</button></div>
@@ -1621,6 +1891,7 @@ window.SUB_STR = {
     const [a, b] = path.split(".");
     let v = value;
     if (b === "lead" || b === "months" || b === "decimals") v = +value;
+    if (b === "hints") { v = !!value; UI.after = ""; UI.quiet = ""; }
     if (b === "symbol") v = String(value).slice(0, 5);
     if (S[a][b] === v) return;
     const snap = snapshot();
@@ -1692,7 +1963,8 @@ window.SUB_STR = {
     const extra = it ? `<div class="sheet-extra btn-row">${it.ended ? `<button type="button" class="btn sm" data-act="restore" data-id="${esc(it.id)}">${icon("undo")}${te("restore")}</button>` : `<button type="button" class="btn sm ghost" data-act="ended" data-id="${esc(it.id)}">${icon("off")}${te("cancelledIt")}</button>`}
       <button type="button" class="btn sm danger" data-act="del" data-id="${esc(it.id)}">${icon("x")}${te("delService")}</button></div>` : "";
     const status = (it ? it.status : "keep");
-    const body = `${quick}
+    DLG_HINT = C.pickHint(S, "dialog", hintCtx({ dialog: { mode: it ? "edit" : "add", trial: !!tr } }));
+    const body = `${DLG_HINT ? hintLine(DLG_HINT) : ""}${quick}
       <div class="two"><div class="field"><label for="f-name">${te("fName")}</label><input class="input" id="f-name" maxlength="80" autocomplete="off" placeholder="${te("fNamePh")}" value="${esc(it ? it.name : "")}" ${it ? "" : "autofocus"}></div>
       <div class="field"><label for="f-amt" id="f-amt-l">${te(tr ? "fAmountTrial" : "fAmount")}</label>${moneyInput("f-amt", it ? it.amount : "")}</div></div>
       <div class="two"><div class="field"><label for="f-often">${te("fOften")}</label>${sel("f-often", "", PRESET_KEYS.map((k) => [k, t(k)]), preset)}</div>
@@ -1751,6 +2023,7 @@ window.SUB_STR = {
       const n = { id: uid(), amount: amt, anchor, day: freq === "month" ? day : 0, prices: [], ended: "", ack: "", created: C.fmt(d) };
       Object.assign(n, fields);
       const clean = C.sanitizeState({ items: [n] }, d).state.items[0];
+      if (!S.items.length && !S.sample && UI.tab === "home") warmHint("home.firstAdded");
       S.items.push(clean);
       changed(); commit(); toast(t("added", { name }), () => restoreSnap(snap));
     }
@@ -1877,8 +2150,30 @@ window.SUB_STR = {
 
   // ------------------------------------------------------------------ actions
   const find = (el) => S.items.find((x) => x.id === el.getAttribute("data-id"));
+  /* "Keep it" or "I cancelled it" on Home that empties Review these: one warm line there */
+  function reviewCleared(it) {
+    if (UI.tab !== "home" || MODAL || !R || !R.review.some((r) => r.item === it)) return;
+    if (!C.compute(S, today()).review.length) warmHint("home.reviewDone");
+  }
   const ACT = {
-    tab: (el) => { UI.tab = el.getAttribute("data-tab"); closeModal(true); render(); const v = $("view"); if (v) v.focus({ preventScroll: true }); window.scrollTo(0, 0); },
+    tab: (el) => goTab(el.getAttribute("data-tab")),
+    help: (el) => helpDialog(el.getAttribute("data-v")), helpGo,
+    hintX: (el) => {
+      const id = el.getAttribute("data-id"), inDlg = !!el.closest("#modal");
+      const h = inDlg ? (DLG_HINT && DLG_HINT.id === id ? DLG_HINT : null) : (HINT && HINT.id === id ? HINT : null);
+      if (h) C.hintClose(S, h, nowMs());
+      if (inDlg) {
+        DLG_HINT = null; persist();
+        const line = el.closest(".hint-line"); if (line) line.remove();
+        const f = $("f-name"); if (f) f.focus();
+        return;
+      }
+      if (UI.after === id) UI.after = "";
+      UI.quiet = UI.tab;
+      commit(true);
+      const v = $("view"); if (v) v.focus({ preventScroll: true });
+    },
+    hintsReset: () => { C.hintsReset(S); UI.quiet = ""; commit(true); toast(t("hintsResetDone")); },
     add: () => serviceDialog(null),
     edit: (el) => serviceDialog(el.getAttribute("data-id")),
     how: () => { UI.showHow = !UI.showHow; render(); },
@@ -1893,12 +2188,14 @@ window.SUB_STR = {
       const it = find(el); if (!it) return;
       const before = { status: it.status, unused: it.unused, ack: it.ack };
       it.status = "keep"; it.unused = false; it.ack = C.fmt(today());
+      reviewCleared(it);
       changed(); commit(true);
       toast(t("kept", { name: it.name }), () => { Object.assign(it, before); commit(true); });
     },
     ended: (el) => {
       const it = find(el); if (!it) return;
       it.ended = C.fmt(today());
+      reviewCleared(it);
       changed(); commit();
       toast(t("endedToast", { name: it.name }), () => { it.ended = ""; changed(); commit(true); });
     },
@@ -1923,7 +2220,7 @@ window.SUB_STR = {
     icsSave, icsShare, csvSave, moveDevice: moveDialog, printList,
     palette: (el) => { const v = el.getAttribute("data-v"); if (v === S.settings.palette) return; const snap = snapshot(); S.settings.palette = v; commit(true); toast(t("settingChanged"), () => restoreSnap(snap)); },
     close: () => closeModal(),
-    undo: () => { const u = toastUndo; $("toast").hidden = true; toastUndo = null; if (u) u(); },
+    undo: () => { const u = toastUndo; $("toast").hidden = true; toastUndo = null; UI.after = ""; if (u) u(); },
     backupSave, backupCopy, backupPaste, copyText,
     backupRestore: () => { const f = $("restore-file"); if (f) { f.value = ""; f.click(); } },
     dismissBackup: () => { UI.dismissed.backup = true; render(); },
@@ -1994,7 +2291,7 @@ window.SUB_STR = {
   }
 
   // test + screenshot hooks (read-only helpers, no network)
-  window.SUB_APP = { state: () => S, compute: () => C.compute(S, today()), render, today, ics: () => icsFile() };
+  window.SUB_APP = { state: () => S, compute: () => C.compute(S, today()), render, today, ics: () => icsFile(), hint: () => (HINT ? HINT.id : null) };
 
   load();
   bind();
