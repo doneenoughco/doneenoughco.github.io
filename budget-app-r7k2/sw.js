@@ -1,6 +1,6 @@
 // Done Enough Budget: offline cache for the home-screen copy. Your numbers never pass through here: they live
 // in this browser's storage on this device.
-const CACHE = "deb-web-12c5efd57a";
+const CACHE = "deb-web-b9d51e03a1";
 const FILES = ["./", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

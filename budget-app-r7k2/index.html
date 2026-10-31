@@ -404,6 +404,28 @@ ol.steps li::before { content: counter(st); width: 28px; height: 28px; border-ra
 ol.steps li > span { flex: 1; min-width: 0; }
 .print-head { display: none; }
 
+/* ---------- calm hints: one quiet line, smaller and lighter than anything around the main number */
+.hint-line { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; padding: 2px 2px 2px 12px; border-radius: 14px;
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); font-size: 14.5px; font-weight: 700; line-height: 1.4; }
+.col > .hint-line { margin: -6px 0 0; }
+.hint-line > .ico { width: 18px; height: 18px; flex: 0 0 auto; margin-top: 12px; color: var(--primary-text); }
+.hint-line.warm > .ico { color: var(--primary-text); }
+.hint-body { flex: 1; min-width: 0; padding: 10px 0 8px; }
+.hint-body p { margin: 0; }
+.hint-body .link-btn { font-size: 14.5px; padding: 4px 0; min-height: 44px; display: inline-flex; align-items: center; }
+.hint-x { flex: 0 0 auto; width: 44px; height: 44px; border: 0; background: none; color: var(--ink-2); border-radius: 12px; display: grid; place-items: center; cursor: pointer; }
+.hint-x .ico { width: 18px; height: 18px; }
+.hint-x:hover { background: var(--line); }
+.routine .hint-line { margin-top: 6px; }
+.help-row { display: flex; justify-content: center; margin-top: 18px; }
+.help-btn { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; }
+.help-btn .ico { width: 20px; height: 20px; }
+.help-list { display: grid; gap: 4px; }
+.help-item { border-top: 1.5px solid var(--line); padding: 12px 0 10px; }
+.help-item:first-child { border-top: 0; padding-top: 2px; }
+.help-item h3 { font-family: 'Nunito', sans-serif; font-size: 16.5px; font-weight: 900; margin: 0 0 4px; }
+.help-item p { margin: 0 0 8px; color: var(--ink); }
+
 /* ---------- print: the "This month" page on one clean sheet (Letter or A4); no buttons, tabs or banners */
 @media print {
   @page { margin: 11mm 12mm; }
@@ -691,6 +713,97 @@ window.DEB_STR = {
   moveS2: "Open the app on the other device: the phone link or the computer file.",
   moveS3: "Restore the file there: Settings, then Your data, then Restore from backup file. (Copied text? Use Paste backup text.)",
   moveEnd: "From then on the two copies stay separate. Use the one you like as your main one.",
+
+  // calm hints: short lines written by us, picked by fixed rules (no AI, no network); one at a time, each can be closed
+  setHints: "Calm hints",
+  setHintsHint: "Short messages written by us that explain the screen you are on and the next step. “Help with this screen” stays when they are off.",
+  hintsReset: "Show closed hints again", hintsResetDone: "Closed hints can show again.",
+  hintClose: "Close this hint", hintShowMath: "Show the calculation", hintToBills: "Take me to Bills",
+  hnWelcome: "Welcome back. The number is current again. Take the rest one thing at a time.",
+  hnRoutineDone: "That's this payday looked at. You can close the app now.",
+  hnBelow: "Below zero means the bills, goal money and cushion here add up to more than your balance. The calculation lists each part.",
+  hnZero: "Zero is what's left after the bills, goal money and cushion counted here. The calculation shows each part.",
+  hnFirst: "When you buy something that isn't a bill, tap “Add spending”. This number goes down by that amount.",
+  hnBalanceOld: "You last typed your balance on {date}. If your bank shows a different amount, tap “Update balance” to change it.",
+  hnIrregular: "Your pay is irregular, so the countdown uses the next payday you typed. Add each new one in Settings.",
+  hnMath: "Safe to spend is your balance minus the bills due before payday, goal money and your cushion.",
+  hnGoalsHeld: "{amount} for your goals this payday is already taken out of this number.",
+  hnBillsNeeds: "“Skip” leaves out only that date. Later dates stay as they are.",
+  hnBillsEmpty: "A bill due before your next payday is held back from safe to spend.",
+  hnBillsPeriod: "Only bills due before your next payday come off safe to spend now. Later ones count in their own pay period.",
+  hnBillsCount: "A bill with a number of payments stops after the last one. “All my bills” shows how many are left.",
+  hnBillsCal: "Tap a day to see what's due on it. Paydays have a coin.",
+  hnWaitReady: "“Buy it (log the spend)” records it as spending. “Let it go” records nothing and takes it off the list.",
+  hnSpendEmpty: "Type the amount, then tap what it was for. That's the whole entry.",
+  hnWaitOn: "Things on the wait list don't change safe to spend until you buy them.",
+  hnSpendNoBank: "The app uses only what you enter. It never connects to a bank.",
+  hnGoalsDone: "A finished goal stays here until you delete it. “Take money out” records money moved back to your everyday balance.",
+  hnGoalsEmpty: "A goal can hold back an amount every payday. That amount comes off safe to spend.",
+  hnGoalsMove: "“Add money” records money you moved into the goal. It comes off your everyday balance and counts toward this payday's goal amount.",
+  hnDebtEmpty: "Type what you owe, the interest rate and the minimum payment. The plan uses them for an estimate.",
+  hnDebtTooLow: "The estimate uses your minimum payments plus the extra amount. Change either number and the estimate updates.",
+  hnDebtExtra: "“Extra I can pay each month” is optional. With 0, the plan uses only the minimum payments.",
+  hnDebtMethods: "Snowball and Avalanche spend the same monthly amount in a different order. The app shows both; you pick.",
+  hnBackup: "A backup file copies everything in the app as it is when you save it. You can restore it here or on another device.",
+
+  // help with this screen: short answers written by us, works offline
+  helpBtn: "Help with this screen", helpTitle: "Help with this screen",
+  helpNote: "Short answers written by us. A planning tool, not financial advice.",
+  hpHomeQ1: "What does “safe to spend” mean?",
+  hpHomeA1: "What's left until your next payday after the bills due before it, goal money for this payday and your cushion. It counts only what you have entered.",
+  hpHomeQ2: "Why did the number change?",
+  hpHomeA2: "Spending, money in, bills, goals and your cushion can change it. So can a balance update or a new pay period on payday.",
+  hpHomeQ3: "The number doesn't match my bank.",
+  hpHomeA3: "Safe to spend isn't your bank balance: bills, goal money and your cushion are taken out. If the balance itself is off, tap “Update balance” and type what your bank shows.",
+  hpHomeQ4: "What is low-energy mode?",
+  hpHomeA4: "Just the number and the next three bills. You turn it on and off with “Low-energy mode” at the top (“Low energy” on a phone).",
+  hpBillsQ1: "Which bills count right now?",
+  hpBillsA1: "Bills due before your next payday. A bill due on payday itself counts in the next pay period.",
+  hpBillsQ2: "What do “Mark paid” and “Skip” do?",
+  hpBillsA2: "“Mark paid” records a payment you made. “Skip” leaves out one date and records no payment. Both can be undone.",
+  hpBillsQ3: "A bill changed its amount or date.",
+  hpBillsA3: "Tap the bill to edit it. Payments you already marked stay as they were.",
+  hpBillsQ4: "A bill that ends, like Pay in 4?",
+  hpBillsA4: "In the bill form, type how many payments are left. After the last one the bill stops.",
+  hpSpendQ1: "What goes here?",
+  hpSpendA1: "Anything you pay from your everyday account that isn't a bill: groceries, coffee, fuel. Bills go in Bills.",
+  hpSpendQ2: "What about money that comes in?",
+  hpSpendA2: "“Add money in” is for extra money, like a refund, a side job or a gift. Your regular pay is added on payday, or the app asks about it if you turned that off.",
+  hpSpendQ3: "How do I fix or delete an entry?",
+  hpSpendA3: "Tap it under Activity. You can change the amount, category, note or date, or delete it.",
+  hpSpendQ4: "Does this connect to my bank?",
+  hpSpendA4: "No. The app counts only what you type, and your entries stay in this browser on this device.",
+  hpGoalsQ1: "How do goals change safe to spend?",
+  hpGoalsA1: "An amount you set per payday is held back from safe to spend each pay period. Money you move into the goal during that pay period counts toward it.",
+  hpGoalsQ2: "What do “Add money” and “Take money out” do?",
+  hpGoalsA2: "“Add money” records money you moved into the goal. “Take money out” records money moved back to your everyday balance. The app never moves money; your bank does that.",
+  hpGoalsQ3: "What does the target date do?",
+  hpGoalsA3: "With a target date, the app shows about how much per payday reaches it, worked out from the amounts you typed.",
+  hpDebtQ1: "Is this advice?",
+  hpDebtA1: "No. It's an estimate from the numbers you type. Real interest, fees and minimum payments can differ; your lender has the exact figures.",
+  hpDebtQ2: "What are Snowball and Avalanche?",
+  hpDebtA2: "Two ways to spend the same monthly amount. Snowball starts with the smallest balance, Avalanche with the highest interest rate. The app shows both; the choice is yours.",
+  hpDebtQ3: "Do debts change safe to spend?",
+  hpDebtA3: "Not by themselves. Add the minimum payments as bills, and they're held back like any bill.",
+  hpSetQ1: "Where are my numbers saved?",
+  hpSetA1: "In this browser on this device. Nothing is sent anywhere. A backup file keeps a copy you can restore.",
+  hpSetQ2: "How do I use it on another device?",
+  hpSetA2: "Save a backup here and restore it on the other device. The two copies don't sync on their own.",
+  hpSetQ3: "What are calm hints?",
+  hpSetA3: "Short messages written by us that explain the screen you are on. You can turn them off under Optional extras; this help stays.",
+  hpBillsQ5: "Does “Mark paid” send money?",
+  hpBillsA5: "No. It only records the payment in this app. The app never sends money or connects to a bank.",
+  hpSpendQ5: "What is the wait list?",
+  hpSpendA5: "An optional 48-hour pause for things you're not sure about. Turn it on in Settings, under Optional extras. After 48 hours the app asks if you still want it.",
+  hpSetA1Demo: "In this free demo nothing is saved. The full app saves your numbers in this browser on this device and makes backup files.",
+  hpSetQ4: "Can clearing browser data remove my budget?",
+  hpSetA4: "Yes. Clearing this browser's saved data removes it. A backup file is a separate copy you can restore.",
+  hpSetQ5: "Does restoring replace what's here?",
+  hpSetA5: "Yes. Restoring replaces everything in the app with the backup. The app asks before it does.",
+  hpMonthQ1: "Why is this different from Home?",
+  hpMonthA1: "This page adds up the calendar month. Safe to spend on Home counts down to your next payday.",
+  hpMonthQ2: "Can I print it?",
+  hpMonthA2: "Yes. “Print this month” opens your browser's print window. Most browsers can also save it as a PDF there.",
 
   // categories (ids are fixed, names can be renamed in settings)
   cat_groceries: "Groceries", cat_eating: "Eating out", cat_transport: "Transport", cat_home: "Home", cat_health: "Health",
@@ -1245,12 +1358,91 @@ window.DEB_STR = {
     return r && r.key === key ? r : { key: key, done: [], hide: false };
   }
 
+  // ------------------------------------------------------------------ calm hints (pre-written lines picked by fixed rules; no AI, no network)
+  /* One small line per screen at most. Kinds: "help" (closed = gone for good), "notice" (closed = back after `cool` days),
+     "warm" (only right after an action the buyer took, at most once every HINT_WARM_GAP). Rules read only what is on the
+     screen (the numbers from compute(), the lists, the settings); nothing guesses mood or energy from spending.
+     c = { R: compute() result, today, now (ms), showMath, billsMode, after (id of a hint an action just asked for), quiet
+     (a screen where a hint was just closed or used: nothing more until the screen is opened again), demo }. */
+  var HINT_DAY = 86400000, HINT_WARM_GAP = 3 * HINT_DAY;
+  function hintCandidates(state, screen, c) {
+    var R = c.R, out = [];
+    function add(id, kind, key, o) {
+      o = o || {};
+      out.push({ id: id, screen: screen, kind: kind, key: key, cool: o.cool || 0, act: o.act || "", slot: o.slot || "main", n: o.n, date: o.date, amount: o.amount });
+    }
+    if (!R) return out;
+    var overdue = R.bills.filter(function (b) { return b.status === "overdue"; }).length;
+    if (screen === "home") {
+      if (c.after === "home.welcome") add("home.welcome", "warm", "hnWelcome");
+      if (c.after === "home.routineDone") add("home.routineDone", "warm", "hnRoutineDone", { slot: "routine" });
+      // a note that already asks for something (long break, missing payday, did your pay arrive?) is enough on its own
+      if (state.flags.stale || !R.payKnown || R.pendingItems.length) return out;
+      if (R.safe < 0 && !c.showMath) add("home.below", "notice", "hnBelow", { cool: 7, act: "math" });
+      if (R.safe === 0 && !c.showMath) add("home.zero", "notice", "hnZero", { cool: 7, act: "math" });
+      var ad = parse(state.anchor && state.anchor.date);
+      if (!isNaN(ad) && c.today - ad > 14) add("home.balanceOld", "notice", "hnBalanceOld", { cool: 7, act: "balance", date: ad });
+      if (!state.sample && !(state.events || []).some(function (e) { return e.type === "spend"; })) add("home.first", "help", "hnFirst");
+      if (state.pay && state.pay.freq === "irregular") add("home.irregular", "help", "hnIrregular");
+      if (R.safe > 0 && !c.showMath) add("home.math", "help", "hnMath", { act: "math" });
+      if (R.goalsReserved > 0) add("home.goalsHeld", "help", "hnGoalsHeld", { amount: R.goalsReserved });
+    } else if (screen === "bills") {
+      if (c.billsMode === "cal") { add("bills.cal", "help", "hnBillsCal"); return out; }
+      if (overdue) add("bills.needs", "notice", "hnBillsNeeds", { cool: 14, slot: "needs" });
+      if (!(state.bills || []).length) add("bills.empty", "help", "hnBillsEmpty");
+      if ((state.bills || []).some(function (b) { return b.count > 0; })) add("bills.count", "help", "hnBillsCount");
+      if ((state.bills || []).length) add("bills.period", "help", "hnBillsPeriod");
+    } else if (screen === "spending") {
+      var ws = state.settings && state.settings.waitList ? waitSplit(state, c.now) : { ready: [], waiting: [] };
+      if (ws.ready.length) add("spend.waitReady", "notice", "hnWaitReady", { cool: 14 });
+      if (!Object.keys(R.byCat).length) add("spend.empty", "help", "hnSpendEmpty");
+      if (ws.waiting.length) add("spend.waitOn", "help", "hnWaitOn");
+      if ((state.events || []).some(function (e) { return e.type === "spend"; })) add("spend.noBank", "help", "hnSpendNoBank");
+    } else if (screen === "goals") {
+      if (R.goals.some(function (g) { return g.goal.target > 0 && g.saved >= g.goal.target; })) add("goals.done", "help", "hnGoalsDone");
+      if (!R.goals.length) add("goals.empty", "help", "hnGoalsEmpty"); else add("goals.move", "help", "hnGoalsMove");
+    } else if (screen === "debt") {
+      var ds = state.debts || [];
+      if (ds.length && !debtPlan(ds, state.debtExtra, state.debtMethod).ok) add("debt.tooLow", "notice", "hnDebtTooLow", { cool: 7 });
+      if (!ds.length) add("debt.empty", "help", "hnDebtEmpty");
+      if (ds.length && !state.debtExtra) add("debt.extra", "help", "hnDebtExtra");
+      if (ds.length) add("debt.methods", "help", "hnDebtMethods");
+    } else if (screen === "settings") {
+      if (!c.demo) add("set.backup", "help", "hnBackup", { slot: "data" });
+    }
+    return out;
+  }
+  function hintMem(state) {
+    var f = state.flags = state.flags || {};
+    if (!f.hints) f.hints = { d: {}, w: 0 };
+    return f.hints;
+  }
+  function hintAllowed(state, h, c) {
+    if (h.kind === "warm") return c.after === h.id;
+    var closed = state.flags && state.flags.hints && state.flags.hints.d[h.id];
+    if (!closed) return true;
+    return h.kind === "notice" && h.cool > 0 && c.now - closed >= h.cool * HINT_DAY;
+  }
+  /* The one hint to show on this screen now, or null. Off switch, low-energy mode and setup all mean none. */
+  function pickHint(state, screen, c) {
+    if (!state.setupDone || !state.settings || state.settings.hints === false || state.settings.low || c.quiet === screen) return null;
+    var list = hintCandidates(state, screen, c);
+    for (var i = 0; i < list.length; i++) if (hintAllowed(state, list[i], c)) return list[i];
+    return null;
+  }
+  function hintClose(state, h, now) { if (h.kind !== "warm") hintMem(state).d[h.id] = now; }
+  function hintWarmOk(state, now) { var w = state.flags && state.flags.hints ? state.flags.hints.w : 0; return !w || now - w >= HINT_WARM_GAP; }
+  function hintWarmMark(state, now) { hintMem(state).w = now; }
+  function hintsReset(state) { if (state.flags && state.flags.hints) state.flags.hints.d = {}; }
+
   // ------------------------------------------------------------------ backup
   var APP_ID = "done-enough-budget";
   function str(v, max) { return typeof v === "string" ? v.slice(0, max || 200) : ""; }
   function cents(v, allowNeg) { var n = Math.round(+v); if (!isFinite(n)) return 0; n = Math.max(allowNeg ? -MAX_CENTS : 0, Math.min(MAX_CENTS, n)); return n; }
   function dateStr(v, fallback) { return isNaN(parse(v)) ? fallback : v; }
 
+  /* Calm hints memory: only which hint was closed and when (d: { id: ms }), and when the last warm line was shown (w). */
+  var HINT_ID = /^[a-z0-9.:_-]{1,60}$/i, HINT_MAX = 200;
   var ROUTINE_STEPS = ["arrived", "balance", "bills", "goals", "backup"];
   var PALETTE_IDS = ["default", "sky", "lilac", "rose", "sand", "moss", "graphite"];
   var MAX_EXTRA_PAYS = 4;
@@ -1290,6 +1482,11 @@ window.DEB_STR = {
       Object.keys(fl.ms.d || {}).slice(0, 200).forEach(function (id) { ms.d[str(id, 40)] = fl.ms.d[id] ? 1 : 0; });
       st.flags.ms = ms;
     }
+    if (fl.hints && typeof fl.hints === "object") {
+      var hd = {}, hs = fl.hints.d && typeof fl.hints.d === "object" ? fl.hints.d : {};
+      Object.keys(hs).slice(0, HINT_MAX).forEach(function (id) { var v = Math.round(+hs[id]); if (HINT_ID.test(id) && isFinite(v) && v > 0) hd[id] = v; });
+      st.flags.hints = { d: hd, w: Math.max(0, Math.round(+fl.hints.w) || 0) };
+    }
     var s = src.settings || {};
     st.settings = {
       currency: CURRENCIES[s.currency] || s.currency === "CUSTOM" ? s.currency : "USD", decimals: s.decimals === 0 ? 0 : 2,
@@ -1297,7 +1494,7 @@ window.DEB_STR = {
       symbolPos: ["auto", "before", "after"].indexOf(s.symbolPos) !== -1 ? s.symbolPos : "auto",
       dateStyle: s.dateStyle === "dm" ? "dm" : "md", theme: ["auto", "light", "dark"].indexOf(s.theme) !== -1 ? s.theme : "auto",
       low: !!s.low, autoPay: s.autoPay !== false, cushion: cents(s.cushion), lastBackup: +s.lastBackup || 0, weekStart: s.weekStart === 1 ? 1 : 0,
-      palette: PALETTE_IDS.indexOf(s.palette) !== -1 ? s.palette : "default", plan: !!s.plan, waitList: !!s.waitList, routine: s.routine !== false
+      palette: PALETTE_IDS.indexOf(s.palette) !== -1 ? s.palette : "default", plan: !!s.plan, waitList: !!s.waitList, routine: s.routine !== false, hints: s.hints !== false
     };
     st.pay = cleanPay(src.pay, t);
     st.extraPays = [];
@@ -1401,7 +1598,9 @@ window.DEB_STR = {
     materializePay: materializePay, compute: compute, monthSummary: monthSummary, earliestMonth: earliestMonth, debtPlan: debtPlan, sanitizeState: sanitizeState, makeBackup: makeBackup, APP_ID: APP_ID,
     planSummary: planSummary, WAIT_MS: WAIT_MS, MAX_WAITS: MAX_WAITS, waitReady: waitReady, waitSplit: waitSplit,
     THRESHOLDS: THRESHOLDS, goalPct: goalPct, levelOf: levelOf, msSync: msSync, msPending: msPending, msDismiss: msDismiss,
-    ROUTINE_STEPS: ROUTINE_STEPS, routineKey: routineKey, routineState: routineState, PALETTE_IDS: PALETTE_IDS
+    ROUTINE_STEPS: ROUTINE_STEPS, routineKey: routineKey, routineState: routineState, PALETTE_IDS: PALETTE_IDS, HINT_ID: HINT_ID, HINT_MAX: HINT_MAX,
+    HINT_DAY: HINT_DAY, HINT_WARM_GAP: HINT_WARM_GAP, hintCandidates: hintCandidates, hintAllowed: hintAllowed, pickHint: pickHint,
+    hintClose: hintClose, hintWarmOk: hintWarmOk, hintWarmMark: hintWarmMark, hintsReset: hintsReset
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.DEB_CORE = api;
@@ -1454,6 +1653,8 @@ window.DEB_STR = {
     circle: '<circle cx="12" cy="12" r="8"/>',
     arrowIn: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5"/><path d="M4 20h16"/>',
     print: '<path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v6H7z"/>',
+    help: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.6M12 16.6h.01"/>',
+    bulb: '<path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v.1h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/>',
     hourglass: '<path d="M7 3.5h10M7 20.5h10"/><path d="M8 3.5c0 4 2 5.5 4 8.5-2 3-4 4.5-4 8.5M16 3.5c0 4-2 5.5-4 8.5 2 3 4 4.5 4 8.5"/>',
     batLow: '<rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M21.5 10.5v3"/><rect x="4.6" y="9" width="3.4" height="6" rx=".6" fill="currentColor" stroke="none"/>',
     batFull: '<rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M21.5 10.5v3"/><rect x="4.6" y="9" width="3.4" height="6" rx=".6" fill="currentColor" stroke="none"/><rect x="9.2" y="9" width="3.4" height="6" rx=".6" fill="currentColor" stroke="none"/><rect x="13.8" y="9" width="3.4" height="6" rx=".6" fill="currentColor" stroke="none"/>'
@@ -1509,7 +1710,7 @@ window.DEB_STR = {
 
   // ------------------------------------------------------------------ state
   let S = null, STORAGE_OK = true, lastT = 0;
-  const UI = { tab: "home", billsMode: "list", cal: null, calSel: null, act: "period", month: null, showMath: false, onb: null, dismissed: {} };
+  const UI = { tab: "home", billsMode: "list", cal: null, calSel: null, act: "period", month: null, showMath: false, onb: null, dismissed: {}, after: "", quiet: "" };
 
   function stamp() { let n = Date.now(); if (n <= lastT) n = lastT + 1; lastT = n; return n; }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -1535,7 +1736,7 @@ window.DEB_STR = {
       setupDone: true, sample: true,
       settings: { currency: S ? S.settings.currency : "USD", numberFormat: S ? S.settings.numberFormat : "1,234.56", symbolPos: S ? S.settings.symbolPos : "auto",
         dateStyle: S ? S.settings.dateStyle : "md", theme: S ? S.settings.theme : "auto", palette: S ? S.settings.palette : "default", decimals: S ? S.settings.decimals : 2,
-        plan: S ? S.settings.plan : false, waitList: S ? S.settings.waitList : false, routine: S ? S.settings.routine : true, autoPay: true, cushion: 5000, lastBackup: 0 },
+        plan: S ? S.settings.plan : false, waitList: S ? S.settings.waitList : false, routine: S ? S.settings.routine : true, hints: S ? S.settings.hints : true, autoPay: true, cushion: 5000, lastBackup: 0 },
       pay, anchor: { amount: 69000, t: now, date: f(d) },
       bills: [
         { id: "b-rent", name: T.sRent, amount: 115000, start: f(next + 2), repeat: "month", every: 1 },
@@ -1644,10 +1845,11 @@ window.DEB_STR = {
     document.body.classList.toggle("low", low);
     let view;
     const inOnb = !S.setupDone || !!(UI.onb && UI.onb.step === 5);
+    HINT = inOnb || low ? null : C.pickHint(S, UI.tab, hintCtx());
     if (inOnb) view = onboardingView();
     else if (low) view = lowView();
     else view = ({ home: homeView, month: monthView, bills: billsView, spending: spendingView, goals: goalsView, debt: debtView, settings: settingsView }[UI.tab] || homeView)();
-    $("app").innerHTML = `<div class="wrap">${topBar()}${banners()}${!inOnb && !low ? navBar() : ""}<main id="view" tabindex="-1">${view}</main>${footer()}</div>`;
+    $("app").innerHTML = `<div class="wrap">${topBar()}${banners()}${!inOnb && !low ? navBar() : ""}<main id="view" tabindex="-1">${view}${!inOnb && !low ? helpRow() : ""}</main>${footer()}</div>`;
     if (key) { const el = document.querySelector(key); if (el) el.focus({ preventScroll: true }); }
     fitAmounts();
   }
@@ -1763,6 +1965,70 @@ window.DEB_STR = {
       <span class="amt num">${esc(money(it.amount))}</span><span class="acts">${skipBtn}${payBtn}</span></div>`;
   }
 
+  // ------------------------------------------------------------------ calm hints + help with this screen
+  /* Calm hints: one short line written by us, picked by fixed rules in core.js (no AI, no network). HINT is the one hint of
+     this render; each view puts it in its slot. Help with this screen: a sheet of short answers, always there (even when
+     hints are off), with buttons to the real places. */
+  let HINT = null;
+  const hintCtx = () => ({ R, today: today(), now: nowMs(), showMath: UI.showMath, billsMode: UI.billsMode, after: UI.after, quiet: UI.quiet, demo: DEMO });
+  const HINT_ACT = { math: "hintShowMath", bills: "hintToBills", balance: "updateBalance", backup: "backupSave", move: "moveBtn" };
+  function hintHtml(slot) {
+    const h = HINT;
+    if (!h || h.slot !== (slot || "main")) return "";
+    const v = {};
+    if (h.n != null) v.n = h.n;
+    if (h.date != null) v.date = dateLabel(h.date, { noDow: true });
+    if (h.amount != null) v.amount = money(h.amount);
+    const act = h.act ? `<button class="link-btn" data-act="helpGo" data-v="${h.act}" data-hint="${esc(h.id)}">${te(HINT_ACT[h.act])}</button>` : "";
+    return `<div class="hint-line ${h.kind}" role="note" data-testid="hint" data-hint="${esc(h.id)}">${icon(h.kind === "warm" ? "heart" : "bulb")}
+      <div class="hint-body"><p>${te(h.key, v)}</p>${act}</div>
+      <button class="hint-x" data-act="hintX" data-id="${esc(h.id)}" aria-label="${te("hintClose")}">${icon("x")}</button></div>`;
+  }
+  /* A warm line only right after the buyer did something, and not more often than once in a few days. */
+  function warmHint(id) {
+    if (!S.setupDone || S.settings.hints === false || S.settings.low || !C.hintWarmOk(S, nowMs())) return;
+    UI.after = id; UI.quiet = "";
+    C.hintWarmMark(S, nowMs());
+  }
+  const HELP = {
+    home: [["hpHomeQ1", "hpHomeA1", ["math"]], ["hpHomeQ2", "hpHomeA2"], ["hpHomeQ3", "hpHomeA3", ["balance", "bills"]], ["hpHomeQ4", "hpHomeA4"]],
+    month: [["hpMonthQ1", "hpMonthA1"], ["hpMonthQ2", "hpMonthA2"]],
+    bills: [["hpBillsQ1", "hpBillsA1"], ["hpBillsQ2", "hpBillsA2"], ["hpBillsQ5", "hpBillsA5"], ["hpBillsQ3", "hpBillsA3"], ["hpBillsQ4", "hpBillsA4"]],
+    spending: [["hpSpendQ1", "hpSpendA1"], ["hpSpendQ2", "hpSpendA2"], ["hpSpendQ3", "hpSpendA3"], ["hpSpendQ4", "hpSpendA4"], ["hpSpendQ5", "hpSpendA5"]],
+    goals: [["hpGoalsQ1", "hpGoalsA1"], ["hpGoalsQ2", "hpGoalsA2"], ["hpGoalsQ3", "hpGoalsA3"]],
+    debt: [["hpDebtQ1", "hpDebtA1"], ["hpDebtQ2", "hpDebtA2"], ["hpDebtQ3", "hpDebtA3", ["bills"]]],
+    settings: [["hpSetQ1", "hpSetA1", ["backup"]], ["hpSetQ2", "hpSetA2", ["move"]], ["hpSetQ4", "hpSetA4"], ["hpSetQ5", "hpSetA5"], ["hpSetQ3", "hpSetA3"]]
+  };
+  /* The free demo saves nothing and has no backup buttons: its Settings help says so instead. */
+  const HELP_DEMO = { settings: [["hpSetQ1", "hpSetA1Demo"], ["hpSetQ3", "hpSetA3"]] };
+  function helpRow() {
+    const scr = HELP[UI.tab] ? UI.tab : "home";
+    return `<div class="help-row hide-print"><button class="link-btn help-btn" data-act="help" data-v="${scr}">${icon("help")}${te("helpBtn")}</button></div>`;
+  }
+  function helpDialog(scr) {
+    const items = ((DEMO && HELP_DEMO[scr]) || HELP[scr] || HELP.home).map(([q, a, acts]) => {
+      const btns = (acts || []).filter((x) => !(DEMO && (x === "backup" || x === "move"))).map((x) => `<button type="button" class="btn sm ${x === "math" || x === "bills" ? "" : "ghost"}" data-act="helpGo" data-v="${x}">${te(HINT_ACT[x])}</button>`).join("");
+      return `<div class="help-item"><h3>${te(q)}</h3><p>${te(a)}</p>${btns ? `<div class="btn-row">${btns}</div>` : ""}</div>`;
+    }).join("");
+    openModal(t("helpTitle"), `<div class="help-list" data-testid="help-${scr}">${items}</div><p class="muted small">${te("helpNote")}</p>
+      <div class="sheet-foot"><button type="button" class="btn primary" data-act="close">${te("close")}</button></div>`);
+  }
+  function goTab(tab) { UI.tab = tab; UI.showMath = false; UI.after = ""; UI.quiet = ""; if (tab === "month") UI.month = null; render(); const v = $("view"); if (v) v.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  function helpGo(el) {
+    const v = el.getAttribute("data-v");
+    if (el.getAttribute("data-hint")) UI.quiet = UI.tab;
+    closeModal(true);
+    if (v === "math") {
+      if (UI.tab !== "home") goTab("home");
+      UI.showMath = true; render();
+      const b = document.querySelector('#view [data-act="math"]');
+      if (b) { b.focus({ preventScroll: true }); b.scrollIntoView({ block: "center" }); }
+    } else if (v === "bills") goTab("bills");
+    else if (v === "balance") balanceDialog();
+    else if (v === "backup") backupSave();
+    else if (v === "move") moveDialog();
+  }
+
   // ------------------------------------------------------------------ home
   function notes() {
     const d = today(), out = [];
@@ -1804,15 +2070,17 @@ window.DEB_STR = {
     const open = UI.routineOpen === key;
     const toggle = `<button class="link-btn" data-act="routineToggle" aria-expanded="${open}" aria-controls="routine">${te("routineTitle")}</button>`;
     if (!open) return toggle;
-    const steps = [["arrived", "rtArrived", ""], ["balance", "rtBalance", `<button class="btn sm" data-act="balance">${te("updateBalance")}</button>`],
-      ["bills", "rtBills", `<button class="btn sm ghost" data-act="tab" data-tab="bills">${te("rtOpenBills")}</button>`]];
-    if (S.goals.length) steps.push(["goals", "rtGoals", `<button class="btn sm ghost" data-act="tab" data-tab="goals">${te("rtOpenGoals")}</button>`]);
-    if (!DEMO) steps.push(["backup", "rtBackup", `<button class="btn sm ghost" data-act="backupSave">${te("backupSave")}</button>`]);
-    const all = steps.every((x) => rs.done.indexOf(x[0]) !== -1);
+    const BTN = { balance: `<button class="btn sm" data-act="balance">${te("updateBalance")}</button>`, bills: `<button class="btn sm ghost" data-act="tab" data-tab="bills">${te("rtOpenBills")}</button>`,
+      goals: `<button class="btn sm ghost" data-act="tab" data-tab="goals">${te("rtOpenGoals")}</button>`, backup: `<button class="btn sm ghost" data-act="backupSave">${te("backupSave")}</button>` };
+    const LBL = { arrived: "rtArrived", balance: "rtBalance", bills: "rtBills", goals: "rtGoals", backup: "rtBackup" };
+    const steps = routineSteps().map((k) => [k, LBL[k], BTN[k] || ""]);
+    const all = steps.every((x) => rs.done.indexOf(x[0]) !== -1), warm = hintHtml("routine");
     return `${toggle}<div class="routine" id="routine" role="group" aria-label="${te("routineTitle")}" data-testid="routine"><p class="small muted">${te("routineNote")}</p>
       ${steps.map(([k, lb, btn]) => `<div class="rt-step"><label class="toggle"><input type="checkbox" id="rt-${k}" data-routine="${k}" ${rs.done.indexOf(k) !== -1 ? "checked" : ""}><span>${te(lb)}</span></label>${btn}</div>`).join("")}
-      ${all ? `<p class="small" style="font-weight:800">${te("rtDone")}</p>` : ""}<div class="btn-row" style="margin-top:6px"><button class="btn sm ghost" data-act="routineHide">${te("rtHide")}</button></div></div>`;
+      ${all ? warm || `<p class="small" style="font-weight:800">${te("rtDone")}</p>` : ""}<div class="btn-row" style="margin-top:6px"><button class="btn sm ghost" data-act="routineHide">${te("rtHide")}</button></div></div>`;
   }
+
+  function routineSteps() { const k = ["arrived", "balance", "bills"]; if (S.goals.length) k.push("goals"); if (!DEMO) k.push("backup"); return k; }
 
   function nextBillsPanel(limit, opts) {
     opts = opts || {};
@@ -1848,7 +2116,7 @@ window.DEB_STR = {
   }
 
   function homeView() {
-    return `<div class="grid"><div class="col">${hero()}${notes()}${periodPanel()}</div><div class="col">${nextBillsPanel(5)}${goalsMini()}</div></div>`;
+    return `<div class="grid"><div class="col">${hero()}${hintHtml()}${notes()}${periodPanel()}</div><div class="col">${nextBillsPanel(5)}${goalsMini()}</div></div>`;
   }
 
   function lowView() {
@@ -1908,7 +2176,7 @@ window.DEB_STR = {
   function billsView() {
     const seg = `<div class="seg" role="group" aria-label="${te("billsTitle")}"><button data-act="billsMode" data-v="list" aria-pressed="${UI.billsMode === "list"}">${icon("list")}${te("billsList")}</button><button data-act="billsMode" data-v="cal" aria-pressed="${UI.billsMode === "cal"}">${icon("calendar")}${te("billsCalendar")}</button></div>`;
     const head = `<div class="panel-head"><h2>${te("billsTitle")}</h2><div class="row">${seg}<button class="btn sm primary" data-act="addBill">${icon("plus")}${te("addBill")}</button></div></div>`;
-    if (UI.billsMode === "cal") return `<section class="panel">${head}${calendar()}</section>`;
+    if (UI.billsMode === "cal") return `<section class="panel">${head}${hintHtml()}${calendar()}</section>`;
     const next2 = C.nextPaydayAll(S, R.nextPayday);
     const groups = [
       ["billsNeedsLook", R.bills.filter((b) => b.status === "overdue"), te("noteOverdueHint")],
@@ -1919,6 +2187,7 @@ window.DEB_STR = {
     let body = "";
     for (const [k, items, sub] of groups) {
       if (k === "billsNeedsLook" && !items.length) continue;
+      if (k === "billsNeedsLook") body += hintHtml("needs");
       body += `<h3 class="section-title">${te(k)}${sub ? ` <span style="text-transform:none;letter-spacing:0;font-weight:700">· ${sub}</span>` : ""}</h3>`;
       body += items.length ? `<div class="list">${items.map((it) => billRow(it)).join("")}</div>` : `<p class="empty">${te(S.bills.length ? "billsNone" : "noBillsYet")}</p>`;
     }
@@ -1929,7 +2198,7 @@ window.DEB_STR = {
         <span class="meta"><span>${te(REPEAT_LABEL[code])}</span>${nx != null ? `<span>· ${te("billNextDue", { date: dateLabel(nx) })}</span>` : ""}${b.count ? `<span>· ${nx != null ? te("payLeft", { n: C.paymentsLeft(b, today()) }) : te("payEnded")}</span>` : ""}</span></span></button>
         <span class="amt num">${esc(money(b.amount))}</span><span class="acts"><button class="btn sm ghost" data-act="editBill" data-id="${esc(b.id)}" aria-label="${esc(t("edit") + ": " + b.name)}">${icon("pencil")}</button></span></div>`;
     }).join("");
-    return `<div class="grid"><section class="panel">${head}${body}</section><section class="panel"><div class="panel-head"><h2>${te("billsAll")}</h2></div>${all ? `<div class="list">${all}</div>` : `<p class="empty">${te("noBillsYet")}</p>`}</section></div>`;
+    return `<div class="grid"><section class="panel">${head}${hintHtml()}${body}</section><section class="panel"><div class="panel-head"><h2>${te("billsAll")}</h2></div>${all ? `<div class="list">${all}</div>` : `<p class="empty">${te("noBillsYet")}</p>`}</section></div>`;
   }
 
   function calendar() {
@@ -2017,7 +2286,7 @@ window.DEB_STR = {
     const seg = `<div class="seg" role="group" aria-label="${te("activity")}"><button data-act="actMode" data-v="period" aria-pressed="${UI.act === "period"}">${te("activityPeriod")}</button><button data-act="actMode" data-v="all" aria-pressed="${UI.act === "all"}">${te("activityAll")}</button></div>`;
     return `<div class="grid"><div class="col"><section class="panel"><div class="panel-head"><h2>${te("spendTitle")}</h2></div>
         <div class="btn-row"><button class="btn primary big" data-act="spend" style="flex:1 1 200px">${icon("plus")}${te("addSpend")}</button><button class="btn big" data-act="income" style="flex:1 1 160px">${icon("arrowIn")}${te("addIncome")}</button></div>
-        ${S.settings.waitList ? `<div class="btn-row" style="margin-top:10px"><button class="btn" data-act="waitAdd">${icon("hourglass")}${te("waitBtn")}</button></div>` : ""}</section>
+        ${S.settings.waitList ? `<div class="btn-row" style="margin-top:10px"><button class="btn" data-act="waitAdd">${icon("hourglass")}${te("waitBtn")}</button></div>` : ""}${hintHtml()}</section>
         ${S.settings.waitList ? waitPanel() : ""}
         <section class="panel"><div class="panel-head"><h2>${te("byCategory")}</h2><span class="muted small">${te("activityPeriod")}: ${esc(money(R.spent))}</span></div>
         ${S.settings.plan ? planBody(cats, max) : cats.length ? cats.map((id) => catRow(id, R.byCat[id], max)).join("") : `<p class="empty">${te("noSpendYet")}</p>`}
@@ -2046,7 +2315,7 @@ window.DEB_STR = {
   }
   function goalsView() {
     return `<section class="panel" style="max-width:760px"><div class="panel-head"><h2>${te("goalsTitle")}</h2><button class="btn sm primary" data-act="addGoal">${icon("plus")}${te("addGoal")}</button></div>
-      ${R.goals.length ? R.goals.map((g) => goalBlock(g, false)).join("") : `<p class="empty">${te("goalsEmpty")}</p>`}</section>`;
+      ${hintHtml()}${R.goals.length ? R.goals.map((g) => goalBlock(g, false)).join("") : `<p class="empty">${te("goalsEmpty")}</p>`}</section>`;
   }
 
   // ------------------------------------------------------------------ debt view
@@ -2076,7 +2345,7 @@ window.DEB_STR = {
           ${cmp ? `<p style="margin-top:12px">${cmp}</p>` : ""}`;
       }
     }
-    return `<div class="grid"><div class="col"><div class="disclaimer" role="note">${icon("alert")}<div><strong>${te("debtEstimate")}</strong> ${te("debtEstimateLong")}</div></div>
+    return `<div class="grid"><div class="col"><div class="disclaimer" role="note">${icon("alert")}<div><strong>${te("debtEstimate")}</strong> ${te("debtEstimateLong")}</div></div>${hintHtml()}
       <section class="panel"><div class="panel-head"><h2>${te("debtTitle")}</h2><button class="btn sm primary" data-act="addDebt">${icon("plus")}${te("addDebt")}</button></div>
       ${list ? `<div class="list">${list}</div>` : `<p class="empty">${te("debtEmpty")}</p>`}<p class="muted small" style="margin-top:12px">${te("debtBillsNote")}</p>${cardBills ? `<div class="btn-row" style="margin-top:8px" data-testid="card-bills">${cardBills}</div>` : ""}</section></div>
       <section class="panel"><div class="field"><label for="debt-extra">${te("debtExtra")}</label>${moneyInput("debt-extra", S.debtExtra, { set: "debtExtra" })}</div>
@@ -2147,7 +2416,7 @@ window.DEB_STR = {
       ${st.plan ? `<div class="plan-edit"><label class="small muted" for="cp-${esc(c.id)}">${te("planPer")}</label>${moneyInput("cp-" + c.id, c.plan || "", { attrs: `data-cat-plan="${esc(c.id)}"` })}</div>` : ""}</div>
       <button class="btn sm ghost" data-act="catHide" data-id="${esc(c.id)}" aria-pressed="${c.hidden}">${te(c.hidden ? "catShow" : "catHide")}</button></div>`).join("");
     const lb = st.lastBackup ? te("backupLast", { date: dateLabel(C.todayLocal(new Date(st.lastBackup))) }) : te("backupNever");
-    const data = DEMO ? `<p class="empty">${te("demoNoSave")}</p>` : `<p class="lead">${te("dataWhere")}</p><p class="small muted">${lb}</p>
+    const data = DEMO ? `<p class="empty">${te("demoNoSave")}</p>` : `<p class="lead">${te("dataWhere")}</p><p class="small muted">${lb}</p>${hintHtml("data")}
       <div class="stack"><button class="btn primary" data-act="backupSave">${icon("download")}${te("backupSave")}</button>
       <button class="btn" data-act="backupRestore">${icon("upload")}${te("backupRestore")}</button><input type="file" id="restore-file" accept=".json,application/json,text/plain" hidden>
       <div class="two"><button class="btn sm ghost" data-act="backupCopy">${icon("copy")}${te("backupCopy")}</button><button class="btn sm ghost" data-act="backupPaste">${te("backupPaste")}</button></div>
@@ -2168,6 +2437,8 @@ window.DEB_STR = {
       </div><div class="col">
       <section class="panel"><h2 style="margin-bottom:12px">${te("setData")}</h2>${data}</section>
       <section class="panel"><h2 style="margin-bottom:12px">${te("setExtras")}</h2>
+        <label class="toggle"><input type="checkbox" data-set="settings.hints" ${st.hints !== false ? "checked" : ""}>${te("setHints")}</label><p class="small muted" style="margin:0 0 6px">${te("setHintsHint")}</p>
+        ${st.hints !== false && S.flags.hints && Object.keys(S.flags.hints.d).length ? `<div class="btn-row" style="margin:0 0 10px"><button class="btn sm ghost" data-act="hintsReset">${te("hintsReset")}</button></div>` : `<div style="height:4px"></div>`}
         <label class="toggle"><input type="checkbox" data-set="settings.plan" ${st.plan ? "checked" : ""}>${te("setPlan")}</label><p class="small muted" style="margin:0 0 10px">${te("setPlanHint")}</p>
         <label class="toggle"><input type="checkbox" data-set="settings.waitList" ${st.waitList ? "checked" : ""}>${te("setWait")}</label><p class="small muted" style="margin:0 0 10px">${te("setWaitHint")}</p>
         <label class="toggle"><input type="checkbox" data-set="settings.routine" ${st.routine ? "checked" : ""}>${te("setRoutine")}</label><p class="small muted" style="margin:0">${te("setRoutineHint")}</p></section>
@@ -2189,7 +2460,7 @@ window.DEB_STR = {
       v = pm(raw);
       if (v == null) { if (el) { el.setAttribute("aria-invalid", "true"); toast(t("amountInvalid")); } return; }
     } else if (["day1", "day2", "day", "weekStart", "decimals"].includes(key)) v = parseInt(raw, 10);
-    else if (["autoPay", "plan", "waitList", "routine"].includes(key)) v = !!raw;
+    else if (["autoPay", "plan", "waitList", "routine", "hints"].includes(key)) v = !!raw;
     else if (key === "name") v = String(raw).trim().slice(0, 40);
     else if (key === "anchor" && isNaN(C.parse(raw))) return;
     if (path === "debtExtra") S.debtExtra = v; else target[key] = v;
@@ -2359,7 +2630,7 @@ window.DEB_STR = {
 
   function moveDialog() {
     openModal(t("moveTitle"), `<p class="lead">${te("moveLead")}</p>
-      <ol class="steps"><li><span>${te("moveS1")}</span><div class="btn-row" style="margin-top:8px"><button type="button" class="btn sm primary" data-act="backupSave">${icon("download")}${te("backupSave")}</button><button type="button" class="btn sm ghost" data-act="backupCopy">${icon("copy")}${te("backupCopy")}</button></div></li>
+      <ol class="steps"><li><span>${te("moveS1")}<span class="btn-row" style="margin-top:8px"><button type="button" class="btn sm primary" data-act="backupSave">${icon("download")}${te("backupSave")}</button><button type="button" class="btn sm ghost" data-act="backupCopy">${icon("copy")}${te("backupCopy")}</button></span></span></li>
       <li><span>${te("moveS2")}</span></li><li><span>${te("moveS3")}</span></li></ol><p class="muted small">${te("moveEnd")}</p>
       <div class="sheet-foot"><button type="button" class="btn primary" data-act="close">${te("close")}</button></div>`);
   }
@@ -2452,6 +2723,7 @@ window.DEB_STR = {
         if (b && !C.billPaid(S, b.id, c.getAttribute("data-due"))) S.events.push({ id: "p" + uid(), type: "bill", amount: b.amount, date: C.fmt(today()), t: stamp(), billId: b.id, due: c.getAttribute("data-due"), noBal: true });
       });
       S.anchor = { amount: a, t: stamp(), date: C.fmt(today()) };
+      if (S.flags.stale) warmHint("home.welcome");
       S.flags.stale = false;
       commit(); toast(t("balanceSaved")); return true;
     } });
@@ -2617,7 +2889,17 @@ window.DEB_STR = {
   }
 
   const ACT = {
-    tab: (el) => { UI.tab = el.getAttribute("data-tab"); UI.showMath = false; if (UI.tab === "month") UI.month = null; render(); const v = $("view"); if (v) v.focus({ preventScroll: true }); window.scrollTo(0, 0); },
+    tab: (el) => goTab(el.getAttribute("data-tab")),
+    help: (el) => helpDialog(el.getAttribute("data-v")), helpGo,
+    hintX: (el) => {
+      const h = HINT && HINT.id === el.getAttribute("data-id") ? HINT : null;
+      if (h) C.hintClose(S, h, nowMs());
+      if (UI.after === el.getAttribute("data-id")) UI.after = "";
+      UI.quiet = UI.tab;
+      commit(true);
+      const v = $("view"); if (v) v.focus({ preventScroll: true });
+    },
+    hintsReset: () => { C.hintsReset(S); UI.quiet = ""; commit(true); toast(t("hintsResetDone")); },
     low: () => { S.settings.low = !S.settings.low; commit(); },
     math: () => { UI.showMath = !UI.showMath; render(); },
     spend: () => spendDialog(), income: incomeDialog, balance: balanceDialog,
@@ -2763,7 +3045,14 @@ window.DEB_STR = {
       const rt = el.getAttribute && el.getAttribute("data-routine");
       if (rt) {
         const k = C.routineKey(S, today());
-        if (k) { const rs = C.routineState(S, k), done = rs.done.filter((x) => x !== rt); if (el.checked) done.push(rt); S.flags.routine = { key: k, done, hide: rs.hide }; commit(true); }
+        if (k) {
+          const rs = C.routineState(S, k), done = rs.done.filter((x) => x !== rt);
+          if (el.checked) done.push(rt);
+          S.flags.routine = { key: k, done, hide: rs.hide };
+          if (el.checked && routineSteps().every((x) => done.indexOf(x) !== -1)) warmHint("home.routineDone");
+          else if (UI.after === "home.routineDone") UI.after = "";
+          commit(true);
+        }
         return;
       }
       const cp = el.getAttribute && el.getAttribute("data-cat-plan");
@@ -2783,7 +3072,7 @@ window.DEB_STR = {
       if (m.hidden) return;
       if (ev.key === "Escape") { ev.preventDefault(); closeModal(); return; }
       if (ev.key === "Tab") {
-        const f = [...m.querySelectorAll("button,input,select,textarea,summary,[tabindex]:not([tabindex='-1'])")].filter((x) => !x.disabled && x.offsetParent !== null);
+        const f = [...m.querySelectorAll("button,input,select,textarea,summary,[tabindex]:not([tabindex='-1'])")].filter((x) => !x.disabled && x.offsetParent !== null && !(x.tagName !== "SUMMARY" && x.closest("details:not([open])")));
         if (!f.length) return;
         const first = f[0], last = f[f.length - 1];
         if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
