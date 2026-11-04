@@ -453,6 +453,43 @@ ol.steps li > span { flex: 1; min-width: 0; }
   .small { font-size: 8.5pt; }
   .item.is-paid .name, .item.is-paid .amt { color: #444; }
 }
+
+/* ---------- 4.11.2026: budgets, accounts, run to payday, quick box, brain dump, away card */
+.budget-chip { display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; color: var(--primary-text); font-weight: 800; font-size: 13.5px;
+  padding: 0; min-height: 44px; max-width: 54vw; text-align: left; }
+.budget-chip .ico { width: 16px; height: 16px; opacity: .8; }
+.budget-chip .bn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.budget-picks { display: flex; flex-direction: column; gap: 8px; }
+.budget-pick { display: flex; align-items: center; gap: 10px; border: 2px solid var(--line-2); background: var(--surface); border-radius: 14px; padding: 12px 14px; min-height: 52px;
+  font-weight: 800; text-align: left; }
+.budget-pick[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-text); }
+.budget-row .main { min-width: 0; }
+.budget-row .acts { flex-wrap: wrap; justify-content: flex-end; }
+.low-budget { margin: 0; text-align: center; font-weight: 800; color: var(--ink-2); }
+.run-link { margin-top: 6px; }
+.run-sum { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 8px; font-weight: 700; }
+.run-sum .ico { margin-top: 2px; color: var(--primary-text); }
+.run-sum.short .ico { color: var(--warn-ink); }
+.run-graph { width: 100%; height: 96px; display: block; margin: 4px 0 10px; background: var(--surface-2); border: 1.5px solid var(--line); border-radius: 12px; }
+.run-graph .line { fill: none; stroke: var(--primary); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.run-graph .zero { stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; }
+.run-graph .dot-bill { fill: var(--surface); stroke: var(--primary); stroke-width: 2; }
+.run-graph .dot-short { fill: var(--accent); stroke: var(--warn-ink); stroke-width: 2; }
+.run-list { list-style: none; margin: 0 0 10px; padding: 0; }
+.run-row { display: grid; grid-template-columns: minmax(84px, 1fr) minmax(0, 2fr) auto; gap: 8px; align-items: center; padding: 9px 0; border-top: 1.5px solid var(--line); font-size: 14.5px; }
+.run-row:first-child { border-top: 0; }
+.run-row .rd { font-weight: 800; }
+.run-row .rb { display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.run-row .ra { font-weight: 900; text-align: right; }
+.run-row.short .ra { color: var(--over-ink); }
+.acct-row .amt.over, .run-row .ra.over { color: var(--over-ink); }
+.aside-note { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 12px; color: var(--ink-2); font-weight: 700; }
+.aside-note .ico { margin-top: 2px; color: var(--primary-text); }
+.auto-block { border-top: 1.5px solid var(--line); padding-top: 12px; }
+.split-row { border-top: 1.5px solid var(--line); padding-top: 10px; margin-top: 6px; }
+.split-row:first-of-type { border-top: 0; }
+.away-steps li { padding: 6px 0; }
+.note.away { border-left-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -488,7 +525,7 @@ window.DEB_STR = {
   safeOverKind: "That happens. Look at what can wait, or move one bill. You're not behind on life, just on this number.",
   statusGood: "On track", statusZero: "All covered", statusOver: "Tight until payday",
   howWorked: "How is this worked out?", hideMath: "Hide the math",
-  mathBalance: "In your everyday account", mathBills: "Bills due before payday", mathGoals: "Set aside for goals this payday",
+  mathBalance: "In your everyday account", mathBalanceMulti: "In your everyday accounts", mathBills: "Bills due before payday", mathGoals: "Set aside for goals this payday",
   mathCushion: "Your cushion", mathSafe: "Safe to spend",
   mathNote: "Bills due on payday itself are paid from that paycheck, so they count in the next period.",
   addSpend: "Add spending", updateBalance: "Update balance", addIncome: "Add money in",
@@ -508,8 +545,10 @@ window.DEB_STR = {
   noteOverdue_one: "1 bill looks unpaid.", noteOverdue_other: "{n} bills look unpaid.",
   noteOverdueHint: "Already paid? Mark it paid. Not paying it this time? Skip it.",
   sampleBanner: "You're looking at sample data.", sampleClear: "Clear it and set up mine",
-  demoBanner: "FREE DEMO with sample data. Nothing is saved.",
-  demoBanner2: "The full app saves your numbers on your device and makes backup files.",
+  demoBanner: "FREE DEMO with example numbers.",
+  demoBanner2: "Tap Start setup to type your own: they stay in this browser, up to {n} spends. The full app has no limit.",
+  demoBannerOwn: "FREE DEMO with your numbers.",
+  demoBannerOwn2: "Saved in this browser only. {n} of {max} spends used. Download a backup in Settings to carry your numbers into the full app.",
   storageBanner: "This browser isn't letting the app save. Your numbers will be lost when you close it, so save a backup file before you go.",
 
   // this month (a review page, reached from Home; the default stays "safe to spend until payday")
@@ -652,7 +691,7 @@ window.DEB_STR = {
   // common
   save: "Save", cancel: "Cancel", close: "Close", del: "Delete", edit: "Edit", add: "Add", yes: "Yes", no: "No", optional: "optional",
   required: "Please fill this in.", amountInvalid: "Type an amount, like 45 or 45.99", dateInvalid: "Pick a date.",
-  savedHere: "Saved on this device", notSaved: "Demo: not saved",
+  savedHere: "Saved on this device", notSaved: "Demo: example numbers, not saved", demoSavedHere: "Demo: saved in this browser",
 
   // more currencies, palettes, print
   setDecimals: "Decimals", dec2: "2, like 12.50", dec0: "0, whole numbers like 1,250",
@@ -789,7 +828,9 @@ window.DEB_STR = {
   hpBillsA5: "No. It only records the payment in this app. The app never sends money or connects to a bank.",
   hpSpendQ5: "What is the wait list?",
   hpSpendA5: "An optional 48-hour pause for things you're not sure about. Turn it on in Settings, under Optional extras. After 48 hours the app asks if you still want it.",
-  hpSetA1Demo: "In this free demo nothing is saved. The full app saves your numbers in this browser on this device and makes backup files.",
+  hpSetA1Demo: "The example numbers are never saved. Numbers you type yourself stay in this browser on this device, and nowhere else. The full app has no spend limit.",
+  hpSetQ9: "How do I take my demo numbers into the full app?",
+  hpSetA9Demo: "Tap “Download a backup” in Settings. In the full app, open Settings, then Your data, then Restore from backup file, and pick that file.",
   hpSetQ4: "Can clearing browser data remove my budget?",
   hpSetA4: "Yes. Clearing this browser's saved data removes it. A backup file is a separate copy you can restore.",
   hpSetQ5: "Does restoring replace what's here?",
@@ -798,6 +839,92 @@ window.DEB_STR = {
   hpMonthA1: "This page adds up the calendar month. Safe to spend on Home counts down to your next payday.",
   hpMonthQ2: "Can I print it?",
   hpMonthA2: "Yes. “Print this month” opens your browser's print window. Most browsers can also save it as a PDF there.",
+
+  // ---------- 4.11.2026 parity batch: budgets, accounts, run to payday, set aside, paycheck split, debt payments, auto-backup, demo, quick box, brain dump
+  budgetN: "Budget {n}", budgetSwitch: "Switch budget", budgetsTitle: "Budgets and names",
+  budgetsHint: "A budget of its own for another person or purpose, like “Me” and “My daughter”. Each one has its own pay, bills, accounts and entries. Name each one anything you like.",
+  budgetName: "Name", budgetNameHint: "For example My daughter", budgetInUse: "In use", budgetOpen: "Open", budgetDelete: "Delete this budget",
+  budgetAdd: "Add a budget", budgetAddLead: "A new, empty budget. It starts with its own setup; your other budgets stay as they are.",
+  budgetAdded: "New budget ready. Four short questions to start.", budgetFull: "The app keeps up to {n} budgets.",
+  budgetDeleteConfirm: "Delete the budget “{name}” and everything in it? Save a backup first if you might want it back.", budgetDeleted: "Budget deleted",
+  backupHasBudgets: "This file holds {n} budgets. All of them replace what is in the app.", backupAddHint: "This file holds one budget. You can also add it next to what you have now.",
+  backupAddBudget: "Add as another budget", backupBudgetName: "From backup", backupAdded: "Added “{name}” as another budget.",
+
+  runShow: "Day by day to payday", runHide: "Hide the day by day", runTitle: "Day by day to payday", runRange: "{from} to {to}",
+  runOk: "You stay above zero every day until payday. The lowest point is {amount}, on {date}.",
+  runShort: "Around {date} the money runs out before payday. That's information, not a verdict: a bill could move, or spending could ease for a few days.",
+  runGraphLabel: "Money left to spend each day, from {from} to {to}", runTagShort: "Tight",
+  runAllDays: "Show every day", runFewer: "Show fewer days", runPace: "Include my usual spending (about {amount} a day, from the last 14 days)",
+  runNote: "Each day shows what is left to spend after the bills still to pay on their due days and what you hold back. It stops the day before payday. A guide, not a promise.",
+  runNoteUnknown: "No next payday typed yet, so this counts the next 30 days. A guide, not a promise.",
+
+  acctTitle: "Your accounts", acctSafeEach: "Safe to spend in each", acctNotSpendable: "Savings, not spendable", acctBalance: "Balance {amount}",
+  acctNote: "Savings accounts are listed so you can see them, but their money is never counted as safe to spend.", acctMainName: "Everyday account", acctN: "Account",
+  acctName: "Account name", acctKind: "Kind", acctKindSpend: "Spending account", acctKindSavings: "Savings (never spendable)", acctRemove: "Remove this account",
+  acctSetTitle: "More than one account", acctSetOn: "I keep my money in more than one account",
+  acctSetHint: "Off by default; most people don't need it. Bills and spending can name the account they come from, and Home shows what is safe in each.",
+  acctMainLabel: "Name of your main everyday account", acctAdd: "Add an account", acctLimit: "The app keeps up to {n} extra accounts.",
+  acctSavingsNote: "Update balance asks for every account. Entries you logged on an account stay with it.",
+  acctRemoveConfirm: "Remove “{name}”? Entries logged on it stay in your history but stop counting toward any balance.",
+  balanceNowMain: "Money in {name} now", billAcct: "Paid from", fromMain: "My everyday account", fromCard: "Credit card: {name} (I pay it off later)", fromLabel: "Paid with",
+  fromHint: "A card purchase is held back from safe to spend now and isn't taken off your balance until you record the card payment, so it is never counted twice.",
+  spendSavedCard: "Saved {amount} · {cat} · on your card",
+
+  quickTitle: "Quick actions", quickPlaceholder: "12.50 groceries, or a screen name", quickGo: "Go",
+  quickHint: "Type an amount and what it was for, like “12.50 groceries”, to log it. Or type a screen name, like “bills”, to go there.",
+  quickNo: "Not sure what that means. Try an amount and a word, like “12.50 groceries”, or a screen name like “bills”.",
+  quickBrainOff: "Turn on the brain dump in Settings, under Optional extras.",
+  setQuick: "Quick-action box on Home", setQuickHint: "One box: type “12.50 groceries” to log a spend, or a screen name to jump there.",
+  setBrain: "Brain dump on Home", setBrainHint: "A place for notes with no amount, category or date. It never touches your numbers.",
+  brainTitle: "Brain dump", brainHint: "The one place with no amount, no category and no date. Type what is in your head and get on with your day. It never touches your numbers.",
+  brainPlaceholder: "Type it here", brainAdd: "Add", brainEmpty: "Nothing here. Good.", brainDone: "Done", brainDoneToast: "Cleared from your brain dump.", brainFull: "The brain dump holds up to {n} notes. Clear one first.",
+
+  asideFrom: "From what you set aside", asideShare: "About {amount} a month set aside", asideLabel: "Put a bit aside each month for this bill",
+  asideHint: "For a bill that comes every few months or once a year. A share of it is held back from safe to spend each month, so the money is there when it lands. When the bill is due it is not counted a second time.",
+  asideHeld: "{amount} is held back for bills that come every few months, so the money is there when they land.",
+  mathAside: "Set aside for bills that come every few months", mathAsideNote: "A bill that comes every few months is held back a little each month. When it is due before payday it counts once, in full, in the bills line.",
+  mathCard: "Card purchases waiting for the card payment", mathCardNote: "Things you put on a credit card are held back now. When you record the card payment they are not counted again.",
+
+  awayTitle: "While you were away.", awayLead: "You last opened the app on {date}. Three small steps and every number is right again; skip any you like.",
+  awayBills_one: "1 bill came due. Mark it paid, or skip it.", awayBills_other: "{n} bills came due. Mark them paid, or skip them.", awayBillsNone: "No bills came due while you were away.", awayOpenBills: "Open Bills",
+  awayPayAsk_one: "1 payday is waiting for your answer just below.", awayPayAsk_other: "{n} paydays are waiting for your answer just below.",
+  awayPayAdded_one: "1 payday passed and we added {amount}.", awayPayAdded_other: "{n} paydays passed and we added {amount}.",
+  awayPayStale: "Older paydays are not added; the count starts again from today.", awayPayNone: "No payday passed.",
+  awayBalance: "Type what is in your account now.", awayOk: "Got it",
+
+  splitTitle: "Where this paycheck goes first", splitNone: "Optional. If your bank moves part of every paycheck on its own, say so here.",
+  splitAdd: "Set up the split", splitChange: "Change the split", splitReaches: "{net} of {gross} reaches your everyday account.",
+  splitLead: "If your bank automatically moves a slice of every paycheck (to savings, a joint account...), enter it once. Only what reaches your everyday account is counted as money in.",
+  splitTo: "Goes to (optional)", splitToHint: "For example Savings", splitKind: "How", splitPct: "Percent of the paycheck", splitFixed: "Fixed amount", splitValue: "Percent or amount",
+  splitNote: "The app does not move any money. It only knows your bank does. Leave a row empty to skip it.", splitBadPct: "Type a percent between 0 and 100.",
+  splitOver100: "These add up to more than 100%.", splitSaved: "Split saved",
+  notePayAddedSplit: "Payday! {amount} reached your everyday account ({split} was moved on by your bank).",
+
+  evDebtPay: "Debt payment", evCardPay: "Card payment", onCard: "On card: {name}", cardOwedTag: "Card purchases to pay: {amount}",
+  payRecord: "Record a payment", payHistory: "Payment history", payKind: "Which payment?", payKindMin: "Minimum", payKindExtra: "Extra", payKindBill: "Bill marked paid",
+  payLead: "Your balance is {amount} now. This lowers it, and takes the money off your everyday balance.",
+  payLeadCard: "Your balance is {amount} now. This lowers it and takes the money off your everyday balance. It also covers the card purchases you logged, so they are not counted twice.",
+  payAlready: "Already out of my balance", payCovers: "This payment covers the {name} bill due {date}", payRecorded: "Recorded {amount} on {name}. Balance now {left}.",
+
+  autoTitle: "Automatic backup on this computer", autoNo: "Your browser can't save a backup file by itself. Automatic backup works in Chrome and Edge on a computer. Here, use Save backup file now and then.",
+  autoWhere: "Pick a backup file once. After that, every change is saved into it. The file stays on your computer; nothing is sent anywhere.",
+  autoPick: "Choose the backup file", autoChange: "Choose another file", autoStop: "Stop", autoSet: "Automatic backup is on.", autoStopped: "Automatic backup is off.",
+  autoOn: "Saving every change into {name}.", autoLast: "Last saved {time}.", autoAsk: "Your browser wants a yes before it writes into {name} again.", autoAllow: "Allow it",
+  autoError: "The file could not be written. Check that it still exists and choose it again; Save backup file still works.",
+  autoSupport: "Works in Chrome and Edge on a computer. Not in Safari, Firefox or on phones; there, Save backup file is the way.",
+
+  demoDataSample: "These are example numbers: they are never saved. Tap Start setup at the top to type your own.",
+  demoDataOwn: "Your numbers are saved in this browser on this device, nowhere else. {n} of {max} spends used.", demoDownload: "Download a backup",
+  demoImport: "The full app opens this file: Settings, Your data, Restore from backup file.", demoBackupSaved: "Backup file downloaded. Open it in the full app under Settings, Restore from backup file.",
+  demoCapTitle: "That's the demo's limit", demoCap: "You have logged {n} spends, enough to feel how a real week works. Everything you typed stays here and stays readable. The full app has no limit, and “Download a backup” carries your numbers over.",
+
+  hpHomeQ5: "What is the day by day list?", hpHomeA5: "Tap “Day by day to payday”. It lists each day until payday with what is left to spend, after the bills that go out that day. If the money runs short, it says which day. It is a guide, not a promise.",
+  hpBillsQ6: "What does “put a bit aside each month” do?", hpBillsA6: "For a bill that comes every few months or yearly. A share of it is held back from safe to spend each month. When the bill is due it counts once, never twice. It is held back from the day you turn it on.",
+  hpSpendQ6: "How do I log something I put on a credit card?", hpSpendA6: "Add spending, open “Add a note or another date” and pick the card under “Paid with”. It is held back now, and your card payment later doesn't count it again.",
+  hpDebtQ4: "How do I record a payment?", hpDebtA4: "Tap “Record a payment” on a debt. It lowers the balance and takes the money off your everyday balance. A minimum bill you mark paid lowers a debt that is linked to it too.",
+  hpSetQ6: "What are budgets?", hpSetA6: "Separate budgets in one app, like “Me” and “My daughter”. Each has its own pay, bills and entries. A backup file holds all of them.",
+  hpSetQ7: "What is “more than one account”?", hpSetA7: "An optional switch. Bills and spending can name an account, Home shows what is safe in each, and savings accounts are never counted as spendable.",
+  hpSetQ8: "What is automatic backup?", hpSetA8: "In Chrome and Edge on a computer you can pick a backup file once, and the app saves every change into it. Elsewhere, use Save backup file now and then.",
 
   // categories (ids are fixed, names can be renamed in settings)
   cat_groceries: "Groceries", cat_eating: "Eating out", cat_transport: "Transport", cat_home: "Home", cat_health: "Health",
@@ -1056,20 +1183,39 @@ window.DEB_STR = {
 
   function billPaid(state, billId, dueStr) {
     var ev = state.events || [];
-    for (var i = 0; i < ev.length; i++) if (ev[i].type === "bill" && ev[i].billId === billId && ev[i].due === dueStr) return ev[i];
+    /* a debt payment recorded as covering a bill (the card's minimum) counts as that bill being paid */
+    for (var i = 0; i < ev.length; i++) if ((ev[i].type === "bill" || ev[i].type === "debtpay") && ev[i].billId === billId && ev[i].due === dueStr) return ev[i];
     return null;
   }
   function billSkipped(bill, dueStr) { return (bill.skips || []).indexOf(dueStr) !== -1; }
 
   // ------------------------------------------------------------------ balance and safe to spend
-  var SIGN = { income: 1, spend: -1, bill: -1, save: -1, unsave: 1 };
+  var SIGN = { income: 1, spend: -1, bill: -1, save: -1, unsave: 1, debtpay: -1 };
 
-  /* Current everyday-account balance = the balance you last typed + everything logged after that moment. */
-  function balance(state) {
-    var a = state.anchor || { amount: 0, t: 0 }, b = a.amount || 0, ev = state.events || [];
+  /* More than one account (optional, off by default): state.settings.accounts === true and state.accounts = [{ id, name, kind: "spend" | "savings",
+     anchor: { amount, t, date } }]. The everyday account is always there (id ""). Entries name an account in e.acct / bill.acct; no name,
+     an unknown name or the switch being off all mean the everyday account. Savings accounts are listed but never counted as spendable. */
+  var MAX_ACCOUNTS = 4;
+  function accountsOn(state) { return !!(state && state.settings && state.settings.accounts === true && Array.isArray(state.accounts) && state.accounts.length); }
+  function knownAccount(state, id) {
+    if (!id || !state || !Array.isArray(state.accounts)) return null;
+    for (var i = 0; i < state.accounts.length; i++) if (state.accounts[i].id === id) return state.accounts[i];
+    return null;
+  }
+  function accountOf(state, id) { return accountsOn(state) ? knownAccount(state, id) : null; }
+  /* An entry on another account never touches the everyday balance, even while the accounts switch is off: switching it off and on loses nothing. */
+  function eventAcct(state, e) { return knownAccount(state, e.acct) ? e.acct : ""; }
+  /* The account a bill is paid from: only a spendable account counts, anything else is the everyday account. */
+  function billAcct(state, b) { var a = accountOf(state, b.acct); return a && a.kind !== "savings" ? a.id : ""; }
+
+  /* Current balance of one account (default: the everyday account) = the balance you last typed for it + everything logged after that moment. */
+  function balance(state, acctId) {
+    var acc = acctId ? knownAccount(state, acctId) : null, key = acc ? acc.id : "";
+    var a = (acc ? acc.anchor : state.anchor) || { amount: 0, t: 0 }, b = a.amount || 0, ev = state.events || [];
     for (var i = 0; i < ev.length; i++) {
       var e = ev[i];
       if (e.noBal || !SIGN[e.type] || !(e.t > a.t)) continue;
+      if (eventAcct(state, e) !== key) continue;
       b += SIGN[e.type] * e.amount;
     }
     return b;
@@ -1083,6 +1229,21 @@ window.DEB_STR = {
       if (e.type === "save") s += e.amount; else if (e.type === "unsave") s -= e.amount;
     }
     return s;
+  }
+
+  /* Paycheck split (optional): the bank moves a slice of every paycheck on its own (to savings and so on). pay.split = [{ to, pct } | { to, amount }]
+     (pct = percent of the paycheck, amount = cents). Only what reaches the everyday account is added as money in. The slices never add up to more
+     than the paycheck. Returns { gross, split, net, items: [{ to, cents }] }. */
+  var MAX_SPLITS = 4;
+  function payNet(pay) {
+    var gross = (pay && pay.amount) || 0, items = [], total = 0, sp = pay && Array.isArray(pay.split) ? pay.split : [];
+    for (var i = 0; i < sp.length && i < MAX_SPLITS; i++) {
+      var x = sp[i], c = x.pct > 0 ? Math.round(gross * x.pct / 100) : Math.max(0, x.amount || 0);
+      c = Math.min(c, gross - total);
+      if (c <= 0) continue;
+      items.push({ to: x.to || "", cents: c }); total += c;
+    }
+    return { gross: gross, split: total, net: gross - total, items: items };
   }
 
   /* Paydays of one paycheck that have arrived since we last counted it. With autoPay on, the app adds them as income. */
@@ -1099,7 +1260,7 @@ window.DEB_STR = {
     for (var i = 0; i < pays.length; i++) {
       if (i > 0 && !(pays[i].amount > 0)) continue; // an extra paycheck with no amount yet has nothing to confirm
       var due = duePaydaysOf(pays[i], today);
-      for (var j = 0; j < due.length; j++) out.push({ date: due[j], pay: pays[i], payId: i === 0 ? "" : pays[i].id, name: i === 0 ? "" : (pays[i].name || ""), amount: pays[i].amount || 0 });
+      for (var j = 0; j < due.length; j++) out.push({ date: due[j], pay: pays[i], payId: i === 0 ? "" : pays[i].id, name: i === 0 ? "" : (pays[i].name || ""), amount: payNet(pays[i]).net, gross: pays[i].amount || 0, split: payNet(pays[i]).split });
     }
     return out.sort(function (a, b) { return a.date - b.date; });
   }
@@ -1117,8 +1278,11 @@ window.DEB_STR = {
       var due = duePaydaysOf(pay, today);
       if (!due.length || (state.settings && state.settings.autoPay === false)) continue;
       if (k > 0 && !(pay.amount > 0)) { pay.lastProcessed = fmt(due[due.length - 1]); continue; } // no amount yet: nothing to add
+      var pn = payNet(pay);
       for (var i = 0; i < due.length; i++, seq++) {
-        var e = { id: "pay-" + fmt(due[i]) + "-" + (nowMs + seq).toString(36), type: "income", amount: pay.amount || 0, date: fmt(due[i]), t: nowMs + seq, auto: true };
+        var e = { id: "pay-" + fmt(due[i]) + "-" + (nowMs + seq).toString(36), type: "income", amount: pn.net, date: fmt(due[i]), t: nowMs + seq, auto: true };
+        if (pn.split > 0) { e.gross = pn.gross; e.split = pn.split; }
+        if (pay.acct) e.acct = pay.acct;
         if (k > 0 && pay.name) e.note = pay.name;
         state.events.push(e); res.added.push(e);
       }
@@ -1127,23 +1291,121 @@ window.DEB_STR = {
     return res;
   }
 
+  // ------------------------------------------------------------------ debts: payments, card purchases
+  /* debt.balance is what the person typed at moment debt.t0. What they owe now = that number + card purchases logged on this debt after t0
+     - payments recorded after t0 (debt payment entries, and the debt's minimum bill marked paid). A debt typed before this existed keeps
+     its number: t0 is set once, to the latest entry known at that time (see sanitizeState). */
+  function debtBalance(state, d) {
+    var t0 = d.t0 || 0, b = d.balance || 0, ev = state.events || [];
+    for (var i = 0; i < ev.length; i++) {
+      var e = ev[i];
+      if (!(e.t > t0)) continue;
+      if (e.type === "spend" && e.card && e.card === d.id) b += e.amount;
+      else if (e.type === "debtpay" && e.debtId === d.id) b -= e.amount;
+      else if (e.type === "bill" && d.billId && e.billId === d.billId) b -= e.amount;
+    }
+    return Math.max(0, b);
+  }
+  /* The debts with their balance as of now (what the payoff plan and the lists use). */
+  function debtsNow(state) {
+    return (state.debts || []).map(function (d) { var c = {}; for (var k in d) c[k] = d[k]; c.balance = debtBalance(state, d); return c; });
+  }
+  /* Payments on one debt, newest first: [{ id, date, amount, kind: "min" | "extra" | "bill", e }]. Used for the history. */
+  function debtPayments(state, d) {
+    var out = [], ev = state.events || [];
+    for (var i = 0; i < ev.length; i++) {
+      var e = ev[i];
+      if (e.type === "debtpay" && e.debtId === d.id) out.push({ id: e.id, date: e.date, amount: e.amount, kind: e.kind === "extra" ? "extra" : "min", t: e.t });
+      else if (e.type === "bill" && d.billId && e.billId === d.billId) out.push({ id: e.id, date: e.date, amount: e.amount, kind: "bill", t: e.t });
+    }
+    return out.sort(function (x, y) { return parse(y.date) - parse(x.date) || y.t - x.t; });
+  }
+  /* Card purchases logged on a credit card that the card payment has not covered yet. A payment only covers purchases made before it, so an
+     extra payment on an old balance never hides a later purchase. This is the part of the next card payment that safe to spend holds back. */
+  function cardOwed(state, d) {
+    var t0 = d.t0 || 0, ev = state.events || [], flows = [], owed = 0, i;
+    for (i = 0; i < ev.length; i++) {
+      var e = ev[i];
+      if (!(e.t > t0)) continue;
+      if (e.type === "spend" && e.card && e.card === d.id) flows.push({ t: e.t, a: e.amount });
+      else if (e.type === "debtpay" && e.debtId === d.id) flows.push({ t: e.t, a: -e.amount });
+      else if (e.type === "bill" && d.billId && e.billId === d.billId) flows.push({ t: e.t, a: -e.amount });
+    }
+    flows.sort(function (x, y) { return x.t - y.t; });
+    for (i = 0; i < flows.length; i++) owed = Math.max(0, owed + flows[i].a);
+    return owed;
+  }
+
+  // ------------------------------------------------------------------ set aside for bills that come every few months
+  /* A bill that repeats every 2 to 24 months can carry "put a bit aside each month" (bill.aside, bill.asideFrom = the day it was switched on).
+     Held back from safe to spend: amount x whole months since the later of its last due date and asideFrom / months between payments, never
+     more than the amount. When the bill is due before the next payday and unpaid, the normal bill rule already holds back the whole amount,
+     so nothing is added here: the same money is never counted twice. A bill already paid for its next date holds back nothing. */
+  function monthsBetween(a, b) {
+    if (b <= a) return 0;
+    var pa = ymd(a), pb = ymd(b), m = (pb.y - pa.y) * 12 + (pb.m - pa.m);
+    var mm = addMonths(pa.y, pa.m, m);
+    if (clampDay(mm.y, mm.m, pa.d) > b) m--;
+    return Math.max(0, m);
+  }
+  function asideApplies(b) { return !!b.aside && b.repeat === "month" && (+b.every || 1) >= 2; }
+  function asideShare(b) { return Math.round((b.amount || 0) / Math.max(1, +b.every || 1)); }
+  function asideInfo(state, b, today, next) {
+    if (!asideApplies(b)) return null;
+    var s = parse(b.start), every = Math.max(1, +b.every || 1);
+    if (isNaN(s)) return null;
+    var upcoming = occurrences(b, today + 1, today + 800)[0];
+    if (upcoming == null) return null;
+    var res = { bill: b, share: asideShare(b), months: 0, hold: 0, nextDue: upcoming };
+    if (upcoming < next || billPaid(state, b.id, fmt(upcoming)) || billSkipped(b, fmt(upcoming))) return res;
+    var prev = occurrences(b, s, today), from = prev.length ? prev[prev.length - 1] : NaN, af = parse(b.asideFrom);
+    if (isNaN(from) || (!isNaN(af) && af > from)) from = af;
+    if (isNaN(from)) from = today;
+    res.months = Math.min(every, monthsBetween(from, today));
+    res.hold = Math.min(b.amount, Math.round((b.amount || 0) * res.months / every));
+    return res;
+  }
+
   function compute(state, today) {
     var start = prevPaydayAll(state, today), next = nextPaydayAll(state, today);
-    var bal = balance(state), bills = state.bills || [], list = [], reserved = 0, i, j;
+    var bills = state.bills || [], list = [], reserved = 0, i, j;
+    var on = accountsOn(state), per = {}, perList = [], savings = [];
+    function addAcct(id, name, main) { var o = { id: id, name: name, main: !!main, balance: balance(state, id), bills: 0, aside: 0, card: 0, goals: 0, cushion: 0, safe: 0 }; per[id] = o; perList.push(o); }
+    addAcct("", (state.settings && state.settings.acctMain) || "", true);
+    if (on) state.accounts.forEach(function (a) {
+      if (a.kind === "savings") savings.push({ id: a.id, name: a.name, balance: balance(state, a.id) }); else addAcct(a.id, a.name, false);
+    });
+    var bal = 0;
+    perList.forEach(function (a) { bal += a.balance; });
     for (i = 0; i < bills.length; i++) {
-      var b = bills[i], occ = occurrences(b, parse(b.start), next + 62);
+      var b = bills[i], occ = occurrences(b, parse(b.start), next + 62), ba = billAcct(state, b);
       for (j = 0; j < occ.length; j++) {
         var d = occ[j], ds = fmt(d), paid = billPaid(state, b.id, ds), skipped = billSkipped(b, ds);
         var inWindow = d < next, overdue = d < today;
         if (!inWindow && (paid || skipped)) continue;
         if (overdue && (paid || skipped) && d < start) continue;
         var status = paid ? "paid" : skipped ? "skipped" : overdue ? "overdue" : d === today ? "today" : "upcoming";
-        var item = { bill: b, due: d, dueStr: ds, amount: paid ? paid.amount : b.amount, status: status, thisPeriod: inWindow };
-        if (inWindow && !paid && !skipped) reserved += b.amount;
+        var item = { bill: b, due: d, dueStr: ds, amount: paid ? paid.amount : b.amount, status: status, thisPeriod: inWindow, acct: ba };
+        if (inWindow && !paid && !skipped) { reserved += b.amount; per[ba].bills += b.amount; }
         list.push(item);
       }
     }
     list.sort(function (x, y) { return x.due - y.due || (x.bill.name < y.bill.name ? -1 : 1); });
+    var asideList = [], aside = 0;
+    for (i = 0; i < bills.length; i++) {
+      var ai = asideInfo(state, bills[i], today, next);
+      if (!ai) continue;
+      asideList.push(ai); aside += ai.hold; per[billAcct(state, bills[i])].aside += ai.hold;
+    }
+    var cards = [], cardReserve = 0;
+    (state.debts || []).forEach(function (dd) {
+      if (dd.kind !== "card") return;
+      var owed = cardOwed(state, dd), inBill = 0, ca = "";
+      list.forEach(function (it) { if (dd.billId && it.bill.id === dd.billId && it.thisPeriod && it.status !== "paid" && it.status !== "skipped") { inBill += it.amount; ca = it.acct; } });
+      var hold = Math.max(0, owed - inBill);
+      if (owed > 0) cards.push({ debt: dd, owed: owed, hold: hold });
+      cardReserve += hold; per[ca].card += hold;
+    });
     var goals = state.goals || [], goalsReserved = 0, goalInfo = [];
     for (i = 0; i < goals.length; i++) {
       var g = goals[i], saved = goalSaved(state, g), left = Math.max(0, (g.target || 0) - saved), thisP = 0;
@@ -1156,23 +1418,72 @@ window.DEB_STR = {
       goalInfo.push({ goal: g, saved: saved, left: left, reserved: res, savedThisPeriod: thisP, pct: g.target > 0 ? Math.min(100, Math.floor(saved * 100 / g.target)) : 0 });
     }
     var cushion = Math.max(0, (state.settings && state.settings.cushion) || 0), unit = unitOf(state.settings);
-    var safe = bal - reserved - goalsReserved - cushion;
+    per[""].goals = goalsReserved; per[""].cushion = cushion;
+    var safe = 0;
+    perList.forEach(function (a) { a.safe = a.balance - a.bills - a.aside - a.card - a.goals - a.cushion; safe += a.safe; });
     var daysLeft = Math.max(1, next - today);
     var spent = 0, byCat = {}, income = 0;
     for (i = 0; i < (state.events || []).length; i++) {
-      var ev = state.events[i], dd = parse(ev.date);
-      if (!(dd >= start && dd <= today)) continue;
+      var ev = state.events[i], dd2 = parse(ev.date);
+      if (!(dd2 >= start && dd2 <= today)) continue;
       if (ev.type === "spend") { spent += ev.amount; byCat[ev.cat || "other"] = (byCat[ev.cat || "other"] || 0) + ev.amount; }
       if (ev.type === "income") income += ev.amount;
     }
     return {
       today: today, periodStart: start, nextPayday: next, daysLeft: daysLeft, balance: bal, billsReserved: reserved,
+      billsAside: aside, asideItems: asideList, cardReserve: cardReserve, cards: cards, accounts: perList, savings: savings, multi: perList.length > 1,
       goalsReserved: goalsReserved, cushion: cushion, safe: safe, perDay: safe > 0 ? Math.floor(safe / daysLeft / unit) * unit : 0,
       bills: list, goals: goalInfo, spent: spent, byCat: byCat, incomeThisPeriod: income,
       payKnown: nextPaydayKnown(state, today),
       pendingItems: (state.settings && state.settings.autoPay === false) ? pendingPays(state, today) : [],
       pendingPaydays: (state.settings && state.settings.autoPay === false) ? pendingPays(state, today).map(function (x) { return x.date; }) : []
     };
+  }
+
+  // ------------------------------------------------------------------ run to payday (optional day-by-day forecast)
+  /* Today to the day before the next payday, one entry per day: the money left to spend at the end of that day, if the bills still to pay go out
+     on their due days (a bill that looks overdue goes out today) and, optionally, you keep spending about `pace` a day. "Left" holds back the
+     same things safe to spend holds back (goal money, cushion, set aside, card purchases), so with no pace the last day equals safe to spend.
+     { days: [{ date, idx, bills: [{ name, amount, id, overdue }], billsTotal, balance, left, short }], payday, firstShort, lowest, lowestDate, pace } */
+  function spendPace(state, today) {
+    var from = today - 13, sum = 0, ev = state.events || [];
+    for (var i = 0; i < ev.length; i++) { var e = ev[i]; if (e.type !== "spend") continue; var d = parse(e.date); if (d >= from && d <= today) sum += e.amount; }
+    return Math.round(sum / 14);
+  }
+  function runToPayday(state, today, opts) {
+    opts = opts || {};
+    var R = compute(state, today), pace = Math.max(0, Math.round(+opts.pace || 0)), hold = R.billsAside + R.cardReserve + R.goalsReserved + R.cushion;
+    var byDay = {}, days = [], cum = 0, firstShort = null, lowest = null, lowestDate = null;
+    R.bills.forEach(function (it) {
+      if (!it.thisPeriod || it.status === "paid" || it.status === "skipped") return;
+      var dd = Math.max(it.due, today);
+      (byDay[dd] = byDay[dd] || []).push({ name: it.bill.name, amount: it.amount, id: it.bill.id, overdue: it.due < today });
+    });
+    for (var n = today, k = 0; n < R.nextPayday; n++, k++) {
+      var bs = byDay[n] || [], tot = 0;
+      bs.forEach(function (x) { tot += x.amount; });
+      cum += tot;
+      var bal = R.balance - cum - pace * k, left = bal - hold;
+      var day = { date: n, idx: k, bills: bs, billsTotal: tot, balance: bal, left: left, short: left < 0 };
+      days.push(day);
+      if (day.short && firstShort == null) firstShort = n;
+      if (lowest == null || left < lowest) { lowest = left; lowestDate = n; }
+    }
+    return { days: days, payday: R.nextPayday, payKnown: R.payKnown, firstShort: firstShort, lowest: lowest, lowestDate: lowestDate, pace: pace, hold: hold };
+  }
+
+  // ------------------------------------------------------------------ welcome back (a week or more away)
+  /* Remembers the last day the app was opened (flags.seen). Coming back after 7 days or more raises flags.away = { since }, which shows one
+     calm catch-up card (bills that came due, pay that was expected, the balance) until it is closed. Opening it again never raises a second one
+     while the first is open. Returns true if something changed. */
+  var AWAY_DAYS = 7;
+  function touchSeen(state, today) {
+    var f = state.flags = state.flags || {}, seen = parse(f.seen), changed = false;
+    if (isNaN(seen)) { f.seen = fmt(today); return true; }
+    if (today <= seen) return false;
+    if (today - seen >= AWAY_DAYS && !f.away) { f.away = { since: f.seen }; changed = true; }
+    f.seen = fmt(today);
+    return true;
   }
 
   // ------------------------------------------------------------------ month review
@@ -1316,8 +1627,9 @@ window.DEB_STR = {
     if (!ms) { ms = f.ms = { g: {}, d: {} }; changed = true; }
     (state.goals || []).forEach(function (g) { if (ms.g[g.id] === undefined) { ms.g[g.id] = levelOf(goalPct(state, g)); changed = true; } });
     (state.debts || []).forEach(function (d) {
-      if (ms.d[d.id] === undefined) { ms.d[d.id] = d.balance > 0 ? 0 : 1; changed = true; }
-      else if (ms.d[d.id] === 1 && d.balance > 0) { ms.d[d.id] = 0; changed = true; }
+      var db = debtBalance(state, d);
+      if (ms.d[d.id] === undefined) { ms.d[d.id] = db > 0 ? 0 : 1; changed = true; }
+      else if (ms.d[d.id] === 1 && db > 0) { ms.d[d.id] = 0; changed = true; }
     });
     return changed;
   }
@@ -1330,7 +1642,7 @@ window.DEB_STR = {
       var lv = levelOf(goalPct(state, g));
       if (lv > ms.g[g.id]) out.push({ kind: "goal", id: g.id, name: g.name, level: lv });
     });
-    (state.debts || []).forEach(function (d) { if (ms.d[d.id] === 0 && d.balance === 0) out.push({ kind: "debt", id: d.id, name: d.name }); });
+    (state.debts || []).forEach(function (d) { if (ms.d[d.id] === 0 && debtBalance(state, d) === 0) out.push({ kind: "debt", id: d.id, name: d.name }); });
     return out;
   }
   function msDismiss(state, item) {
@@ -1397,7 +1709,7 @@ window.DEB_STR = {
       if (!R.goals.length) add("goals.empty", "help", "hnGoalsEmpty"); else add("goals.move", "help", "hnGoalsMove");
     } else if (screen === "debt") {
       var ds = state.debts || [];
-      if (ds.length && !debtPlan(ds, state.debtExtra, state.debtMethod).ok) add("debt.tooLow", "notice", "hnDebtTooLow", { cool: 7 });
+      if (ds.length && !debtPlan(debtsNow(state), state.debtExtra, state.debtMethod).ok) add("debt.tooLow", "notice", "hnDebtTooLow", { cool: 7 });
       if (!ds.length) add("debt.empty", "help", "hnDebtEmpty");
       if (ds.length && !state.debtExtra) add("debt.extra", "help", "hnDebtExtra");
       if (ds.length) add("debt.methods", "help", "hnDebtMethods");
@@ -1439,18 +1751,32 @@ window.DEB_STR = {
   var HINT_ID = /^[a-z0-9.:_-]{1,60}$/i, HINT_MAX = 200;
   var ROUTINE_STEPS = ["arrived", "balance", "bills", "goals", "backup"];
   var PALETTE_IDS = ["default", "sky", "lilac", "rose", "sand", "moss", "graphite"];
-  var MAX_EXTRA_PAYS = 4;
+  var MAX_EXTRA_PAYS = 4, MAX_NOTES = 200;
   var MAX_IRREGULAR_DATES = 60;
+  function cleanSplit(list) {
+    var out = [];
+    (Array.isArray(list) ? list : []).slice(0, MAX_SPLITS).forEach(function (x) {
+      if (!x || typeof x !== "object") return;
+      var o = { to: str(x.to, 40) }, pct = Math.round((+x.pct || 0) * 100) / 100;
+      if (pct > 0) o.pct = Math.min(100, pct); else if (cents(x.amount) > 0) o.amount = cents(x.amount); else return;
+      out.push(o);
+    });
+    return out;
+  }
   function cleanPay(p, t) {
     var dates = [];
     (Array.isArray(p.dates) ? p.dates : []).forEach(function (x) { if (!isNaN(parse(x)) && dates.indexOf(x) === -1) dates.push(x); });
     dates.sort();
-    return {
+    var o = {
       freq: FREQS.indexOf(p.freq) !== -1 ? p.freq : "biweekly",
       anchor: dateStr(p.anchor, t), dates: dates.slice(-MAX_IRREGULAR_DATES), day1: Math.min(31, Math.max(1, +p.day1 || 1)), day2: Math.min(31, Math.max(1, +p.day2 || 15)),
       day: Math.min(31, Math.max(1, +p.day || 1)), weekend: ["keep", "before", "after"].indexOf(p.weekend) !== -1 ? p.weekend : "keep",
       amount: cents(p.amount), lastProcessed: dateStr(p.lastProcessed, t)
     };
+    var sp = cleanSplit(p.split);
+    if (sp.length) o.split = sp;
+    if (p.acct) o.acct = str(p.acct, 40);
+    return o;
   }
 
   /* Validates and cleans a parsed backup (or stored state). Returns { ok, state } or { ok: false, error }. */
@@ -1459,14 +1785,16 @@ window.DEB_STR = {
     if (!src || typeof src !== "object" || !src.pay || !Array.isArray(src.events) || !Array.isArray(src.bills)) return { ok: false, error: "not-ours" };
     var t = fmt(today);
     var st = {
-      v: 1, setupDone: !!src.setupDone, sample: !!src.sample,
+      v: 2, setupDone: !!src.setupDone, sample: !!src.sample,
       settings: {}, pay: {}, anchor: { amount: cents(src.anchor && src.anchor.amount, true), t: +(src.anchor && src.anchor.t) || 0, date: dateStr(src.anchor && src.anchor.date, t) },
-      bills: [], events: [], goals: [], debts: [], cats: [], extraPays: [],
+      bills: [], events: [], goals: [], debts: [], cats: [], extraPays: [], accounts: [], notes: [],
       debtExtra: cents(src.debtExtra), debtMethod: src.debtMethod === "avalanche" ? "avalanche" : "snowball",
       flags: { stale: !!(src.flags && src.flags.stale), payNote: str(src.flags && src.flags.payNote, 60), payNoteUntil: dateStr(src.flags && src.flags.payNoteUntil, "") },
       waits: []
     };
     var fl = src.flags || {};
+    if (!isNaN(parse(fl.seen))) st.flags.seen = fl.seen;
+    if (fl.away && typeof fl.away === "object" && !isNaN(parse(fl.away.since))) st.flags.away = { since: fl.away.since };
     if (fl.routine && typeof fl.routine === "object" && fl.routine.key) {
       st.flags.routine = { key: str(fl.routine.key, 60), done: (Array.isArray(fl.routine.done) ? fl.routine.done : []).filter(function (k) { return ROUTINE_STEPS.indexOf(k) !== -1; }), hide: !!fl.routine.hide };
     }
@@ -1488,7 +1816,8 @@ window.DEB_STR = {
       symbolPos: ["auto", "before", "after"].indexOf(s.symbolPos) !== -1 ? s.symbolPos : "auto",
       dateStyle: s.dateStyle === "dm" ? "dm" : "md", theme: ["auto", "light", "dark"].indexOf(s.theme) !== -1 ? s.theme : "auto",
       low: !!s.low, autoPay: s.autoPay !== false, cushion: cents(s.cushion), lastBackup: +s.lastBackup || 0, weekStart: s.weekStart === 1 ? 1 : 0,
-      palette: PALETTE_IDS.indexOf(s.palette) !== -1 ? s.palette : "default", plan: !!s.plan, waitList: !!s.waitList, routine: s.routine !== false, hints: s.hints !== false
+      palette: PALETTE_IDS.indexOf(s.palette) !== -1 ? s.palette : "default", plan: !!s.plan, waitList: !!s.waitList, routine: s.routine !== false, hints: s.hints !== false,
+      accounts: !!s.accounts, acctMain: str(s.acctMain, 40), brain: !!s.brain, quick: !!s.quick, runPace: !!s.runPace
     };
     st.pay = cleanPay(src.pay, t);
     st.extraPays = [];
@@ -1505,6 +1834,8 @@ window.DEB_STR = {
         skips: Array.isArray(b.skips) ? b.skips.filter(function (x) { return !isNaN(parse(x)); }).slice(-200) : [], cat: str(b.cat, 40) };
       var cnt = Math.floor(+b.count || 0);
       if (cnt > 0 && nb.repeat !== "once") nb.count = Math.min(MAX_COUNT, cnt);
+      if (b.aside && nb.repeat === "month" && nb.every >= 2) { nb.aside = true; nb.asideFrom = dateStr(b.asideFrom, t); }
+      if (b.acct) nb.acct = str(b.acct, 40);
       st.bills.push(nb);
     });
     src.events.slice(-20000).forEach(function (e) {
@@ -1516,19 +1847,36 @@ window.DEB_STR = {
       if (e.goalId) o.goalId = str(e.goalId, 40);
       if (e.noBal) o.noBal = true;
       if (e.auto) o.auto = true;
+      if (e.acct) o.acct = str(e.acct, 40);
+      if (e.card && e.type === "spend") o.card = str(e.card, 40);
+      if (e.type === "debtpay") { o.debtId = str(e.debtId, 40); o.kind = e.kind === "extra" ? "extra" : "min"; }
+      if (e.type === "income" && cents(e.split) > 0) { o.gross = cents(e.gross); o.split = cents(e.split); }
       st.events.push(o);
     });
     (src.goals || []).slice(0, 100).forEach(function (g) {
       if (!g || !g.id) return;
       st.goals.push({ id: str(g.id, 40), name: str(g.name, 80) || "Goal", target: cents(g.target), start: cents(g.start), per: cents(g.per), by: dateStr(g.by, "") });
     });
+    var legacyT0 = st.anchor.t;
+    st.events.forEach(function (e) { if (e.t > legacyT0) legacyT0 = e.t; });
     (src.debts || []).slice(0, 100).forEach(function (d) {
       if (!d || !d.id) return;
       var nd = { id: str(d.id, 40), name: str(d.name, 80) || "Debt", balance: cents(d.balance), apr: Math.min(100, Math.max(0, +d.apr || 0)), min: cents(d.min) };
       if (d.kind === "card" || d.kind === "loan") nd.kind = d.kind;
       var bid = str(d.billId, 40);
       if (bid) nd.billId = bid;
+      nd.t0 = +d.t0 > 0 ? Math.round(+d.t0) : legacyT0;
       st.debts.push(nd);
+    });
+    (src.accounts || []).slice(0, MAX_ACCOUNTS).forEach(function (a) {
+      if (!a || !a.id) return;
+      var an = a.anchor || {};
+      st.accounts.push({ id: str(a.id, 40), name: str(a.name, 40) || "Account", kind: a.kind === "savings" ? "savings" : "spend",
+        anchor: { amount: cents(an.amount, true), t: +an.t || 0, date: dateStr(an.date, t) } });
+    });
+    (src.notes || []).slice(0, MAX_NOTES).forEach(function (n) {
+      if (!n || !n.id || !str(n.text, 200).trim()) return;
+      st.notes.push({ id: str(n.id, 40), text: str(n.text, 200), t: +n.t || 0 });
     });
     (src.cats || []).slice(0, 60).forEach(function (c) {
       if (!c || !c.id) return;
@@ -1557,6 +1905,7 @@ window.DEB_STR = {
       if (e.type === "spend") { type = L.type.spend; cat = L.cat(e.cat || "other"); }
       else if (e.type === "income") { type = e.auto ? L.type.pay : L.type.income; }
       else if (e.type === "bill") { type = L.type.bill; label = name(state.bills || [], e.billId) + (e.note ? " · " + e.note : ""); }
+      else if (e.type === "debtpay") { type = L.type.debtpay || "Debt payment"; label = name(state.debts || [], e.debtId); }
       else { type = L.type[e.type]; label = name(state.goals || [], e.goalId); }
       var cents = SIGN[e.type] * e.amount, sign = cents < 0 ? "-" : "";
       var plain = zero ? String(Math.round(Math.abs(cents) / 100)) : Math.floor(Math.abs(cents) / 100) + "." + pad(Math.abs(cents) % 100);
@@ -1578,8 +1927,44 @@ window.DEB_STR = {
     }).join("\r\n") + "\r\n";
   }
 
-  function makeBackup(state, nowMs) {
-    return { app: APP_ID, version: 1, exported: new Date(nowMs || Date.now()).toISOString(), state: state };
+  // ------------------------------------------------------------------ several budgets in one app
+  /* store = { v: 2, active: id, budgets: [{ id, name, state }] }. Each budget is a complete state of its own (its own pay, bills, accounts,
+     entries and notes); the name is what the person calls it ("Me", "My daughter"). Anything older (one saved state, or a backup file from
+     before budgets existed) becomes a store with one budget. */
+  var MAX_BUDGETS = 8;
+  function sanitizeStore(raw, today) {
+    if (!raw || typeof raw !== "object") return { ok: false, error: "not-ours" };
+    var src = raw.app === APP_ID ? raw : raw, list = [];
+    if (Array.isArray(src.budgets) && src.budgets.length) {
+      src.budgets.slice(0, MAX_BUDGETS).forEach(function (b, i) {
+        if (!b || typeof b !== "object") return;
+        var r = sanitizeState(b.state, today);
+        if (!r.ok) return;
+        var id = str(b.id, 40) || "b" + (i + 1);
+        if (list.some(function (x) { return x.id === id; })) id = id + "-" + (i + 1);
+        list.push({ id: id, name: str(b.name, 40).trim(), state: r.state });
+      });
+    } else {
+      var one = sanitizeState(src, today);
+      if (one.ok) list.push({ id: "b1", name: "", state: one.state });
+    }
+    if (!list.length) return { ok: false, error: "not-ours" };
+    var active = list.some(function (x) { return x.id === src.active; }) ? src.active : list[0].id;
+    return { ok: true, store: { v: 2, active: active, budgets: list } };
+  }
+  function newBudgetId(store) {
+    for (var n = store.budgets.length + 1; n < 100; n++) { var id = "b" + n; if (!store.budgets.some(function (b) { return b.id === id; })) return id; }
+    return "b" + Date.now().toString(36);
+  }
+
+  function makeBackup(x, nowMs) {
+    var exported = new Date(nowMs || Date.now()).toISOString();
+    if (x && Array.isArray(x.budgets)) {
+      var act = x.budgets.filter(function (b) { return b.id === x.active; })[0] || x.budgets[0];
+      /* "state" is the active budget, so an older copy of the app that only knows one budget can still open the file. */
+      return { app: APP_ID, version: 2, exported: exported, active: act.id, budgets: x.budgets, state: act.state };
+    }
+    return { app: APP_ID, version: 1, exported: exported, state: x };
   }
 
   var api = {
@@ -1590,6 +1975,10 @@ window.DEB_STR = {
     pendingPays: pendingPays, duePaydaysOf: duePaydaysOf, exportRows: exportRows, toCsv: toCsv,
     occurrences: occurrences, paymentNo: paymentNo, paymentsLeft: paymentsLeft, MAX_COUNT: MAX_COUNT, billPaid: billPaid, balance: balance, goalSaved: goalSaved, duePaydays: duePaydays,
     materializePay: materializePay, compute: compute, monthSummary: monthSummary, earliestMonth: earliestMonth, debtPlan: debtPlan, sanitizeState: sanitizeState, makeBackup: makeBackup, APP_ID: APP_ID,
+    accountsOn: accountsOn, accountOf: accountOf, billAcct: billAcct, MAX_ACCOUNTS: MAX_ACCOUNTS, payNet: payNet, MAX_SPLITS: MAX_SPLITS,
+    debtBalance: debtBalance, debtsNow: debtsNow, debtPayments: debtPayments, cardOwed: cardOwed,
+    asideApplies: asideApplies, asideShare: asideShare, asideInfo: asideInfo, monthsBetween: monthsBetween,
+    touchSeen: touchSeen, AWAY_DAYS: AWAY_DAYS, runToPayday: runToPayday, spendPace: spendPace, sanitizeStore: sanitizeStore, newBudgetId: newBudgetId, MAX_BUDGETS: MAX_BUDGETS, MAX_NOTES: MAX_NOTES,
     planSummary: planSummary, WAIT_MS: WAIT_MS, MAX_WAITS: MAX_WAITS, waitReady: waitReady, waitSplit: waitSplit,
     THRESHOLDS: THRESHOLDS, goalPct: goalPct, levelOf: levelOf, msSync: msSync, msPending: msPending, msDismiss: msDismiss,
     ROUTINE_STEPS: ROUTINE_STEPS, routineKey: routineKey, routineState: routineState, PALETTE_IDS: PALETTE_IDS, HINT_ID: HINT_ID, HINT_MAX: HINT_MAX,
@@ -1604,7 +1993,8 @@ window.DEB_STR = {
 (function () {
   "use strict";
   const C = window.DEB_CORE, T = window.DEB_STR, DEMO = !!window.DEB_DEMO, VERSION = "1.0";
-  const KEY = "doneenough.budget.v1";
+  const KEY = "doneenough.budget.v1", DEMO_KEY = "doneenough.demo.v1", AUTO_KEY = "doneenough.autobackup.v1", STORE_KEY = DEMO ? DEMO_KEY : KEY;
+  const DEMO_CAP = 40;
   const $ = (id) => document.getElementById(id);
 
   // ------------------------------------------------------------------ icons (24x24, stroke = currentColor)
@@ -1703,8 +2093,10 @@ window.DEB_STR = {
   const monthYear = (y, m) => `${T.months[m - 1]} ${y}`;
 
   // ------------------------------------------------------------------ state
-  let S = null, STORAGE_OK = true, lastT = 0;
-  const UI = { tab: "home", billsMode: "list", cal: null, calSel: null, act: "period", month: null, showMath: false, onb: null, dismissed: {}, after: "", quiet: "" };
+  /* STORE holds every budget: { v, active, budgets: [{ id, name, state }] }. S is always the active budget's state, so everything below
+     works on S as before; switching budgets only swaps S. */
+  let S = null, STORE = null, STORAGE_OK = true, lastT = 0;
+  const UI = { tab: "home", billsMode: "list", cal: null, calSel: null, act: "period", month: null, showMath: false, onb: null, dismissed: {}, after: "", quiet: "", runOpen: false, runAll: false };
 
   function stamp() { let n = Date.now(); if (n <= lastT) n = lastT + 1; lastT = n; return n; }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -1712,10 +2104,20 @@ window.DEB_STR = {
   const catName = (id) => { const c = S.cats.find((x) => x.id === id); return c ? (c.name || T["cat_" + id] || id) : (T["cat_" + id] || T.cat_other); };
   const catIcon = (id) => { const c = S.cats.find((x) => x.id === id); return c ? c.icon : "dots"; };
 
-  function freshState() {
-    const d = today();
+  const activeBudget = () => STORE.budgets.find((b) => b.id === STORE.active) || STORE.budgets[0];
+  function setState(ns) { activeBudget().state = S = ns; }
+  const budgetLabel = (b) => b.name || t("budgetN", { n: STORE.budgets.indexOf(b) + 1 });
+  /* Look settings belong to the person, not to one budget: they move with them when they switch. */
+  const LOOK = ["theme", "palette", "low"];
+  /* What a new budget starts with: the same money format and look as the one in use, nothing else. */
+  const CARRY = ["currency", "symbol", "decimals", "numberFormat", "symbolPos", "dateStyle", "weekStart", "theme", "palette", "low", "hints", "routine"];
+
+  function freshState(carry) {
+    const d = today(), from = S ? S.settings : null, st = { currency: "USD", numberFormat: "1,234.56", autoPay: true, theme: from ? from.theme : "auto", palette: from ? from.palette : "default" };
+    if (carry && from) CARRY.forEach((k) => { st[k] = from[k]; });
+    if (DEMO) { st.quick = true; st.brain = true; } // the free demo shows the quick-action box and the brain dump so they can be tried
     return C.sanitizeState({
-      setupDone: false, sample: false, settings: { currency: "USD", numberFormat: "1,234.56", autoPay: true, theme: S ? S.settings.theme : "auto", palette: S ? S.settings.palette : "default" },
+      setupDone: false, sample: false, settings: st,
       pay: { freq: "biweekly", anchor: C.fmt(d + 7), day1: 15, day2: 31, day: 1, weekend: "keep", amount: 0, lastProcessed: C.fmt(d) },
       anchor: { amount: 0, t: 0, date: C.fmt(d) }, bills: [], events: [], goals: [], debts: [], cats: defaultCats(), flags: {}, waits: []
     }, d).state;
@@ -1730,7 +2132,8 @@ window.DEB_STR = {
       setupDone: true, sample: true,
       settings: { currency: S ? S.settings.currency : "USD", numberFormat: S ? S.settings.numberFormat : "1,234.56", symbolPos: S ? S.settings.symbolPos : "auto",
         dateStyle: S ? S.settings.dateStyle : "md", theme: S ? S.settings.theme : "auto", palette: S ? S.settings.palette : "default", decimals: S ? S.settings.decimals : 2,
-        plan: S ? S.settings.plan : false, waitList: S ? S.settings.waitList : false, routine: S ? S.settings.routine : true, hints: S ? S.settings.hints : true, autoPay: true, cushion: 5000, lastBackup: 0 },
+        plan: S ? S.settings.plan : false, waitList: S ? S.settings.waitList : false, routine: S ? S.settings.routine : true, hints: S ? S.settings.hints : true, autoPay: true, cushion: 5000, lastBackup: 0,
+        quick: DEMO ? true : S ? S.settings.quick : false, brain: DEMO ? true : S ? S.settings.brain : false },
       pay, anchor: { amount: 69000, t: now, date: f(d) },
       bills: [
         { id: "b-rent", name: T.sRent, amount: 115000, start: f(next + 2), repeat: "month", every: 1 },
@@ -1754,35 +2157,45 @@ window.DEB_STR = {
         { id: "g-hol", name: T.sHoliday, target: 60000, start: 18000, per: 2000, by: f(d + 200) }
       ],
       debts: [
-        { id: "d1", name: T.sCard, balance: 240000, apr: 22.9, min: 7500 },
-        { id: "d2", name: T.sCarLoan, balance: 680000, apr: 6.9, min: 21000 },
-        { id: "d3", name: T.sStore, balance: 38000, apr: 26.99, min: 2500 }
+        { id: "d1", name: T.sCard, balance: 240000, apr: 22.9, min: 7500, t0: now - 20000 },
+        { id: "d2", name: T.sCarLoan, balance: 680000, apr: 6.9, min: 21000, t0: now - 20000 },
+        { id: "d3", name: T.sStore, balance: 38000, apr: 26.99, min: 2500, t0: now - 20000 }
       ],
       debtExtra: 5000, debtMethod: "snowball", cats: S ? S.cats : defaultCats(), flags: {}, waits: S ? S.waits : []
     };
     return C.sanitizeState(st, d).state;
   }
 
+  /* Every budget gets the same few checks when it becomes the one in use. */
+  function prepare(st) {
+    if (!st.cats.length) st.cats = defaultCats();
+    st.events.forEach((e) => { if (e.t > lastT) lastT = e.t; });
+    if (st.anchor.t > lastT) lastT = st.anchor.t;
+    (st.accounts || []).forEach((a) => { if (a.anchor.t > lastT) lastT = a.anchor.t; });
+    if (st.setupDone) C.msSync(st);
+  }
+
   function load() {
-    if (DEMO) { S = sampleState(); return; }
     let raw = null;
     try {
       localStorage.setItem("doneenough.test", "1"); localStorage.removeItem("doneenough.test");
-      raw = localStorage.getItem(KEY);
+      raw = localStorage.getItem(STORE_KEY);
     } catch (e) { STORAGE_OK = false; }
     if (raw) {
-      try { const r = C.sanitizeState(JSON.parse(raw), today()); if (r.ok) S = r.state; } catch (e) { S = null; }
+      try { const r = C.sanitizeStore(JSON.parse(raw), today()); if (r.ok) STORE = r.store; } catch (e) { STORE = null; }
     }
-    if (!S) S = freshState();
-    if (!S.cats.length) S.cats = defaultCats();
-    S.events.forEach((e) => { if (e.t > lastT) lastT = e.t; });
-    if (S.anchor.t > lastT) lastT = S.anchor.t;
-    if (S.setupDone) C.msSync(S);
+    if (!STORE) STORE = { v: 2, active: "b1", budgets: [{ id: "b1", name: "", state: DEMO ? sampleState() : freshState() }] };
+    S = activeBudget().state;
+    STORE.budgets.forEach((b) => prepare(b.state));
   }
 
+  /* The free demo keeps what a visitor types, but not the example numbers: those are made fresh each visit. */
+  const demoSaves = () => !DEMO || STORE.budgets.some((b) => !b.state.sample);
+  let autoTimer = null;
   function persist() {
-    if (DEMO) return;
-    try { localStorage.setItem(KEY, JSON.stringify(S)); STORAGE_OK = true; } catch (e) { STORAGE_OK = false; }
+    if (!demoSaves()) return;
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(STORE)); STORAGE_OK = true; } catch (e) { STORAGE_OK = false; }
+    autoSoon();
   }
 
   function tick() {
@@ -1794,8 +2207,8 @@ window.DEB_STR = {
       S.flags.payNoteUntil = C.fmt(d + 3);
     }
     if (r.stale) S.flags.stale = true;
-    const ms = C.msSync(S);
-    if (r.added.length || r.stale || ms) persist();
+    const ms = C.msSync(S), seen = C.touchSeen(S, d);
+    if (r.added.length || r.stale || ms || seen) persist();
   }
 
   function commit(keepModal) {
@@ -1869,16 +2282,21 @@ window.DEB_STR = {
   function topBar() {
     const low = S.settings.low;
     const lowBtn = S.setupDone ? `<button class="chip-btn" data-act="low" aria-pressed="${low ? "true" : "false"}">${icon(low ? "batFull" : "batLow")}<span class="lbl-long">${te(low ? "lowOff" : "lowOn")}</span><span class="lbl-short" aria-hidden="true">${te(low ? "lowShortOff" : "lowShort")}</span><span class="sr">${low ? "" : te("lowHint")}</span></button>` : "";
-    const saved = DEMO ? te("notSaved") : STORAGE_OK ? te("savedHere") : "";
-    return `<header class="top"><div class="logo"><span class="mark">${icon("check")}<i></i></span><div><h1>${te("appName")}</h1><small>${te("tagline")}</small></div></div>
+    const saved = DEMO ? (demoSaves() && STORAGE_OK ? te("demoSavedHere") : te("notSaved")) : STORAGE_OK ? te("savedHere") : "";
+    const ab = activeBudget(), multi = STORE.budgets.length > 1;
+    const sub = multi ? `<button class="budget-chip hide-low" data-act="budgets" aria-haspopup="dialog">${icon("list")}<span class="bn">${esc(budgetLabel(ab))}</span>${icon("chevR")}<span class="sr"> ${te("budgetSwitch")}</span></button>`
+      : `<small>${ab.name ? te("appName") : te("tagline")}</small>`;
+    return `<header class="top"><div class="logo"><span class="mark">${icon("check")}<i></i></span><div><h1>${multi || !ab.name ? te("appName") : esc(ab.name)}</h1>${sub}</div></div>
       <div class="top-actions"><span class="saved-state hide-low" aria-live="polite">${saved ? icon(DEMO ? "alert" : "lock") + saved : ""}</span>${lowBtn}${S.setupDone ? `<button class="chip-btn icon-btn show-phone hide-low" data-act="tab" data-tab="settings" aria-label="${te("settingsBtn")}">${icon("gear")}<span class="lbl-short" aria-hidden="true">${te("settingsBtn")}</span></button>` : ""}</div></header>`;
   }
 
   function banners() {
     let h = "";
-    if (DEMO) h += `<div class="banner demo" role="note">${icon("star")}<div class="grow"><strong>${te("demoBanner")}</strong> ${te("demoBanner2")}</div>${S.setupDone ? `<button class="btn sm ghost hide-low" data-act="demoSetup">${te("onbStart")}</button>` : ""}</div>`;
+    if (DEMO) h += S.sample || !S.setupDone
+      ? `<div class="banner demo" role="note">${icon("star")}<div class="grow"><strong>${te("demoBanner")}</strong> ${te("demoBanner2", { n: DEMO_CAP })}</div>${S.setupDone ? `<button class="btn sm ghost hide-low" data-act="demoSetup">${te("onbStart")}</button>` : ""}</div>`
+      : `<div class="banner demo" role="note">${icon("star")}<div class="grow"><strong>${te("demoBannerOwn")}</strong> ${te("demoBannerOwn2", { n: demoSpends(), max: DEMO_CAP })}</div></div>`;
     else if (S.sample && S.setupDone) h += `<div class="banner" role="note">${icon("alert")}<div class="grow">${te("sampleBanner")}</div><button class="btn sm primary" data-act="clearSample">${te("sampleClear")}</button></div>`;
-    if (!DEMO && !STORAGE_OK) h += `<div class="banner" role="alert">${icon("alert")}<div class="grow">${te("storageBanner")}</div><button class="btn sm primary" data-act="backupSave">${te("backupSave")}</button></div>`;
+    if (!STORAGE_OK && (!DEMO || !S.sample)) h += `<div class="banner" role="alert">${icon("alert")}<div class="grow">${te("storageBanner")}</div><button class="btn sm primary" data-act="backupSave">${te("backupSave")}</button></div>`;
     return h;
   }
 
@@ -1911,9 +2329,9 @@ window.DEB_STR = {
     else if (st === "zero") sub = `<div class="hero-sub">${te("safeZero")}</div><div class="hero-sub2">${payday}</div>`;
     else sub = `<div class="hero-sub">${te("safeOver", { amount: money(-r.safe) })}</div><div class="hero-sub2">${payday}</div><p class="hero-kind">${te("safeOverKind")}</p>`;
     const math = UI.showMath ? `<div class="math" id="math">
-        ${mathRow("", "mathBalance", r.balance)}${mathRow("−", "mathBills", r.billsReserved)}${mathRow("−", "mathGoals", r.goalsReserved)}${mathRow("−", "mathCushion", r.cushion)}
+        ${mathRow("", r.multi ? "mathBalanceMulti" : "mathBalance", r.balance)}${mathRow("−", "mathBills", r.billsReserved)}${r.billsAside > 0 ? mathRow("−", "mathAside", r.billsAside) : ""}${r.cardReserve > 0 ? mathRow("−", "mathCard", r.cardReserve) : ""}${mathRow("−", "mathGoals", r.goalsReserved)}${mathRow("−", "mathCushion", r.cushion)}
         <div class="math-row total"><span><span class="op">=</span>${te("mathSafe")}</span><span class="num">${esc(amt)}</span></div>
-        <p class="math-note">${te("mathNote")}</p></div>` : "";
+        <p class="math-note">${te("mathNote")}</p>${r.billsAside > 0 ? `<p class="math-note">${te("mathAsideNote")}</p>` : ""}${r.cardReserve > 0 ? `<p class="math-note">${te("mathCardNote")}</p>` : ""}</div>` : "";
     const actions = opts.noActions ? "" : `<div class="hero-actions"><button class="btn primary big" data-act="spend">${icon("plus")}${te("addSpend")}</button><button class="btn big" data-act="balance">${te("updateBalance")}</button></div>`;
     return `<section class="panel hero" aria-labelledby="safe-label">
       <div class="hero-label" id="safe-label">${icon("wallet")}${te("safeLabel")}</div>
@@ -1921,6 +2339,7 @@ window.DEB_STR = {
       <span class="status ${st}">${icon(statusIcon)}${statusTxt}</span>
       ${sub}
       ${opts.noMath ? "" : `<button class="link-btn" data-act="math" aria-expanded="${UI.showMath}" aria-controls="math">${te(UI.showMath ? "hideMath" : "howWorked")}</button>${math}`}
+      ${opts.runway ? `<button class="link-btn run-link" data-act="runway" aria-expanded="${UI.runOpen}" aria-controls="runway">${icon("calendar")}${te(UI.runOpen ? "runHide" : "runShow")}</button>` : ""}
       ${actions}
     </section>`;
   }
@@ -1945,6 +2364,16 @@ window.DEB_STR = {
     const n = C.paymentNo(it.bill, it.due);
     return n ? `<span class="tag plain">${te("billPaymentNo", { n, total: it.bill.count })}</span>` : "";
   }
+  /* A bill carried as a monthly share: "from what you set aside" once it is paid, the monthly share while it waits. */
+  function asideTag(it) {
+    if (!C.asideApplies(it.bill)) return "";
+    return it.status === "paid" ? `<span class="tag ok">${icon("check")}${te("asideFrom")}</span>` : `<span class="tag plain">${te("asideShare", { amount: money(C.asideShare(it.bill)) })}</span>`;
+  }
+  function acctTag(b) {
+    if (!R || !R.multi) return "";
+    const a = C.billAcct(S, b), acc = R.accounts.find((x) => x.id === a);
+    return a && acc ? `<span class="tag plain">${esc(acctName(acc))}</span>` : "";
+  }
   function billRow(it, opts) {
     opts = opts || {};
     const paid = it.status === "paid", skipped = it.status === "skipped", nm = it.bill.name;
@@ -1955,7 +2384,7 @@ window.DEB_STR = {
     const skipBtn = it.status === "overdue" && !opts.noSkip ? `<button class="btn sm ghost" data-act="skip" data-id="${esc(it.bill.id)}" data-due="${it.dueStr}" aria-label="${esc(t("skipBtn") + ": " + nm)}">${te("skipBtn")}</button>` : "";
     return `<div class="item ${paid ? "is-paid" : ""} ${skipped ? "is-skipped" : ""}" data-bill-row="${esc(it.bill.id)}">
       <button class="item-btn" data-act="editBill" data-id="${esc(it.bill.id)}" data-due="${it.dueStr}"><span class="ic">${icon(billIcon(nm))}</span>
-      <span class="main"><span class="name">${esc(nm)}</span><span class="meta">${statusTag(it)}${payNoTag(it)}${when}<span class="amt-inline num">${esc(money(it.amount))}</span></span></span></button>
+      <span class="main"><span class="name">${esc(nm)}</span><span class="meta">${statusTag(it)}${payNoTag(it)}${asideTag(it)}${acctTag(it.bill)}${when}<span class="amt-inline num">${esc(money(it.amount))}</span></span></span></button>
       <span class="amt num">${esc(money(it.amount))}</span><span class="acts">${skipBtn}${payBtn}</span></div>`;
   }
 
@@ -1985,16 +2414,16 @@ window.DEB_STR = {
     C.hintWarmMark(S, nowMs());
   }
   const HELP = {
-    home: [["hpHomeQ1", "hpHomeA1", ["math"]], ["hpHomeQ2", "hpHomeA2"], ["hpHomeQ3", "hpHomeA3", ["balance", "bills"]], ["hpHomeQ4", "hpHomeA4"]],
+    home: [["hpHomeQ1", "hpHomeA1", ["math"]], ["hpHomeQ2", "hpHomeA2"], ["hpHomeQ3", "hpHomeA3", ["balance", "bills"]], ["hpHomeQ4", "hpHomeA4"], ["hpHomeQ5", "hpHomeA5"]],
     month: [["hpMonthQ1", "hpMonthA1"], ["hpMonthQ2", "hpMonthA2"]],
-    bills: [["hpBillsQ1", "hpBillsA1"], ["hpBillsQ2", "hpBillsA2"], ["hpBillsQ5", "hpBillsA5"], ["hpBillsQ3", "hpBillsA3"], ["hpBillsQ4", "hpBillsA4"]],
-    spending: [["hpSpendQ1", "hpSpendA1"], ["hpSpendQ2", "hpSpendA2"], ["hpSpendQ3", "hpSpendA3"], ["hpSpendQ4", "hpSpendA4"], ["hpSpendQ5", "hpSpendA5"]],
+    bills: [["hpBillsQ1", "hpBillsA1"], ["hpBillsQ2", "hpBillsA2"], ["hpBillsQ5", "hpBillsA5"], ["hpBillsQ3", "hpBillsA3"], ["hpBillsQ4", "hpBillsA4"], ["hpBillsQ6", "hpBillsA6"]],
+    spending: [["hpSpendQ1", "hpSpendA1"], ["hpSpendQ2", "hpSpendA2"], ["hpSpendQ3", "hpSpendA3"], ["hpSpendQ4", "hpSpendA4"], ["hpSpendQ5", "hpSpendA5"], ["hpSpendQ6", "hpSpendA6"]],
     goals: [["hpGoalsQ1", "hpGoalsA1"], ["hpGoalsQ2", "hpGoalsA2"], ["hpGoalsQ3", "hpGoalsA3"]],
-    debt: [["hpDebtQ1", "hpDebtA1"], ["hpDebtQ2", "hpDebtA2"], ["hpDebtQ3", "hpDebtA3", ["bills"]]],
-    settings: [["hpSetQ1", "hpSetA1", ["backup"]], ["hpSetQ2", "hpSetA2", ["move"]], ["hpSetQ4", "hpSetA4"], ["hpSetQ5", "hpSetA5"], ["hpSetQ3", "hpSetA3"]]
+    debt: [["hpDebtQ1", "hpDebtA1"], ["hpDebtQ2", "hpDebtA2"], ["hpDebtQ3", "hpDebtA3", ["bills"]], ["hpDebtQ4", "hpDebtA4"]],
+    settings: [["hpSetQ1", "hpSetA1", ["backup"]], ["hpSetQ2", "hpSetA2", ["move"]], ["hpSetQ4", "hpSetA4"], ["hpSetQ5", "hpSetA5"], ["hpSetQ3", "hpSetA3"], ["hpSetQ6", "hpSetA6"], ["hpSetQ7", "hpSetA7"], ["hpSetQ8", "hpSetA8"]]
   };
   /* The free demo saves nothing and has no backup buttons: its Settings help says so instead. */
-  const HELP_DEMO = { settings: [["hpSetQ1", "hpSetA1Demo"], ["hpSetQ3", "hpSetA3"]] };
+  const HELP_DEMO = { settings: [["hpSetQ1", "hpSetA1Demo"], ["hpSetQ9", "hpSetA9Demo"], ["hpSetQ3", "hpSetA3"]] };
   function helpRow() {
     const scr = HELP[UI.tab] ? UI.tab : "home";
     return `<div class="help-row hide-print"><button class="link-btn help-btn" data-act="help" data-v="${scr}">${icon("help")}${te("helpBtn")}</button></div>`;
@@ -2027,6 +2456,7 @@ window.DEB_STR = {
   function notes() {
     const d = today(), out = [];
     if (S.flags.stale) out.push(`<div class="note" role="status">${icon("heart")}<div class="body"><p>${te("noteStale")}</p><button class="btn sm primary" data-act="balance">${te("updateBalance")}</button></div></div>`);
+    if (S.flags.away) out.push(awayCard());
     if (!R.payKnown) out.push(`<div class="note" role="status">${icon("calendar")}<div class="body"><p>${te("noteNoNext")}</p><button class="btn sm primary" data-act="nextPay">${te("noteNoNextBtn")}</button></div></div>`);
     if (R.pendingItems.length) {
       const items = R.pendingItems, n = items.length, total = items.reduce((a, x) => a + x.amount, 0);
@@ -2037,7 +2467,7 @@ window.DEB_STR = {
     }
     if (S.flags.payNote && C.parse(S.flags.payNoteUntil) >= d) {
       const ev = S.events.find((e) => e.id === S.flags.payNote);
-      if (ev) out.push(`<div class="note pay" role="status">${icon("coin")}<div class="body"><p>${te("notePayAdded", { amount: money(ev.amount) })}</p>
+      if (ev) out.push(`<div class="note pay" role="status">${icon("coin")}<div class="body"><p>${ev.split > 0 ? te("notePayAddedSplit", { amount: money(ev.amount), split: money(ev.split) }) : te("notePayAdded", { amount: money(ev.amount) })}</p>
         <div class="btn-row"><button class="btn sm" data-act="editEvent" data-id="${esc(ev.id)}">${te("notePayEdit")}</button><button class="btn sm ghost" data-act="dismissPay">${te("close")}</button></div>${routineBlock()}</div></div>`);
     }
     C.msPending(S).forEach((m) => out.push(`<div class="note pay" role="status" data-testid="milestone">${icon("star")}<div class="body"><p>${te(m.kind === "goal" ? "msGoal" + m.level : "msDebt", { name: m.name })}</p>
@@ -2048,11 +2478,27 @@ window.DEB_STR = {
         <div class="btn-row"><button class="btn sm primary" data-act="tab" data-tab="spending">${te("waitLook")}</button></div></div></div>`);
     }
     if (!DEMO && !S.sample && !UI.dismissed.backup && (S.events.length || S.bills.length)) {
-      const lb = S.settings.lastBackup, old = lb && Date.now() - lb > 14 * 86400000;
-      if (!lb || old) out.push(`<div class="note" role="status">${icon("download")}<div class="body"><p>${te(lb ? "noteBackup" : "noteBackupNever")}</p>
+      const lb = S.settings.lastBackup, old = lb && Date.now() - lb > 14 * 86400000, autoOk = AUTO.state === "on" && Date.now() - AUTO.last < 3 * 86400000;
+      if ((!lb || old) && !autoOk) out.push(`<div class="note" role="status">${icon("download")}<div class="body"><p>${te(lb ? "noteBackup" : "noteBackupNever")}</p>
         <div class="btn-row"><button class="btn sm primary" data-act="backupSave">${te("backupSave")}</button><button class="btn sm ghost" data-act="dismissBackup">${te("close")}</button></div></div></div>`);
     }
     return out.join("");
+  }
+
+  /* "While you were away": after a week or more, one calm card with three small steps. Nothing here blocks the app; each step is optional. */
+  function awayCard() {
+    const since = C.parse(S.flags.away.since), billsDue = R.bills.filter((b) => b.status === "overdue").length;
+    const added = S.events.filter((e) => e.type === "income" && e.auto && C.parse(e.date) > since && C.parse(e.date) <= today());
+    const addedSum = added.reduce((a, e) => a + e.amount, 0), pend = R.pendingItems.length;
+    let payTxt;
+    if (pend) payTxt = te("awayPayAsk", { n: pend });
+    else if (added.length) payTxt = te("awayPayAdded", { n: added.length, amount: money(addedSum) });
+    else if (S.flags.stale) payTxt = te("awayPayStale");
+    else payTxt = te("awayPayNone");
+    return `<div class="note away" role="status" data-testid="away">${icon("heart")}<div class="body"><p><strong>${te("awayTitle")}</strong> ${te("awayLead", { date: dateLabel(since, { noDow: true }) })}</p>
+      <ol class="steps away-steps"><li><span>${billsDue ? te("awayBills", { n: billsDue }) : te("awayBillsNone")}${billsDue ? ` <button class="link-btn" data-act="tab" data-tab="bills">${te("awayOpenBills")}</button>` : ""}</span></li>
+      <li><span>${payTxt}</span></li><li><span>${te("awayBalance")} <button class="link-btn" data-act="balance">${te("updateBalance")}</button></span></li></ol>
+      <div class="btn-row"><button class="btn sm ghost" data-act="awayOk">${te("awayOk")}</button></div></div></div>`;
   }
 
   /* Inside the payday note: a short optional checklist. Ticks live for this payday only (flags.routine.key = this payday's pay entry). */
@@ -2110,11 +2556,65 @@ window.DEB_STR = {
   }
 
   function homeView() {
-    return `<div class="grid"><div class="col">${hero()}${hintHtml()}${notes()}${periodPanel()}</div><div class="col">${nextBillsPanel(5)}${goalsMini()}</div></div>`;
+    return `<div class="grid"><div class="col">${hero({ runway: true })}${UI.runOpen ? runwayPanel() : ""}${S.settings.quick ? quickPanel() : ""}${hintHtml()}${notes()}${accountsPanel()}${periodPanel()}</div><div class="col">${nextBillsPanel(5)}${goalsMini()}${S.settings.brain ? brainPanel() : ""}</div></div>`;
+  }
+
+  // ------------------------------------------------------------------ run to payday (day by day)
+  function runwayPanel() {
+    const pace = S.settings.runPace ? C.spendPace(S, today()) : 0, run = C.runToPayday(S, today(), { pace }), days = run.days;
+    const usual = C.spendPace(S, today());
+    let sum;
+    if (run.firstShort != null) sum = `<p class="run-sum short" data-testid="run-sum">${icon("heart")}<span>${te("runShort", { date: dateLabel(run.firstShort, { noDow: true }) })}</span></p>`;
+    else sum = `<p class="run-sum" data-testid="run-sum">${icon("check")}<span>${te("runOk", { amount: money(run.lowest), date: dateLabel(run.lowestDate, { noDow: true }) })}</span></p>`;
+    let svg = "";
+    if (days.length > 1) {
+      const W = 320, H = 96, px = 12, py = 10, vals = days.map((d) => d.left), mx = Math.max(0, ...vals), mn = Math.min(0, ...vals), span = Math.max(1, mx - mn);
+      const X = (i) => px + (i * (W - 2 * px)) / (days.length - 1), Y = (v) => py + ((mx - v) * (H - 2 * py)) / span;
+      const pts = days.map((d, i) => `${X(i).toFixed(1)},${Y(d.left).toFixed(1)}`).join(" ");
+      const dots = days.map((d, i) => (d.billsTotal > 0 || d.short && d.date === run.firstShort ? `<circle cx="${X(i).toFixed(1)}" cy="${Y(d.left).toFixed(1)}" r="${d.short ? 5 : 3.6}" class="${d.short ? "dot-short" : "dot-bill"}"/>` : "")).join("");
+      svg = `<svg class="run-graph" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("runGraphLabel", { from: dateLabel(days[0].date, { noDow: true }), to: dateLabel(days[days.length - 1].date, { noDow: true }) }))}" preserveAspectRatio="none">
+        <line x1="${px}" x2="${W - px}" y1="${Y(0).toFixed(1)}" y2="${Y(0).toFixed(1)}" class="zero"/><polyline points="${pts}" class="line"/>${dots}</svg>`;
+    }
+    const keep = (d, i) => UI.runAll || i === 0 || i === days.length - 1 || d.billsTotal > 0 || d.date === run.firstShort;
+    const rows = days.map((d, i) => keep(d, i) ? `<li class="run-row ${d.short ? "short" : ""}" data-testid="run-day"><span class="rd">${esc(dateLabel(d.date))}${d.idx === 0 ? ` · ${te("today")}` : ""}</span>
+      <span class="rb">${d.bills.map((b) => `<span class="tag plain">${esc(b.name)} −${esc(money(b.amount))}</span>`).join("")}${d.date === run.firstShort ? `<span class="tag soft">${icon("heart")}${te("runTagShort")}</span>` : ""}</span><span class="num ra">${esc(money(d.left))}</span></li>` : "").join("");
+    return `<section class="panel run" id="runway" aria-labelledby="run-h" data-testid="runway"><div class="panel-head"><h2 id="run-h">${te("runTitle")}</h2><span class="muted small">${te("runRange", { from: dateLabel(days[0].date, { noDow: true }), to: dateLabel(run.payday, { noDow: true }) })}</span></div>
+      ${sum}${svg}<ul class="run-list" aria-label="${te("runTitle")}">${rows}</ul>
+      <div class="btn-row"><button class="btn sm ghost" data-act="runAll" aria-pressed="${UI.runAll}">${te(UI.runAll ? "runFewer" : "runAllDays")}</button></div>
+      ${usual > 0 ? `<label class="toggle"><input type="checkbox" data-set="settings.runPace" ${S.settings.runPace ? "checked" : ""}><span>${te("runPace", { amount: money(usual) })}</span></label>` : ""}
+      <p class="muted small" style="margin:8px 0 0">${te(run.payKnown ? "runNote" : "runNoteUnknown")}</p></section>`;
+  }
+
+  // ------------------------------------------------------------------ accounts on Home
+  function accountsPanel() {
+    if (!R.multi && !R.savings.length) return "";
+    const row = (a, saving) => `<div class="item acct-row" data-testid="${saving ? "acct-saving" : "acct-spend"}"><span class="ic">${icon(saving ? "lock" : "wallet")}</span><span class="main"><span class="name">${esc(acctName(a))}</span>
+      <span class="meta">${saving ? `<span class="tag plain">${te("acctNotSpendable")}</span><span>${te("acctBalance", { amount: money(a.balance) })}</span>` : `<span>${te("acctBalance", { amount: money(a.balance) })}</span><span class="amt-inline num ${a.safe < 0 ? "over" : ""}" data-testid="acct-safe">${esc(money(a.safe))}</span>`}</span></span>
+      ${saving ? `<span class="amt num">${esc(money(a.balance))}</span>` : `<span class="amt num ${a.safe < 0 ? "over" : ""}">${esc(money(a.safe))}</span>`}</div>`;
+    return `<section class="panel" aria-labelledby="ac-h" data-testid="accounts"><div class="panel-head"><h2 id="ac-h">${te("acctTitle")}</h2><span class="muted small">${te("acctSafeEach")}</span></div>
+      <div class="list">${R.accounts.map((a) => row(a, false)).join("")}${R.savings.map((a) => row(a, true)).join("")}</div>
+      <p class="muted small" style="margin:10px 0 0">${te("acctNote")}</p></section>`;
+  }
+  const acctName = (a) => a.name || (a.main ? t("acctMainName") : t("acctN"));
+
+  // ------------------------------------------------------------------ quick-action box + brain dump
+  function quickPanel() {
+    return `<section class="panel quick" aria-label="${te("quickTitle")}" data-testid="quick">
+      <label class="lbl" for="qa-in" style="font-weight:800">${te("quickTitle")}</label>
+      <div class="row" style="margin-top:6px"><input class="input" id="qa-in" autocomplete="off" maxlength="120" placeholder="${te("quickPlaceholder")}" aria-describedby="qa-msg" style="flex:1 1 200px"><button class="btn primary" data-act="quickGo">${te("quickGo")}</button></div>
+      <p class="muted small" id="qa-msg" role="status" style="margin:8px 0 0">${te("quickHint")}</p></section>`;
+  }
+  function brainPanel() {
+    const notes = S.notes.slice().sort((a, b) => b.t - a.t);
+    return `<section class="panel" aria-labelledby="bd-h" data-testid="brain"><div class="panel-head"><h2 id="bd-h">${te("brainTitle")}</h2></div>
+      <p class="muted small" style="margin:0 0 10px">${te("brainHint")}</p>
+      <div class="row"><label class="sr" for="bd-in">${te("brainTitle")}</label><input class="input" id="bd-in" autocomplete="off" maxlength="200" placeholder="${te("brainPlaceholder")}" style="flex:1 1 200px"><button class="btn" data-act="bdAdd">${icon("plus")}${te("brainAdd")}</button></div>
+      ${notes.length ? `<div class="list" style="margin-top:8px">${notes.map((n) => `<div class="item" data-testid="brain-note"><span class="main"><span class="name" style="font-weight:700">${esc(n.text)}</span></span><span class="acts"><button class="btn sm ghost" data-act="bdDone" data-id="${esc(n.id)}" aria-label="${esc(t("brainDone") + ": " + n.text)}">${icon("check")}${te("brainDone")}</button></span></div>`).join("")}</div>` : `<p class="empty">${te("brainEmpty")}</p>`}</section>`;
   }
 
   function lowView() {
-    return `<div class="low-wrap">${hero({ noMath: true, noActions: true })}${nextBillsPanel(3, { noMore: true, noSkip: true })}
+    const ab = activeBudget();
+    return `<div class="low-wrap">${STORE.budgets.length > 1 ? `<p class="low-budget" data-testid="low-budget">${esc(budgetLabel(ab))}</p>` : ""}${hero({ noMath: true, noActions: true })}${nextBillsPanel(3, { noMore: true, noSkip: true })}
       <button class="btn big ghost" data-act="low">${icon("batFull")}${te("lowOff")}</button></div>`;
   }
 
@@ -2189,10 +2689,11 @@ window.DEB_STR = {
       const code = Object.keys(REPEATS).find((k) => REPEATS[k][0] === b.repeat && REPEATS[k][1] === b.every) || "m1";
       const nx = C.occurrences(b, today(), today() + 800)[0];
       return `<div class="item"><button class="item-btn" data-act="editBill" data-id="${esc(b.id)}"><span class="ic">${icon(billIcon(b.name))}</span><span class="main"><span class="name">${esc(b.name)}</span>
-        <span class="meta"><span>${te(REPEAT_LABEL[code])}</span>${nx != null ? `<span>· ${te("billNextDue", { date: dateLabel(nx) })}</span>` : ""}${b.count ? `<span>· ${nx != null ? te("payLeft", { n: C.paymentsLeft(b, today()) }) : te("payEnded")}</span>` : ""}</span></span></button>
+        <span class="meta"><span>${te(REPEAT_LABEL[code])}</span>${C.asideApplies(b) ? `<span class="tag plain">${te("asideShare", { amount: money(C.asideShare(b)) })}</span>` : ""}${nx != null ? `<span>· ${te("billNextDue", { date: dateLabel(nx) })}</span>` : ""}${b.count ? `<span>· ${nx != null ? te("payLeft", { n: C.paymentsLeft(b, today()) }) : te("payEnded")}</span>` : ""}</span></span></button>
         <span class="amt num">${esc(money(b.amount))}</span><span class="acts"><button class="btn sm ghost" data-act="editBill" data-id="${esc(b.id)}" aria-label="${esc(t("edit") + ": " + b.name)}">${icon("pencil")}</button></span></div>`;
     }).join("");
-    return `<div class="grid"><section class="panel">${head}${hintHtml()}${body}</section><section class="panel"><div class="panel-head"><h2>${te("billsAll")}</h2></div>${all ? `<div class="list">${all}</div>` : `<p class="empty">${te("noBillsYet")}</p>`}</section></div>`;
+    const asideNote = R.billsAside > 0 ? `<p class="aside-note small" data-testid="aside-note">${icon("lock")}<span>${te("asideHeld", { amount: money(R.billsAside), n: R.asideItems.filter((x) => x.hold > 0).length })}</span></p>` : "";
+    return `<div class="grid"><section class="panel">${head}${hintHtml()}${asideNote}${body}</section><section class="panel"><div class="panel-head"><h2>${te("billsAll")}</h2></div>${all ? `<div class="list">${all}</div>` : `<p class="empty">${te("noBillsYet")}</p>`}</section></div>`;
   }
 
   function calendar() {
@@ -2231,14 +2732,16 @@ window.DEB_STR = {
     if (e.type === "spend") return e.note ? `${catName(e.cat)} · ${e.note}` : catName(e.cat);
     if (e.type === "income") return e.auto ? (e.note || t("evPay")) : (e.note || t("evIncome"));
     if (e.type === "bill") { const b = S.bills.find((x) => x.id === e.billId); return `${t("evBill")}: ${b ? b.name : "—"}`; }
+    if (e.type === "debtpay") { const d = S.debts.find((x) => x.id === e.debtId); return `${t(d && d.kind === "card" ? "evCardPay" : "evDebtPay")}: ${d ? d.name : "—"}`; }
     const g = S.goals.find((x) => x.id === e.goalId);
     return `${t(e.type === "save" ? "evSave" : "evUnsave")}: ${g ? g.name : "—"}`;
   }
-  function eventIcon(e) { return e.type === "spend" ? catIcon(e.cat) : e.type === "income" ? "coin" : e.type === "bill" ? "bills" : "target"; }
+  function eventIcon(e) { return e.type === "spend" ? catIcon(e.cat) : e.type === "income" ? "coin" : e.type === "bill" ? "bills" : e.type === "debtpay" ? "card" : "target"; }
   function eventRow(e) {
     const plus = e.type === "income" || e.type === "unsave";
     const amt = (plus ? "+" : "−") + money(e.amount);
-    const extra = e.noBal ? ` · ${te("noBalanceEffect")}` : "";
+    const cardD = e.card ? S.debts.find((x) => x.id === e.card) : null;
+    const extra = cardD ? ` · ${te("onCard", { name: cardD.name })}` : e.noBal ? ` · ${te("noBalanceEffect")}` : "";
     return `<div class="item"><button class="item-btn" data-act="editEvent" data-id="${esc(e.id)}"><span class="ic">${icon(eventIcon(e))}</span><span class="main"><span class="name">${esc(eventLabel(e))}</span>
       <span class="meta"><span>${esc(dateLabel(C.parse(e.date)))}${extra}</span><span class="amt-inline num" ${plus ? 'style="color:var(--ok-ink)"' : ""}>${esc(amt)}</span></span></span></button><span class="amt num" ${plus ? 'style="color:var(--ok-ink)"' : ""}>${esc(amt)}</span></div>`;
   }
@@ -2315,19 +2818,20 @@ window.DEB_STR = {
   // ------------------------------------------------------------------ debt view
   function monthsLabel(m) { const td = C.ymd(today()), mm = C.addMonths(td.y, td.m, m); return `${T.monthsShort[mm.m - 1]} ${mm.y}`; }
   function debtView() {
-    const hasBill = (d) => !!(d.billId && S.bills.some((b) => b.id === d.billId));
+    const now = C.debtsNow(S), hasBill = (d) => !!(d.billId && S.bills.some((b) => b.id === d.billId));
+    const owedOf = (d) => { const c = R.cards.find((x) => x.debt.id === d.id); return c ? c.owed : 0; };
     const kindTag = (d) => (d.kind === "card" ? `<span class="tag plain">${te("tagCard")}</span>` : d.kind === "loan" ? `<span class="tag plain">${te("tagLoan")}</span>` : "");
-    const list = S.debts.map((d) => `<div class="item"><button class="item-btn" data-act="editDebt" data-id="${esc(d.id)}"><span class="ic">${icon("card")}</span><span class="main"><span class="name">${esc(d.name)}</span>
-      <span class="meta">${kindTag(d)}${d.balance === 0 ? `<span class="tag ok">${icon("check")}${te("tagPaidOff")}</span>` : ""}<span>${esc(String(d.apr).replace(".", C.NUMBER_FORMATS[S.settings.numberFormat].dec))}% APR · ${te("debtMin")}: ${esc(money(d.min))}</span><span class="amt-inline num">${esc(money(d.balance))}</span></span></span></button><span class="amt num">${esc(money(d.balance))}</span></div>`).join("");
-    const cardBills = S.debts.filter((d) => d.kind === "card" && d.min > 0 && d.balance > 0).map((d) => hasBill(d)
+    const list = now.map((d) => `<div class="item"><button class="item-btn" data-act="editDebt" data-id="${esc(d.id)}"><span class="ic">${icon("card")}</span><span class="main"><span class="name">${esc(d.name)}</span>
+      <span class="meta">${kindTag(d)}${owedOf(d) > 0 ? `<span class="tag soft">${te("cardOwedTag", { amount: money(owedOf(d)) })}</span>` : ""}${d.balance === 0 ? `<span class="tag ok">${icon("check")}${te("tagPaidOff")}</span>` : ""}<span>${esc(String(d.apr).replace(".", C.NUMBER_FORMATS[S.settings.numberFormat].dec))}% APR · ${te("debtMin")}: ${esc(money(d.min))}</span><span class="amt-inline num">${esc(money(d.balance))}</span></span></span></button><span class="amt num">${esc(money(d.balance))}</span><span class="acts"><button class="btn sm" data-act="debtPay" data-id="${esc(d.id)}" aria-label="${esc(t("payRecord") + ": " + d.name)}">${te("payRecord")}</button></span></div>`).join("");
+    const cardBills = now.filter((d) => d.kind === "card" && d.min > 0 && d.balance > 0).map((d) => hasBill(d)
       ? `<span class="tag ok">${icon("check")}${esc(d.name)}: ${te("debtInBills")}</span>`
       : `<button class="btn sm" data-act="debtBill" data-id="${esc(d.id)}">${icon("plus")}${te("debtAddBillNamed", { name: d.name })}</button>`).join("");
     let result = "";
     if (S.debts.length) {
-      const plan = C.debtPlan(S.debts, S.debtExtra, S.debtMethod);
+      const plan = C.debtPlan(now, S.debtExtra, S.debtMethod);
       if (!plan.ok) result = `<p class="empty" role="status">${te(plan.reason === "too-long" ? "debtTooLong" : "debtTooLow")}</p>`;
       else if (!plan.empty) {
-        const sb = C.debtPlan(S.debts, S.debtExtra, "snowball"), av = C.debtPlan(S.debts, S.debtExtra, "avalanche");
+        const sb = C.debtPlan(now, S.debtExtra, "snowball"), av = C.debtPlan(now, S.debtExtra, "avalanche");
         let cmp = "";
         if (sb.ok && av.ok) {
           const saves = sb.totalInterest - av.totalInterest, sooner = (av.order[0] ? av.order[0].month : 0) - (sb.order[0] ? sb.order[0].month : 0);
@@ -2385,11 +2889,52 @@ window.DEB_STR = {
     const weekend = p.freq === "irregular" ? "" : `<div class="field"><label for="${prefix}wk">${te("setWeekend")}</label>${sel(prefix + "wk", path + ".weekend", [["keep", t("weekendKeep")], ["before", t("weekendBefore")], ["after", t("weekendAfter")]], p.weekend)}</div>`;
     return `<div class="field"><label for="${prefix}freq">${te("setFreq")}</label>${freq}</div>${when}${weekend}`;
   }
+  function splitText(p) {
+    const pct = (v) => String(v).replace(".", C.NUMBER_FORMATS[S.settings.numberFormat].dec) + "%";
+    return p.split.map((x) => `${x.pct > 0 ? pct(x.pct) : esc(money(x.amount))}${x.to ? " → " + esc(x.to) : ""}`).join(", ");
+  }
+  function splitRow(p, id) {
+    const has = p.split && p.split.length, pn = C.payNet(p);
+    return `<div class="field split-field" data-testid="split-field"><span class="lbl">${te("splitTitle")}</span>
+      ${has ? `<p class="small" style="margin:0 0 6px" data-testid="split-sum">${splitText(p)}. ${te("splitReaches", { net: money(pn.net), gross: money(pn.gross) })}</p>` : `<p class="small muted" style="margin:0 0 6px">${te("splitNone")}</p>`}
+      <button type="button" class="btn sm" data-act="splitEdit" data-id="${esc(id)}">${te(has ? "splitChange" : "splitAdd")}</button></div>`;
+  }
+  function splitDialog(id) {
+    const p = payById(id);
+    if (!p) return;
+    const rows = [0, 1, 2, 3].map((i) => {
+      const x = (p.split || [])[i] || {}, isPct = x.pct > 0 || (!x.amount);
+      return `<div class="split-row"><div class="field"><label for="sp-n${i}">${te("splitTo")}</label><input class="input" id="sp-n${i}" maxlength="40" value="${esc(x.to || "")}" placeholder="${te("splitToHint")}"></div>
+        <div class="two"><div class="field"><label for="sp-t${i}">${te("splitKind")}</label>${sel("sp-t" + i, "", [["pct", t("splitPct")], ["amount", t("splitFixed")]], isPct ? "pct" : "amount")}</div>
+        <div class="field"><label for="sp-v${i}">${te("splitValue")}</label><input class="input num" id="sp-v${i}" inputmode="decimal" autocomplete="off" value="${esc(x.pct > 0 ? String(x.pct) : x.amount > 0 ? moneyPlain(x.amount) : "")}"></div></div></div>`;
+    }).join("");
+    openModal(t("splitTitle"), `<p class="lead">${te("splitLead")}</p>${rows}<p class="muted small">${te("splitNote")}</p>${foot()}`,
+    { submit: () => {
+      const out = [];
+      let pct = 0;
+      for (let i = 0; i < 4; i++) {
+        const raw = val("sp-v" + i).trim(), to = val("sp-n" + i).trim().slice(0, 40);
+        if (!raw) continue;
+        if (val("sp-t" + i) === "pct") {
+          const v = pm(raw);
+          if (v == null || v <= 0 || v > 10000) { fieldErr("sp-v" + i, "splitBadPct"); return false; }
+          pct += v / 100; out.push({ to, pct: v / 100 });
+        } else {
+          const v = pm(raw);
+          if (v == null || v <= 0) { fieldErr("sp-v" + i, "amountInvalid"); return false; }
+          out.push({ to, amount: v });
+        }
+      }
+      if (pct > 100) { fieldErr("sp-v0", "splitOver100"); return false; }
+      if (out.length) p.split = out; else delete p.split;
+      commit(); toast(t("splitSaved")); return true;
+    } });
+  }
   function extraPaysPanel() {
     const cards = S.extraPays.map((x, i) => `<div class="paycard"><h3 class="section-title" style="margin-top:0">${esc(payLabel(x, i + 1))}</h3>
       <div class="field"><label for="x${i}-name">${te("payName")}</label><input class="input" id="x${i}-name" data-set="xpay.${esc(x.id)}.name" maxlength="40" value="${esc(x.name)}"></div>
       <div class="field"><label for="x${i}-amt">${te("setPayAmount")}</label>${moneyInput("x" + i + "-amt", x.amount, { set: "xpay." + x.id + ".amount" })}</div>
-      ${payFields("x" + i + "-", x, x.id)}
+      ${splitRow(x, x.id)}${payFields("x" + i + "-", x, x.id)}
       <div class="btn-row"><button type="button" class="btn sm danger" data-act="payRemove" data-id="${esc(x.id)}" aria-label="${esc(t("payRemove") + ": " + payLabel(x, i + 1))}">${icon("trash")}${te("payRemove")}</button></div></div>`).join("");
     const full = S.extraPays.length >= C.MAX_EXTRA_PAYS;
     return `<section class="panel"><h2 style="margin-bottom:6px">${te("setOtherPays")}</h2><p class="small muted" style="margin-top:0">${te("setOtherPaysHint")}</p>
@@ -2404,23 +2949,70 @@ window.DEB_STR = {
       ${st.currency === "CUSTOM" ? `<div class="two"><div class="field"><label for="s-sym">${te("setSymbol")}</label><input class="input" id="s-sym" data-set="settings.symbol" maxlength="6" value="${esc(st.symbol)}"></div>
         <div class="field"><label for="s-dec">${te("setDecimals")}</label>${sel("s-dec", "settings.decimals", [[2, t("dec2")], [0, t("dec0")]], st.decimals)}</div></div>` : ""}`;
   }
+  // ------------------------------------------------------------------ budgets (settings)
+  function budgetsPanel() {
+    const rows = STORE.budgets.map((b, i) => `<div class="item budget-row" data-testid="budget-row"><div class="main"><label class="small muted" for="bn-${esc(b.id)}">${te("budgetName")}</label>
+      <input class="input" id="bn-${esc(b.id)}" data-bname="${esc(b.id)}" maxlength="40" value="${esc(b.name)}" placeholder="${esc(t("budgetN", { n: i + 1 }))}"></div>
+      <span class="acts">${b.id === STORE.active ? `<span class="tag ok">${icon("check")}${te("budgetInUse")}</span>` : `<button class="btn sm" data-act="budgetSwitch" data-id="${esc(b.id)}" aria-label="${esc(t("budgetOpen") + ": " + budgetLabel(b))}">${te("budgetOpen")}</button>`}
+      ${STORE.budgets.length > 1 ? `<button class="btn sm ghost" data-act="budgetDelete" data-id="${esc(b.id)}" aria-label="${esc(t("budgetDelete") + ": " + budgetLabel(b))}">${icon("trash")}</button>` : ""}</span></div>`).join("");
+    const full = STORE.budgets.length >= C.MAX_BUDGETS;
+    return `<section class="panel" data-testid="budgets"><h2 style="margin-bottom:6px">${te("budgetsTitle")}</h2><p class="small muted" style="margin-top:0">${te("budgetsHint")}</p>
+      <div class="list">${rows}</div>
+      <div class="btn-row" style="margin-top:12px"><button type="button" class="btn" data-act="budgetAdd" ${full ? 'aria-disabled="true"' : ""}>${icon("plus")}${te("budgetAdd")}</button></div></section>`;
+  }
+  function accountsSettings() {
+    const st = S.settings, on = st.accounts;
+    const rows = S.accounts.map((a, i) => `<div class="item acct-edit" data-testid="acct-edit"><div class="main">
+      <label class="small muted" for="an-${esc(a.id)}">${te("acctName")}</label><input class="input" id="an-${esc(a.id)}" data-acct-name="${esc(a.id)}" maxlength="40" value="${esc(a.name)}">
+      <label class="small muted" for="ak-${esc(a.id)}" style="margin-top:6px;display:block">${te("acctKind")}</label>${sel("ak-" + a.id, "", [["spend", t("acctKindSpend")], ["savings", t("acctKindSavings")]], a.kind).replace("<select ", `<select data-acct-kind="${esc(a.id)}" `)}</div>
+      <span class="acts"><button class="btn sm ghost" data-act="acctDelete" data-id="${esc(a.id)}" aria-label="${esc(t("acctRemove") + ": " + a.name)}">${icon("trash")}</button></span></div>`).join("");
+    return `<section class="panel" data-testid="accounts-settings"><h2 style="margin-bottom:6px">${te("acctSetTitle")}</h2>
+      <label class="toggle"><input type="checkbox" data-set="settings.accounts" ${on ? "checked" : ""}>${te("acctSetOn")}</label><p class="small muted" style="margin:0 0 6px">${te("acctSetHint")}</p>
+      ${on ? `<div class="field"><label for="am-name">${te("acctMainLabel")}</label><input class="input" id="am-name" data-set="settings.acctMain" maxlength="40" value="${esc(st.acctMain)}" placeholder="${te("acctMainName")}"></div>
+      <div class="list">${rows}</div>
+      <div class="btn-row" style="margin-top:10px"><button type="button" class="btn" data-act="acctAdd" ${S.accounts.length >= C.MAX_ACCOUNTS ? 'aria-disabled="true"' : ""}>${icon("plus")}${te("acctAdd")}</button></div>
+      <p class="small muted" style="margin:10px 0 0">${te("acctSavingsNote")}</p>` : ""}</section>`;
+  }
+
+  // ------------------------------------------------------------------ data: demo block, automatic backup
+  function demoDataBlock() {
+    return `<p class="lead">${te(S.sample ? "demoDataSample" : "demoDataOwn", { n: demoSpends(), max: DEMO_CAP })}</p>
+      <div class="stack"><button class="btn primary" data-act="backupSave">${icon("download")}${te("demoDownload")}</button></div>
+      <p class="small muted" style="margin:10px 0 0">${te("demoImport")}</p>`;
+  }
+  const fsaOk = () => !DEMO && typeof window.showSaveFilePicker === "function";
+  function autoBlock() {
+    const head = `<div class="csv-block auto-block" data-testid="auto-backup"><h3 class="section-title" style="margin-top:0">${te("autoTitle")}</h3>`;
+    if (!fsaOk()) return `${head}<p class="small muted" style="margin:0">${te("autoNo")}</p></div>`;
+    const name = AUTO.handle ? esc(AUTO.handle.name || "") : "";
+    let body;
+    if (AUTO.state === "on") body = `<p class="small" style="margin:0 0 8px" data-testid="auto-status">${te("autoOn", { name })}${AUTO.last ? " " + te("autoLast", { time: new Date(AUTO.last).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) }) : ""}</p>
+      <div class="btn-row"><button class="btn sm" data-act="autoPick">${te("autoChange")}</button><button class="btn sm ghost" data-act="autoStop">${te("autoStop")}</button></div>`;
+    else if (AUTO.state === "ask") body = `<p class="small" style="margin:0 0 8px" data-testid="auto-status">${te("autoAsk", { name })}</p><div class="btn-row"><button class="btn sm primary" data-act="autoAllow">${te("autoAllow")}</button><button class="btn sm ghost" data-act="autoStop">${te("autoStop")}</button></div>`;
+    else body = `${AUTO.state === "error" ? `<p class="small" role="status" style="margin:0 0 8px" data-testid="auto-status">${te("autoError")}</p>` : `<p class="small muted" style="margin:0 0 8px">${te("autoWhere")}</p>`}
+      <button class="btn sm primary" data-act="autoPick">${te("autoPick")}</button>`;
+    return `${head}${body}<p class="small muted" style="margin:8px 0 0">${te("autoSupport")}</p></div>`;
+  }
+
   function settingsView() {
     const st = S.settings, p = S.pay;
     const catsHtml = S.cats.map((c) => `<div class="item"><span class="ic">${icon(c.icon)}</span><div class="main"><input class="input" aria-label="${esc(t("catRename") + ": " + catName(c.id))}" data-cat-name="${esc(c.id)}" value="${esc(catName(c.id))}" maxlength="40">
       ${st.plan ? `<div class="plan-edit"><label class="small muted" for="cp-${esc(c.id)}">${te("planPer")}</label>${moneyInput("cp-" + c.id, c.plan || "", { attrs: `data-cat-plan="${esc(c.id)}"` })}</div>` : ""}</div>
       <button class="btn sm ghost" data-act="catHide" data-id="${esc(c.id)}" aria-pressed="${c.hidden}">${te(c.hidden ? "catShow" : "catHide")}</button></div>`).join("");
     const lb = st.lastBackup ? te("backupLast", { date: dateLabel(C.todayLocal(new Date(st.lastBackup))) }) : te("backupNever");
-    const data = DEMO ? `<p class="empty">${te("demoNoSave")}</p>` : `<p class="lead">${te("dataWhere")}</p><p class="small muted">${lb}</p>${hintHtml("data")}
-      <div class="stack"><button class="btn primary" data-act="backupSave">${icon("download")}${te("backupSave")}</button>
+    const data = DEMO ? demoDataBlock() : `<p class="lead">${te("dataWhere")}</p><p class="small muted">${lb}</p>${hintHtml("data")}
+      <div class="stack"><button class="btn primary" data-act="backupSave">${icon("download")}${te("backupSave")}</button>${autoBlock()}
       <button class="btn" data-act="backupRestore">${icon("upload")}${te("backupRestore")}</button><input type="file" id="restore-file" accept=".json,application/json,text/plain" hidden>
       <div class="two"><button class="btn sm ghost" data-act="backupCopy">${icon("copy")}${te("backupCopy")}</button><button class="btn sm ghost" data-act="backupPaste">${te("backupPaste")}</button></div>
       <div class="csv-block"><button class="btn" data-act="csvSave">${icon("download")}${te("csvSave")}</button><p class="small muted" style="margin:8px 0 0">${te("csvHint")}</p></div>
       <div class="csv-block"><button class="btn" data-act="moveDevice">${icon("upload")}${te("moveBtn")}</button></div></div>`;
     return `<div class="grid"><div class="col">
+      ${budgetsPanel()}
       <section class="panel"><h2 style="margin-bottom:12px">${te("setPay")}</h2>${payFields("s-", p)}
-        <div class="field"><label for="s-amt">${te("setPayAmount")}</label>${moneyInput("s-amt", p.amount, { set: "pay.amount" })}</div>
+        <div class="field"><label for="s-amt">${te("setPayAmount")}</label>${moneyInput("s-amt", p.amount, { set: "pay.amount" })}</div>${splitRow(p, "")}
         <label class="toggle"><input type="checkbox" data-set="settings.autoPay" ${st.autoPay ? "checked" : ""}>${te("setAutoPay")}</label><p class="small muted" style="margin:0">${te("setAutoPayHint")}</p></section>
       ${extraPaysPanel()}
+      ${accountsSettings()}
       <section class="panel"><h2 style="margin-bottom:12px">${te("setMoney")}</h2>${moneyFormatFields()}
         <div class="field"><label for="s-sp">${te("setSymPos")}</label>${sel("s-sp", "settings.symbolPos", [["auto", t("symAuto")], ["before", t("symBefore")], ["after", t("symAfter")]], st.symbolPos)}</div>
         <div class="two"><div class="field"><label for="s-ds">${te("setDateStyle")}</label>${sel("s-ds", "settings.dateStyle", [["md", t("dateMD")], ["dm", t("dateDM")]], st.dateStyle)}</div>
@@ -2435,7 +3027,9 @@ window.DEB_STR = {
         ${st.hints !== false && S.flags.hints && Object.keys(S.flags.hints.d).length ? `<div class="btn-row" style="margin:0 0 10px"><button class="btn sm ghost" data-act="hintsReset">${te("hintsReset")}</button></div>` : `<div style="height:4px"></div>`}
         <label class="toggle"><input type="checkbox" data-set="settings.plan" ${st.plan ? "checked" : ""}>${te("setPlan")}</label><p class="small muted" style="margin:0 0 10px">${te("setPlanHint")}</p>
         <label class="toggle"><input type="checkbox" data-set="settings.waitList" ${st.waitList ? "checked" : ""}>${te("setWait")}</label><p class="small muted" style="margin:0 0 10px">${te("setWaitHint")}</p>
-        <label class="toggle"><input type="checkbox" data-set="settings.routine" ${st.routine ? "checked" : ""}>${te("setRoutine")}</label><p class="small muted" style="margin:0">${te("setRoutineHint")}</p></section>
+        <label class="toggle"><input type="checkbox" data-set="settings.routine" ${st.routine ? "checked" : ""}>${te("setRoutine")}</label><p class="small muted" style="margin:0 0 10px">${te("setRoutineHint")}</p>
+        <label class="toggle"><input type="checkbox" data-set="settings.quick" ${st.quick ? "checked" : ""}>${te("setQuick")}</label><p class="small muted" style="margin:0 0 10px">${te("setQuickHint")}</p>
+        <label class="toggle"><input type="checkbox" data-set="settings.brain" ${st.brain ? "checked" : ""}>${te("setBrain")}</label><p class="small muted" style="margin:0">${te("setBrainHint")}</p></section>
       <section class="panel"><h2 style="margin-bottom:12px">${te("setCats")}</h2><div class="list">${catsHtml}</div>
         <div class="row" style="margin-top:12px"><input class="input" id="new-cat" placeholder="${te("catName")}" aria-label="${te("catName")}" maxlength="40" style="flex:1 1 160px"><button class="btn sm" data-act="catAdd">${icon("plus")}${te("catAdd")}</button></div></section>
       <section class="panel"><h2 style="margin-bottom:12px">${te("setAbout")}</h2><p>${te("aboutText", { version: VERSION })}</p><p><strong>${te("aboutAdvice")}</strong></p><p class="small muted">${te("aboutFonts")}<br>${te("aboutMade")}</p>
@@ -2454,8 +3048,8 @@ window.DEB_STR = {
       v = pm(raw);
       if (v == null) { if (el) { el.setAttribute("aria-invalid", "true"); toast(t("amountInvalid")); } return; }
     } else if (["day1", "day2", "day", "weekStart", "decimals"].includes(key)) v = parseInt(raw, 10);
-    else if (["autoPay", "plan", "waitList", "routine", "hints"].includes(key)) v = !!raw;
-    else if (key === "name") v = String(raw).trim().slice(0, 40);
+    else if (["autoPay", "plan", "waitList", "routine", "hints", "accounts", "brain", "quick", "runPace"].includes(key)) v = !!raw;
+    else if (key === "name" || key === "acctMain") v = String(raw).trim().slice(0, 40);
     else if (key === "anchor" && isNaN(C.parse(raw))) return;
     if (path === "debtExtra") S.debtExtra = v; else target[key] = v;
     if (path === "settings.currency" && C.CURRENCIES[v]) target.numberFormat = C.CURRENCIES[v].nf;
@@ -2580,15 +3174,29 @@ window.DEB_STR = {
   }
 
   // quick add: amount + one tap on a category
+  const demoSpends = () => S.events.filter((e) => e.type === "spend" && /^s/.test(e.id)).length;
+  const demoFull = () => DEMO && !S.sample && demoSpends() >= DEMO_CAP;
+  function demoCapDialog() {
+    openModal(t("demoCapTitle"), `<p class="lead">${te("demoCap", { n: DEMO_CAP })}</p><div class="sheet-foot"><button type="button" class="btn primary" data-act="close">${te("close")}</button></div>`);
+  }
+  /* Where a spend came out of: the everyday account (default), another spendable account, or a credit card (paid off later). */
+  function fromOptions() {
+    const o = [["", t("fromMain")]];
+    R.accounts.filter((a) => !a.main).forEach((a) => o.push(["a:" + a.id, acctName(a)]));
+    S.debts.filter((d) => d.kind === "card").forEach((d) => o.push(["c:" + d.id, t("fromCard", { name: d.name })]));
+    return o;
+  }
   function spendDialog(pre) {
     pre = pre || {};
-    const cats = S.cats.filter((c) => !c.hidden);
+    if (demoFull()) { demoCapDialog(); return; }
+    const cats = S.cats.filter((c) => !c.hidden), fromO = fromOptions();
     openModal(t("addSpend"), `${pre.waitId ? `<p class="lead">${te("waitBuyHint")}</p>` : ""}<div class="field"><label for="q-amt">${te("spendHowMuch")}</label>${moneyInput("q-amt", pre.amount > 0 ? pre.amount : "", { big: true, auto: true })}</div>
       <p class="lbl" style="font-weight:800;margin:0 0 8px" id="q-cats-l">${te("spendPickCat")}</p>
       <div class="cats" role="group" aria-labelledby="q-cats-l">${cats.map((c) => `<button type="button" class="cat-btn" data-act="qcat" data-id="${esc(c.id)}">${icon(c.icon)}<span>${esc(catName(c.id))}</span></button>`).join("")}</div>
       <details style="margin-top:14px" ${pre.note ? "open" : ""}><summary style="font-weight:800;cursor:pointer">${te("spendMore")}</summary><div style="margin-top:10px">
       <div class="field"><label for="q-note">${te("spendNote")}</label><input class="input" id="q-note" maxlength="120" value="${esc(pre.note || "")}"></div>
-      <div class="field"><label for="q-date">${te("spendDate")}</label><input type="date" class="input" id="q-date" value="${C.fmt(today())}"></div></div></details>`,
+      <div class="field"><label for="q-date">${te("spendDate")}</label><input type="date" class="input" id="q-date" value="${C.fmt(today())}"></div>
+      ${fromO.length > 1 ? `<div class="field"><label for="q-from">${te("fromLabel")}</label>${sel("q-from", "", fromO, "")}<span class="hint">${te("fromHint")}</span></div>` : ""}</div></details>`,
     { submit: () => {
       const a = pm(val("q-amt"));
       if (a == null || a <= 0) { fieldErr("q-amt", val("q-amt") ? "spendBadAmount" : "spendNeedAmount"); return false; }
@@ -2596,17 +3204,25 @@ window.DEB_STR = {
     } });
     if (pre.waitId && MODAL) MODAL.wait = pre.waitId;
   }
+  /* One place that writes a spend, for the form, the quick-action box and the wait list. from: "" | "a:<account id>" | "c:<card debt id>". */
+  function addSpend(o) {
+    const e = { id: "s" + uid(), type: "spend", amount: o.amount, date: o.date || C.fmt(today()), t: stamp(), cat: o.cat };
+    if (o.note) e.note = o.note.slice(0, 120);
+    const from = o.from || "";
+    if (from.startsWith("a:") && R.accounts.some((x) => x.id === from.slice(2))) e.acct = from.slice(2);
+    else if (from.startsWith("c:") && S.debts.some((d) => d.id === from.slice(2) && d.kind === "card")) { e.card = from.slice(2); e.noBal = true; }
+    S.events.push(e);
+    return e;
+  }
   function quickSave(catId) {
     const a = pm(val("q-amt"));
     if (a == null || a <= 0) { fieldErr("q-amt", val("q-amt") ? "spendBadAmount" : "spendNeedAmount"); return; }
     const date = isNaN(C.parse(val("q-date"))) ? C.fmt(today()) : val("q-date");
-    const e = { id: "s" + uid(), type: "spend", amount: a, date, t: stamp(), cat: catId };
-    const note = val("q-note").trim(); if (note) e.note = note.slice(0, 120);
     const wid = MODAL && MODAL.wait, bought = wid ? S.waits.find((x) => x.id === wid) : null;
-    S.events.push(e);
+    const e = addSpend({ amount: a, cat: catId, date, note: val("q-note").trim(), from: $("q-from") ? val("q-from") : "" });
     if (bought) S.waits = S.waits.filter((x) => x !== bought);
     commit();
-    toast(t("spendSaved", { amount: money(a), cat: catName(catId) }), () => { S.events = S.events.filter((x) => x.id !== e.id); if (bought) S.waits.push(bought); commit(); });
+    toast(t(e.card ? "spendSavedCard" : "spendSaved", { amount: money(a), cat: catName(catId) }), () => { S.events = S.events.filter((x) => x.id !== e.id); if (bought) S.waits.push(bought); commit(); });
   }
 
   function waitDialog() {
@@ -2663,6 +3279,7 @@ window.DEB_STR = {
     } });
   }
 
+  const asideCode = (code) => ["m2", "m3", "m6", "m12"].includes(code);
   function billDialog(id, pre) {
     const b = id ? S.bills.find((x) => x.id === id) : null;
     pre = pre || {};
@@ -2674,6 +3291,8 @@ window.DEB_STR = {
       <div class="field"><label for="b-amt">${te("billAmount")}</label>${moneyInput("b-amt", b ? b.amount : pre.amount || "")}</div>
       <div class="two"><div class="field"><label for="b-due">${te("billDue")}</label><input type="date" class="input" id="b-due" value="${b ? C.fmt(nextDue != null ? nextDue : C.parse(b.start)) : esc(pre.due || "")}"></div>
       <div class="field"><label for="b-rep">${te("billRepeat")}</label><select class="input" id="b-rep">${Object.keys(REPEATS).map((k) => opt(k, t(REPEAT_LABEL[k]), code)).join("")}</select></div></div>
+      ${R.multi ? `<div class="field"><label for="b-acct">${te("billAcct")}</label>${sel("b-acct", "", R.accounts.map((a) => [a.id, acctName(a)]), b ? C.billAcct(S, b) : "")}</div>` : ""}
+      <div class="field" id="b-aside-wrap" ${asideCode(code) ? "" : "hidden"}><label class="toggle"><input type="checkbox" id="b-aside" ${b && b.aside ? "checked" : ""}><span>${te("asideLabel")}</span></label><span class="hint">${te("asideHint")}</span></div>
       <div class="field"><label for="b-cnt">${te("billCount")}</label><input class="input num" id="b-cnt" inputmode="numeric" autocomplete="off" maxlength="3" value="${esc(cntVal)}" aria-describedby="b-cnt-h"><span class="hint" id="b-cnt-h">${te("billCountHint")}</span></div>
       ${b ? "" : `<div class="chips" role="group" aria-label="${te("payIn4")}"><button type="button" data-act="payIn4">${icon("calendar")}${te("payIn4")}</button><span class="hint" style="align-self:center">${te("payIn4Hint")}</span></div>`}
       ${foot(b ? `<button type="button" class="btn danger" data-act="delBill" data-id="${esc(b.id)}">${icon("trash")}${te("del")}</button>` : "")}`,
@@ -2684,9 +3303,15 @@ window.DEB_STR = {
       if (a == null || a <= 0) { fieldErr("b-amt", "amountInvalid"); return false; }
       if (isNaN(C.parse(due))) { fieldErr("b-due", "dateInvalid"); return false; }
       if (cntRaw && (!/^\d{1,3}$/.test(cntRaw) || cnt > C.MAX_COUNT)) { fieldErr("b-cnt", "billCountBad"); return false; }
+      const wantAside = asideCode(repCode) && !!($("b-aside") && $("b-aside").checked), acct = $("b-acct") ? val("b-acct") : "";
+      const setExtras = (x) => {
+        if (acct) x.acct = acct; else delete x.acct;
+        if (wantAside) { if (!x.aside) { x.aside = true; x.asideFrom = C.fmt(today()); } } else { delete x.aside; delete x.asideFrom; }
+      };
       if (b) {
         // keep history: a changed schedule starts from the new date, earlier paid dates stay paid
         Object.assign(b, { name: name.slice(0, 80), amount: a });
+        setExtras(b);
         const changed = nextDue != null ? (C.fmt(nextDue) !== due || code !== repCode) : (b.start !== due || code !== repCode);
         if (changed) {
           Object.assign(b, { start: due, repeat: rep[0], every: rep[1] });
@@ -2697,6 +3322,7 @@ window.DEB_STR = {
       } else {
         const nb = { id: "b" + uid(), name: name.slice(0, 80), amount: a, start: due, repeat: rep[0], every: rep[1], skips: [] };
         if (cnt > 0 && rep[0] !== "once") nb.count = cnt;
+        setExtras(nb);
         S.bills.push(nb);
         if (pre.after) pre.after(nb);
       }
@@ -2704,19 +3330,28 @@ window.DEB_STR = {
     } });
   }
 
+  const accountsOn = () => C.accountsOn(S);
   function balanceDialog() {
     const due = R.bills.filter((b) => (b.status === "overdue" || b.status === "today"));
     const checks = due.length ? `<p class="small" style="font-weight:700">${te("balanceAlready")}</p><div class="stack">${due.map((it, i) => `<label class="toggle"><input type="checkbox" id="bal-c${i}" data-id="${esc(it.bill.id)}" data-due="${it.dueStr}">
       <span>${esc(it.bill.name)} · ${esc(dateLabel(it.due))} · <span class="num">${esc(money(it.amount))}</span></span></label>`).join("")}</div>` : "";
-    openModal(t("balanceTitle"), `<p class="lead">${te("balanceHint")}</p><div class="field"><label for="bal-amt">${te("balanceNow")}</label>${moneyInput("bal-amt", R.balance, { big: true, auto: true, neg: true })}</div>${checks}${foot()}`,
+    openModal(t("balanceTitle"), `<p class="lead">${te("balanceHint")}</p><div class="field"><label for="bal-amt">${te(S.settings.accounts && S.accounts.length ? "balanceNowMain" : "balanceNow", { name: acctName(R.accounts[0]) })}</label>${moneyInput("bal-amt", R.accounts[0].balance, { big: true, auto: true, neg: true })}</div>
+      ${accountsOn() ? S.accounts.map((a, i) => `<div class="field"><label for="bal-a${i}">${esc(a.name)}${a.kind === "savings" ? " · " + te("acctNotSpendable") : ""}</label>${moneyInput("bal-a" + i, C.balance(S, a.id), { neg: true })}</div>`).join("") : ""}${checks}${foot()}`,
     { submit: () => {
       const a = pm(val("bal-amt"), { allowNegative: true });
       if (a == null) { fieldErr("bal-amt", "amountInvalid"); return false; }
+      const accVals = [];
+      if (accountsOn()) for (let i = 0; i < S.accounts.length; i++) {
+        const v = pm(val("bal-a" + i), { allowNegative: true });
+        if (v == null) { fieldErr("bal-a" + i, "amountInvalid"); return false; }
+        accVals.push(v);
+      }
       document.querySelectorAll("#m-form input[type=checkbox][data-id]:checked").forEach((c) => {
         const b = S.bills.find((x) => x.id === c.getAttribute("data-id"));
-        if (b && !C.billPaid(S, b.id, c.getAttribute("data-due"))) S.events.push({ id: "p" + uid(), type: "bill", amount: b.amount, date: C.fmt(today()), t: stamp(), billId: b.id, due: c.getAttribute("data-due"), noBal: true });
+        if (b && !C.billPaid(S, b.id, c.getAttribute("data-due"))) { const pe = { id: "p" + uid(), type: "bill", amount: b.amount, date: C.fmt(today()), t: stamp(), billId: b.id, due: c.getAttribute("data-due"), noBal: true }; if (C.billAcct(S, b)) pe.acct = C.billAcct(S, b); S.events.push(pe); }
       });
       S.anchor = { amount: a, t: stamp(), date: C.fmt(today()) };
+      accVals.forEach((v, i) => { S.accounts[i].anchor = { amount: v, t: stamp(), date: C.fmt(today()) }; });
       if (S.flags.stale) warmHint("home.welcome");
       S.flags.stale = false;
       commit(); toast(t("balanceSaved")); return true;
@@ -2758,13 +3393,18 @@ window.DEB_STR = {
 
   function debtDialog(id) {
     const d = id ? S.debts.find((x) => x.id === id) : null;
+    const curBal = d ? C.debtBalance(S, d) : 0;
+    const hist = d ? C.debtPayments(S, d).slice(0, 8) : [];
+    const histHtml = hist.length ? `<h3 class="section-title">${te("payHistory")}</h3><div class="list" data-testid="pay-history">${hist.map((h) => `<div class="item"><span class="main"><span class="name" style="font-weight:700">${esc(dateLabel(C.parse(h.date), { noDow: true }))}</span><span class="meta"><span class="tag plain">${te(h.kind === "extra" ? "payKindExtra" : h.kind === "bill" ? "payKindBill" : "payKindMin")}</span><span class="amt-inline num">${esc(money(h.amount))}</span></span></span>
+      <span class="amt num">${esc(money(h.amount))}</span>${h.kind === "bill" ? "" : `<span class="acts"><button type="button" class="btn sm ghost" data-act="payUndo" data-id="${esc(h.id)}" aria-label="${esc(t("del") + ": " + money(h.amount))}">${icon("trash")}</button></span>`}</div>`).join("")}</div>` : "";
     const aprStr = d ? String(d.apr).replace(".", C.NUMBER_FORMATS[S.settings.numberFormat].dec) : "";
     openModal(t(d ? "editDebt" : "addDebt"), `<div class="field"><label for="d-name">${te("debtName")}</label><input class="input" id="d-name" maxlength="80" value="${esc(d ? d.name : "")}" autofocus></div>
       <div class="field"><label for="d-kind">${te("debtKind")}</label>${sel("d-kind", "", [["", t("kindOther")], ["card", t("kindCard")], ["loan", t("kindLoan")]], d && d.kind ? d.kind : "")}</div>
-      <div class="field"><label for="d-bal">${te("debtBalance")}</label>${moneyInput("d-bal", d ? d.balance : "", { desc: "d-bal-h" })}<span class="hint" id="d-bal-h">${te("debtBalanceHint")}</span></div>
+      <div class="field"><label for="d-bal">${te("debtBalance")}</label>${moneyInput("d-bal", d ? curBal : "", { desc: "d-bal-h" })}<span class="hint" id="d-bal-h">${te("debtBalanceHint")}</span></div>
       <div class="two"><div class="field"><label for="d-apr">${te("debtApr")}</label><input class="input num" id="d-apr" inputmode="decimal" value="${esc(aprStr)}" placeholder="19.9"></div>
       <div class="field"><label for="d-min">${te("debtMin")}</label>${moneyInput("d-min", d ? d.min : "")}</div></div>
-      ${foot(d ? `${d.kind === "card" && d.min > 0 && d.balance > 0 && !(d.billId && S.bills.some((b) => b.id === d.billId)) ? `<button type="button" class="btn" data-act="debtBill" data-id="${esc(d.id)}" style="margin-bottom:10px">${icon("plus")}${te("debtAddBill")}</button>` : ""}<button type="button" class="btn danger" data-act="delDebt" data-id="${esc(d.id)}">${icon("trash")}${te("del")}</button>` : "")}`,
+      ${d ? `<div class="btn-row" style="margin-top:4px"><button type="button" class="btn" data-act="debtPay" data-id="${esc(d.id)}">${icon("plus")}${te("payRecord")}</button></div>${histHtml}` : ""}
+      ${foot(d ? `${d.kind === "card" && d.min > 0 && curBal > 0 && !(d.billId && S.bills.some((b) => b.id === d.billId)) ? `<button type="button" class="btn" data-act="debtBill" data-id="${esc(d.id)}" style="margin-bottom:10px">${icon("plus")}${te("debtAddBill")}</button>` : ""}<button type="button" class="btn danger" data-act="delDebt" data-id="${esc(d.id)}">${icon("trash")}${te("del")}</button>` : "")}`,
     { submit: () => {
       const name = val("d-name").trim(), bal = pm(val("d-bal")), min = pm(val("d-min")), kind = val("d-kind");
       const aprC = pm(val("d-apr")), apr = aprC == null ? NaN : aprC / 100;
@@ -2773,43 +3413,92 @@ window.DEB_STR = {
       if (isNaN(apr) || apr > 100) { fieldErr("d-apr", "amountInvalid"); return false; }
       if (min == null) { fieldErr("d-min", "amountInvalid"); return false; }
       const nd = d || { id: "d" + uid() };
-      Object.assign(nd, { name: name.slice(0, 80), balance: bal, apr, min });
+      Object.assign(nd, { name: name.slice(0, 80), apr, min });
+      if (!d || bal !== curBal) { nd.balance = bal; nd.t0 = stamp(); }
       if (kind === "card" || kind === "loan") nd.kind = kind; else delete nd.kind;
       if (!d) S.debts.push(nd);
       commit(); return true;
     } });
   }
 
+  /* Record a debt payment: it lowers what you owe, and (unless it already left your balance) your everyday balance too. On a credit card it
+     also covers the card purchases you logged, so the same money is not held back twice. */
+  function debtPayDialog(id, pre) {
+    const d = S.debts.find((x) => x.id === id);
+    if (!d) return;
+    pre = pre || {};
+    const cur = C.debtBalance(S, d);
+    const covers = d.billId ? R.bills.find((it) => it.bill.id === d.billId && it.thisPeriod && it.status !== "paid" && it.status !== "skipped") : null;
+    openModal(`${t("payRecord")}: ${d.name}`, `<p class="lead">${te(d.kind === "card" ? "payLeadCard" : "payLead", { amount: money(cur) })}</p>
+      <div class="field"><label for="dp-amt">${te("billAmount")}</label>${moneyInput("dp-amt", d.min > 0 ? d.min : "", { big: true, auto: true })}</div>
+      <div class="field"><span class="lbl" id="dp-k-l">${te("payKind")}</span><div class="choice" role="group" aria-labelledby="dp-k-l"><button type="button" data-act="payKind" data-v="min" aria-pressed="true">${te("payKindMin")}</button><button type="button" data-act="payKind" data-v="extra" aria-pressed="false">${te("payKindExtra")}</button></div></div>
+      <div class="field"><label for="dp-date">${te("spendDate")}</label><input type="date" class="input" id="dp-date" value="${C.fmt(today())}"></div>
+      ${covers ? `<label class="toggle"><input type="checkbox" id="dp-covers" checked><span>${te("payCovers", { name: covers.bill.name, date: dateLabel(covers.due, { noDow: true }) })}</span></label>` : ""}
+      <label class="toggle"><input type="checkbox" id="dp-nobal"><span>${te("payAlready")}</span></label>${foot()}`,
+    { submit: () => {
+      const a = pm(val("dp-amt"));
+      if (a == null || a <= 0) { fieldErr("dp-amt", "amountInvalid"); return false; }
+      const kindBtn = document.querySelector('#m-form [data-act=payKind][aria-pressed=true]');
+      const e = { id: "dp" + uid(), type: "debtpay", amount: a, debtId: d.id, kind: kindBtn && kindBtn.getAttribute("data-v") === "extra" ? "extra" : "min",
+        date: isNaN(C.parse(val("dp-date"))) ? C.fmt(today()) : val("dp-date"), t: stamp() };
+      if ($("dp-nobal") && $("dp-nobal").checked) e.noBal = true;
+      if (covers && $("dp-covers") && $("dp-covers").checked) { e.billId = covers.bill.id; e.due = covers.dueStr; }
+      S.events.push(e); commit();
+      toast(t("payRecorded", { amount: money(a), name: d.name, left: money(C.debtBalance(S, d)) }), () => { S.events = S.events.filter((x) => x.id !== e.id); commit(); });
+      return true;
+    } });
+  }
+
   // ------------------------------------------------------------------ backup
+  const backupData = () => C.makeBackup(STORE, Date.now());
   function backupSave() {
-    if (DEMO) { toast(t("demoNoSave")); return; }
-    const data = JSON.stringify(C.makeBackup(S, Date.now()), null, 1);
+    const data = JSON.stringify(backupData(), null, 1);
     const blob = new Blob([data], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `done-enough-budget-backup-${C.fmt(today())}.json`;
+    a.download = `done-enough-${DEMO ? "demo" : "budget"}-backup-${C.fmt(today())}.json`;
     document.body.appendChild(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
     S.settings.lastBackup = Date.now();
     UI.dismissed.backup = true;
     commit(true);
-    toast(t("backupSaved"));
+    toast(t(DEMO ? "demoBackupSaved" : "backupSaved"));
+  }
+  function applyStore(ns, keepLook) {
+    STORE = ns;
+    if (keepLook && S) STORE.budgets.forEach((b) => LOOK.forEach((k) => { b.state.settings[k] = S.settings[k]; }));
+    S = activeBudget().state;
+    STORE.budgets.forEach((b) => {
+      const st = b.state;
+      if (!st.setupDone && (st.bills.length || st.events.length || st.pay.amount > 0)) st.setupDone = true;
+      prepare(st);
+    });
+    UI.onb = null; UI.tab = "home"; UI.month = null; UI.cal = null; UI.calSel = null; UI.showMath = false; UI.after = ""; UI.quiet = ""; UI.dismissed = {};
+    tick();
   }
   function restoreFrom(text) {
     let parsed = null;
     try { parsed = JSON.parse(text); } catch (e) { parsed = null; }
-    const r = parsed ? C.sanitizeState(parsed, today()) : { ok: false };
+    const r = parsed ? C.sanitizeStore(parsed, today()) : { ok: false };
     if (!r.ok) { closeModal(true); openModal(t("backupRestore"), `<p role="alert">${te("backupBad")}</p><div class="sheet-foot"><button type="button" class="btn primary" data-act="close">${te("close")}</button></div>`); return; }
     const when = parsed.exported ? dateLabel(C.todayLocal(new Date(parsed.exported))) : "?";
-    confirmBox(t("backupRestoreConfirm", { date: when }), t("backupRestore"), () => {
-      S = r.state; S.setupDone = true;
-      S.events.forEach((e) => { if (e.t > lastT) lastT = e.t; });
-      if (S.anchor.t > lastT) lastT = S.anchor.t;
-      tick(); UI.tab = "home"; commit(); toast(t("backupRestored"));
-    });
+    const replace = () => { applyStore(r.store, true); commit(); toast(t("backupRestored")); };
+    const many = r.store.budgets.length;
+    const canAdd = many === 1 && STORE.budgets.length < C.MAX_BUDGETS && S.setupDone;
+    closeModal(true);
+    openModal(t("yes") + "?", `<p>${esc(t("backupRestoreConfirm", { date: when }))}</p>${many > 1 ? `<p class="small muted">${te("backupHasBudgets", { n: many })}</p>` : ""}${canAdd ? `<p class="small muted">${te("backupAddHint")}</p>` : ""}
+      <div class="sheet-foot"><button type="button" class="btn ghost" data-act="close">${te("cancel")}</button>${canAdd ? `<button type="button" class="btn" data-act="restoreAdd">${te("backupAddBudget")}</button>` : ""}
+      <button type="submit" class="btn primary">${te("backupRestore")}</button></div>`, { submit: () => { replace(); return true; } });
+    if (MODAL && canAdd) MODAL.addBudget = () => {
+      const src = r.store.budgets[0], nb = { id: C.newBudgetId(STORE), name: src.name || t("backupBudgetName"), state: src.state };
+      if (!nb.state.setupDone && (nb.state.bills.length || nb.state.events.length || nb.state.pay.amount > 0)) nb.state.setupDone = true;
+      LOOK.forEach((k) => { nb.state.settings[k] = S.settings[k]; });
+      STORE.budgets.push(nb); prepare(nb.state);
+      closeModal(true); switchBudget(nb.id); toast(t("backupAdded", { name: budgetLabel(nb) }));
+    };
   }
   function backupCopy() {
-    const text = JSON.stringify(C.makeBackup(S, Date.now()));
+    const text = JSON.stringify(backupData());
     openModal(t("backupCopy"), `<p class="lead">${te("backupTextHint")}</p><textarea class="input" id="bk-text" readonly aria-label="${te("backupCopy")}">${esc(text)}</textarea>
       <div class="sheet-foot"><button type="button" class="btn ghost" data-act="close">${te("close")}</button><button type="button" class="btn primary" data-act="copyText">${icon("copy")}${te("copyBtn")}</button></div>`);
   }
@@ -2824,6 +3513,176 @@ window.DEB_STR = {
   function backupPaste() {
     openModal(t("backupPaste"), `<p class="lead">${te("backupPasteHint")}</p><textarea class="input" id="bk-paste" aria-label="${te("backupPaste")}"></textarea>${foot()}`,
       { submit: () => { const v = val("bk-paste"); restoreFrom(v); return false; } });
+  }
+
+  // ------------------------------------------------------------------ several budgets
+  function switchBudget(id) {
+    const b = STORE.budgets.find((x) => x.id === id);
+    if (!b || b === activeBudget()) return;
+    LOOK.forEach((k) => { b.state.settings[k] = S.settings[k]; });
+    STORE.active = id; S = b.state;
+    UI.onb = null; UI.month = null; UI.cal = null; UI.calSel = null; UI.showMath = false; UI.after = ""; UI.quiet = ""; UI.dismissed = {}; UI.runOpen = false; UI.routineOpen = null;
+    prepare(S); tick(); persist(); render();
+    const v = $("view"); if (v) v.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+  /* The header's budget chip: pick the budget to look at. */
+  function budgetsDialog() {
+    const rows = STORE.budgets.map((b) => `<button type="button" class="budget-pick" data-act="budgetPick" data-id="${esc(b.id)}" aria-pressed="${b.id === STORE.active}">${icon(b.id === STORE.active ? "check" : "circle")}<span>${esc(budgetLabel(b))}</span></button>`).join("");
+    openModal(t("budgetSwitch"), `<div class="budget-picks" role="group" aria-label="${te("budgetSwitch")}">${rows}</div>
+      <div class="sheet-foot"><button type="button" class="btn ghost" data-act="close">${te("close")}</button><button type="button" class="btn" data-act="budgetAdd">${icon("plus")}${te("budgetAdd")}</button></div>`);
+  }
+  function budgetAddDialog() {
+    if (STORE.budgets.length >= C.MAX_BUDGETS) { toast(t("budgetFull", { n: C.MAX_BUDGETS })); return; }
+    closeModal(true);
+    openModal(t("budgetAdd"), `<p class="lead">${te("budgetAddLead")}</p><div class="field"><label for="nb-name">${te("budgetName")}</label><input class="input" id="nb-name" maxlength="40" autofocus placeholder="${te("budgetNameHint")}"></div>${foot()}`,
+    { submit: () => {
+      const name = val("nb-name").trim().slice(0, 40);
+      const nb = { id: C.newBudgetId(STORE), name, state: freshState(true) };
+      STORE.budgets.push(nb);
+      closeModal(true);
+      switchBudget(nb.id);
+      toast(t("budgetAdded"));
+      return false;
+    } });
+  }
+  function budgetDeleteDialog(id) {
+    const b = STORE.budgets.find((x) => x.id === id);
+    if (!b || STORE.budgets.length < 2) return;
+    confirmBox(t("budgetDeleteConfirm", { name: budgetLabel(b) }), t("del"), () => {
+      const wasActive = b === activeBudget();
+      STORE.budgets = STORE.budgets.filter((x) => x !== b);
+      if (wasActive) { STORE.active = STORE.budgets[0].id; S = STORE.budgets[0].state; UI.onb = null; prepare(S); tick(); }
+      commit(); toast(t("budgetDeleted"));
+    }, true);
+  }
+
+  // ------------------------------------------------------------------ automatic backup on this computer (File System Access API)
+  /* Where the browser allows it (Chrome and Edge on a computer): pick one file once, and every change is written into it. The file is on
+     this computer; nothing is sent anywhere. The handle is remembered in this browser's own storage so the choice survives a restart; the
+     browser may ask again for permission, and then the app shows one button for it. Elsewhere the "Save backup file" reminder stays. */
+  const AUTO = { handle: null, state: "off", last: 0 };
+  let autoBusy = false, autoAgain = false;
+  function idb(mode, fn) {
+    return new Promise((resolve) => {
+      try {
+        const rq = indexedDB.open("deb-auto", 1);
+        rq.onupgradeneeded = () => rq.result.createObjectStore("kv");
+        rq.onerror = () => resolve(null);
+        rq.onsuccess = () => {
+          try {
+            const tx = rq.result.transaction("kv", mode), r = fn(tx.objectStore("kv"));
+            tx.oncomplete = () => resolve(r && r.result !== undefined ? r.result : null);
+            tx.onerror = tx.onabort = () => resolve(null);
+          } catch (e) { resolve(null); }
+        };
+      } catch (e) { resolve(null); }
+    });
+  }
+  async function autoInit() {
+    if (!fsaOk()) return;
+    try { const m = JSON.parse(localStorage.getItem(AUTO_KEY) || "null"); if (m && m.last) AUTO.last = m.last; } catch (e) { /* ignore */ }
+    const h = await idb("readonly", (st) => st.get("handle"));
+    if (!h || !h.queryPermission) return;
+    AUTO.handle = h;
+    let perm = "prompt";
+    try { perm = await h.queryPermission({ mode: "readwrite" }); } catch (e) { /* ignore */ }
+    AUTO.state = perm === "granted" ? "on" : "ask";
+    if (UI.tab === "settings" || S.settings.lastBackup === 0) render();
+  }
+  function autoSoon() {
+    if (AUTO.state !== "on" || !AUTO.handle) return;
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(autoWrite, 700);
+  }
+  async function autoWrite() {
+    if (AUTO.state !== "on" || !AUTO.handle) return;
+    if (autoBusy) { autoAgain = true; return; }
+    autoBusy = true;
+    try {
+      const w = await AUTO.handle.createWritable();
+      await w.write(JSON.stringify(backupData(), null, 1));
+      await w.close();
+      AUTO.last = Date.now();
+      try { localStorage.setItem(AUTO_KEY, JSON.stringify({ last: AUTO.last })); } catch (e) { /* ignore */ }
+    } catch (e) { AUTO.state = "error"; }
+    autoBusy = false;
+    if (autoAgain && AUTO.state === "on") { autoAgain = false; autoSoon(); }
+    if (UI.tab === "settings" && $("modal").hidden) render();
+  }
+  async function autoPick() {
+    if (!fsaOk()) return;
+    let h;
+    try { h = await window.showSaveFilePicker({ suggestedName: "done-enough-budget-auto-backup.json", types: [{ description: "Backup file", accept: { "application/json": [".json"] } }] }); }
+    catch (e) { return; } // the person closed the picker
+    AUTO.handle = h; AUTO.state = "on";
+    await idb("readwrite", (st) => st.put(h, "handle"));
+    await autoWrite();
+    render(); toast(t("autoSet"));
+  }
+  async function autoAllow() {
+    if (!AUTO.handle) return;
+    let perm = "denied";
+    try { perm = await AUTO.handle.requestPermission({ mode: "readwrite" }); } catch (e) { /* ignore */ }
+    if (perm === "granted") { AUTO.state = "on"; await autoWrite(); } else AUTO.state = "ask";
+    render();
+  }
+  async function autoStop() {
+    AUTO.handle = null; AUTO.state = "off"; AUTO.last = 0;
+    await idb("readwrite", (st) => st.delete("handle"));
+    try { localStorage.removeItem(AUTO_KEY); } catch (e) { /* ignore */ }
+    render(); toast(t("autoStopped"));
+  }
+
+  // ------------------------------------------------------------------ quick-action box and brain dump
+  const SCREEN_WORDS = { home: "home", today: "home", bills: "bills", bill: "bills", calendar: "bills", spending: "spending", spend: "spending", activity: "spending", goals: "goals", goal: "goals", debt: "debt", debts: "debt",
+    settings: "settings", setting: "settings", backup: "settings", month: "month", "this month": "month", brain: "brain", "brain dump": "brain", notes: "brain", payday: "run", "run to payday": "run", forecast: "run" };
+  function matchCat(word) {
+    const w = word.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+    if (w.length < 2) return null;
+    const hit = (nm) => { const n = nm.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ""); const sing = (x) => x.replace(/s$/, ""); return n && (n === w || sing(n) === sing(w) || (w.length >= 3 && n.startsWith(w)) || (n.length >= 3 && w.startsWith(n))); };
+    return S.cats.filter((c) => !c.hidden).find((c) => hit(catName(c.id)) || hit(c.id)) || null;
+  }
+  /* "12.50 groceries", "groceries 12.50" or "$12 coffee with Sam": the amount, then a category found in the words (otherwise Other, with the text as the note). */
+  function parseQuick(text) {
+    const s = text.trim().replace(/\s+/g, " ");
+    let m = /^(\S+) (.+)$/.exec(s), amt = m ? pm(m[1]) : null, rest = m ? m[2] : "";
+    if (amt == null || amt <= 0) { m = /^(.+) (\S+)$/.exec(s); amt = m ? pm(m[2]) : null; rest = m ? m[1] : ""; }
+    if (amt == null || amt <= 0) return null;
+    let cat = null;
+    for (const w of rest.split(" ")) { cat = matchCat(w); if (cat) break; }
+    const only = cat && matchCat(rest) === cat && rest.split(" ").length === 1;
+    return { amount: amt, cat: cat ? cat.id : "other", note: only ? "" : rest };
+  }
+  function quickGo() {
+    const inp = $("qa-in"), msg = $("qa-msg");
+    if (!inp) return;
+    const text = inp.value.trim();
+    if (!text) { inp.focus(); return; }
+    const scr = SCREEN_WORDS[text.toLowerCase()];
+    if (scr) {
+      if (scr === "brain") { goTab("home"); const b = $("bd-in"); if (b) { b.focus(); b.scrollIntoView({ block: "center" }); } else toast(t("quickBrainOff")); }
+      else if (scr === "run") { goTab("home"); UI.runOpen = true; render(); const r = $("runway"); if (r) r.scrollIntoView({ block: "start" }); }
+      else goTab(scr);
+      return;
+    }
+    const q = parseQuick(text);
+    if (!q) { if (msg) msg.textContent = t("quickNo"); inp.focus(); return; }
+    if (demoFull()) { demoCapDialog(); return; }
+    const e = addSpend({ amount: q.amount, cat: q.cat, note: q.note });
+    commit();
+    toast(t("spendSaved", { amount: money(q.amount), cat: catName(q.cat) }), () => { S.events = S.events.filter((x) => x.id !== e.id); commit(); });
+    const i2 = $("qa-in"); if (i2) i2.focus();
+  }
+  function bdAdd() {
+    const inp = $("bd-in");
+    if (!inp) return;
+    const text = inp.value.trim().slice(0, 200);
+    if (!text) { inp.focus(); return; }
+    if (S.notes.length >= C.MAX_NOTES) { toast(t("brainFull", { n: C.MAX_NOTES })); return; }
+    S.notes.push({ id: "n" + uid(), text, t: stamp() });
+    commit(true);
+    const i2 = $("bd-in"); if (i2) i2.focus();
   }
 
   // ------------------------------------------------------------------ toast
@@ -2844,6 +3703,7 @@ window.DEB_STR = {
     const ex = C.billPaid(S, id, due);
     if (ex) { S.events = S.events.filter((e) => e !== ex); commit(); return; }
     const e = { id: "p" + uid(), type: "bill", amount: b.amount, date: C.fmt(today()), t: stamp(), billId: id, due };
+    if (C.billAcct(S, b)) e.acct = C.billAcct(S, b);
     S.events.push(e); commit();
     toast(t("billPaidToast", { name: b.name }), () => { S.events = S.events.filter((x) => x.id !== e.id); commit(); });
   }
@@ -2932,7 +3792,7 @@ window.DEB_STR = {
     dismissPay: () => { S.flags.payNote = ""; commit(true); },
     payYes: () => {
       let last = null;
-      R.pendingItems.forEach((x) => { const e = { id: "pay-" + C.fmt(x.date) + "-" + uid(), type: "income", amount: x.amount, date: C.fmt(x.date), t: stamp(), auto: true }; if (x.name) e.note = x.name; S.events.push(e); last = e; });
+      R.pendingItems.forEach((x) => { const e = { id: "pay-" + C.fmt(x.date) + "-" + uid(), type: "income", amount: x.amount, date: C.fmt(x.date), t: stamp(), auto: true }; if (x.name) e.note = x.name; if (x.split > 0) { e.gross = x.gross; e.split = x.split; } if (x.pay.acct) e.acct = x.pay.acct; S.events.push(e); last = e; });
       if (last && C.fmt(today()) === last.date) { S.flags.payNote = last.id; S.flags.payNoteUntil = C.fmt(today() + 3); }
       settlePending(); commit();
     },
@@ -2979,11 +3839,47 @@ window.DEB_STR = {
     routineHide: () => { const k = C.routineKey(S, today()); if (!k) return; const rs = C.routineState(S, k); S.flags.routine = { key: k, done: rs.done, hide: true }; commit(true); },
     catHide: (el) => { const c = S.cats.find((x) => x.id === el.getAttribute("data-id")); if (c) { c.hidden = !c.hidden; commit(true); } },
     catAdd: () => { const n = val("new-cat").trim(); if (!n) { $("new-cat").focus(); return; } S.cats.push({ id: "c" + uid(), name: n.slice(0, 40), icon: "star", hidden: false }); commit(true); },
-    loadSample: () => confirmBox(t("dataSampleConfirm"), t("dataSample"), () => { S = sampleState(); UI.tab = "home"; commit(); }),
-    clearAll: () => confirmBox(t("dataClearConfirm"), t("dataClear"), () => { S = freshState(); UI.onb = null; UI.tab = "home"; if (!DEMO) { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } } commit(); toast(t("dataCleared")); }, true),
-    clearSample: () => { S = freshState(); UI.onb = null; persist(); render(); },
-    demoSetup: () => { S = freshState(); UI.onb = null; render(); },
-    useSample: () => { S = sampleState(); UI.tab = "home"; commit(); },
+    loadSample: () => confirmBox(t("dataSampleConfirm"), t("dataSample"), () => { setState(sampleState()); UI.tab = "home"; commit(); }),
+    clearAll: () => confirmBox(t("dataClearConfirm"), t("dataClear"), () => {
+      STORE = { v: 2, active: "b1", budgets: [{ id: "b1", name: "", state: freshState() }] }; S = STORE.budgets[0].state;
+      UI.onb = null; UI.tab = "home"; UI.runOpen = false;
+      try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+      commit(); toast(t("dataCleared"));
+    }, true),
+    clearSample: () => { setState(freshState()); UI.onb = null; persist(); render(); },
+    demoSetup: () => { setState(freshState()); UI.onb = null; render(); },
+    useSample: () => { setState(sampleState()); UI.tab = "home"; commit(); },
+    budgets: budgetsDialog, budgetAdd: budgetAddDialog,
+    budgetPick: (el) => { closeModal(true); switchBudget(el.getAttribute("data-id")); },
+    budgetSwitch: (el) => switchBudget(el.getAttribute("data-id")),
+    budgetDelete: (el) => budgetDeleteDialog(el.getAttribute("data-id")),
+    restoreAdd: () => { if (MODAL && MODAL.addBudget) MODAL.addBudget(); },
+    acctAdd: () => {
+      if (S.accounts.length >= C.MAX_ACCOUNTS) { toast(t("acctLimit", { n: C.MAX_ACCOUNTS })); return; }
+      const a = { id: "a" + uid(), name: t("acctN"), kind: "spend", anchor: { amount: 0, t: 0, date: C.fmt(today()) } };
+      S.accounts.push(a); commit(true);
+      const f = $("an-" + a.id); if (f) { f.focus(); f.select(); }
+    },
+    acctDelete: (el) => {
+      const a = S.accounts.find((x) => x.id === el.getAttribute("data-id"));
+      if (!a) return;
+      confirmBox(t("acctRemoveConfirm", { name: a.name }), t("del"), () => {
+        S.events.forEach((e) => { if (e.acct === a.id) { delete e.acct; e.noBal = true; } });
+        S.bills.forEach((b) => { if (b.acct === a.id) delete b.acct; });
+        C.allPays(S).forEach((p) => { if (p.acct === a.id) delete p.acct; });
+        S.accounts = S.accounts.filter((x) => x !== a); commit();
+      }, true);
+    },
+    splitEdit: (el) => splitDialog(el.getAttribute("data-id")),
+    debtPay: (el) => { closeModal(true); debtPayDialog(el.getAttribute("data-id")); },
+    payKind: (el) => { document.querySelectorAll("#m-form [data-act=payKind]").forEach((b) => b.setAttribute("aria-pressed", String(b === el))); },
+    payUndo: (el) => { const id = el.getAttribute("data-id"), e = S.events.find((x) => x.id === id); if (!e) return; S.events = S.events.filter((x) => x !== e); commit(); toast(t("entryDeleted"), () => { S.events.push(e); commit(); }); },
+    runway: () => { UI.runOpen = !UI.runOpen; render(); if (UI.runOpen) { const r = $("runway"); if (r) r.scrollIntoView({ block: "nearest" }); } },
+    runAll: () => { UI.runAll = !UI.runAll; render(); },
+    awayOk: () => { delete S.flags.away; commit(true); },
+    quickGo, bdAdd,
+    bdDone: (el) => { const id = el.getAttribute("data-id"), n = S.notes.find((x) => x.id === id); if (!n) return; S.notes = S.notes.filter((x) => x !== n); commit(true); toast(t("brainDoneToast"), () => { S.notes.push(n); commit(true); }); },
+    autoPick, autoAllow, autoStop,
     onbNext: () => {
       const o = onbDraft();
       if (o.step > 0 && !onbValidate()) { render(); const f = document.querySelector("[aria-invalid=true], .err"); if (f) { const i = f.closest(".field") ? f.closest(".field").querySelector("input,select") : null; (i || f).focus && (i || f).focus(); } return; }
@@ -3057,12 +3953,21 @@ window.DEB_STR = {
         if (v > 0) c.plan = v; else delete c.plan;
         commit(true); return;
       }
+      const bn = el.getAttribute && el.getAttribute("data-bname");
+      if (bn) { const b = STORE.budgets.find((x) => x.id === bn); if (b) { b.name = el.value.trim().slice(0, 40); commit(true); } return; }
+      const an = el.getAttribute && el.getAttribute("data-acct-name");
+      if (an) { const a = S.accounts.find((x) => x.id === an); if (a) { a.name = el.value.trim().slice(0, 40) || t("acctN"); commit(true); } return; }
+      const ak = el.getAttribute && el.getAttribute("data-acct-kind");
+      if (ak) { const a = S.accounts.find((x) => x.id === ak); if (a) { a.kind = el.value === "savings" ? "savings" : "spend"; commit(true); } return; }
+      if (el.id === "b-rep") { const w = $("b-aside-wrap"); if (w) w.hidden = !asideCode(el.value); return; }
       const cn = el.getAttribute && el.getAttribute("data-cat-name");
       if (cn) { const c = S.cats.find((x) => x.id === cn); if (c) { c.name = el.value.trim().slice(0, 40); commit(true); } return; }
       if (el.getAttribute && el.getAttribute("data-onb") && el.tagName === "SELECT") { const o = onbDraft(), p = el.getAttribute("data-onb").split("."); if (p[0] === "bills") o.bills[+p[1]][p[2]] = el.value; }
     });
     document.addEventListener("keydown", (ev) => {
       const m = $("modal");
+      if (ev.key === "Enter" && m.hidden && ev.target && ev.target.id === "qa-in") { ev.preventDefault(); quickGo(); return; }
+      if (ev.key === "Enter" && m.hidden && ev.target && ev.target.id === "bd-in") { ev.preventDefault(); bdAdd(); return; }
       if (m.hidden) return;
       if (ev.key === "Escape") { ev.preventDefault(); closeModal(); return; }
       if (ev.key === "Tab") {
@@ -3076,18 +3981,24 @@ window.DEB_STR = {
     $("modal").addEventListener("click", (ev) => { if (ev.target === $("modal")) closeModal(); });
     const refresh = () => { if (document.visibilityState === "visible" && S) { tick(); if ($("modal").hidden) render(); } };
     document.addEventListener("visibilitychange", refresh);
-    window.addEventListener("storage", (ev) => { if (ev.key === KEY && ev.newValue && $("modal").hidden) { const r = C.sanitizeState(JSON.parse(ev.newValue), today()); if (r.ok) { S = r.state; render(); } } });
+    window.addEventListener("storage", (ev) => {
+      if (ev.key !== STORE_KEY || !ev.newValue || !$("modal").hidden) return;
+      let r = { ok: false };
+      try { r = C.sanitizeStore(JSON.parse(ev.newValue), today()); } catch (e) { /* ignore */ }
+      if (r.ok) { STORE = r.store; S = activeBudget().state; STORE.budgets.forEach((b) => prepare(b.state)); render(); }
+    });
     if (window.matchMedia) { const mq = window.matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", render); }
     window.addEventListener("resize", fitAmounts);
   }
 
   // test + video hooks (read-only helpers, no network)
-  window.DEB_APP = { state: () => S, compute: () => C.compute(S, today()), render, toast, today };
+  window.DEB_APP = { state: () => S, store: () => STORE, auto: () => AUTO, compute: () => C.compute(S, today()), render, toast, today };
 
   load();
   tick();
   bind();
   render();
+  autoInit();
 })();
 </script>
 </body>
