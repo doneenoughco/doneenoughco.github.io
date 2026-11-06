@@ -642,7 +642,7 @@ window.SUB_STR = {
   priceLog: "Price history", priceLogNone: "No price changes yet. When you change the price, the old one is kept here.",
   priceLogNew: "Log a price change", priceNewAmt: "New price", priceNewDate: "From",
   priceLogged: "Price change saved",
-  delService: "Delete", delConfirm: "Delete {name} and its price history? This can't be undone.",
+  delService: "Delete", delConfirm: "Delete {name} and its price history? You can undo it for 7 seconds with the Undo button.",
   cancel: "Cancel", save: "Save", close: "Close", yes: "Sure",
   errName: "Give it a name.", errAmount: "Type a price, like 9.99.", errDate: "Pick a date.", errCancelBy: "The cancel-by date can't be after the trial ends.",
   errFuture: "Pick today or an earlier date (change the price on the day it changes).",
@@ -1254,6 +1254,13 @@ window.SUB_STR = {
   // ------------------------------------------------------------------ saved data
   var APP_ID = "done-enough-subscriptions";
   var STATUSES = ["keep", "review", "cancel"];
+  /* Status for the Add dialog when "This is a free trial" is ticked or cleared. A new trial starts as "review" (so it gets
+     "Keep it" and the trial-ended note); one the person has picked a status for, and any saved service, is left alone. */
+  function trialStatus(status, touched, trialOn, isNew) {
+    if (!isNew || touched) return status;
+    if (trialOn) return status === "keep" ? "review" : status;
+    return status === "review" ? "keep" : status;
+  }
   var CATS = ["streaming", "music", "software", "news", "cloud", "fitness", "home", "phone", "insurance", "food", "kids", "work", "other"];
   var MAX_ITEMS = 300;
   var HINT_ID = /^[a-z0-9.:_-]{1,60}$/i, HINT_MAX = 200;
@@ -1366,7 +1373,7 @@ window.SUB_STR = {
     fromYMD: fromYMD, ymd: ymd, dim: dim, dow: dow, fmt: fmt, parse: parse, addMonths: addMonths, addMonthsDay: addMonthsDay, todayLocal: todayLocal,
     parseMoney: parseMoney, formatMoney: formatMoney, NUMBER_FORMATS: NUMBER_FORMATS, CURRENCIES: CURRENCIES, decimalsOf: decimalsOf, PALETTE_IDS: PALETTE_IDS, exportRows: exportRows, toCsv: toCsv, CSV_COLS: CSV_COLS, MAX_CENTS: MAX_CENTS,
     PRESETS: PRESETS, presetOf: presetOf, occurrences: occurrences, nextDue: nextDue, prevDue: prevDue, yearlyCost: yearlyCost,
-    defaultCancelBy: defaultCancelBy, trialInfo: trialInfo, changePrice: changePrice, recentRise: recentRise, compute: compute,
+    defaultCancelBy: defaultCancelBy, trialStatus: trialStatus, trialInfo: trialInfo, changePrice: changePrice, recentRise: recentRise, compute: compute,
     icsEscape: icsEscape, icsFold: icsFold, icsEvents: icsEvents, icsBuild: icsBuild, ALARMS: ALARMS,
     sanitizeState: sanitizeState, makeBackup: makeBackup, APP_ID: APP_ID, STATUSES: STATUSES, CATS: CATS, MAX_ITEMS: MAX_ITEMS,
     HINT_DAY: HINT_DAY, HINT_WARM_GAP: HINT_WARM_GAP, HINT_ID: HINT_ID, HINT_MAX: HINT_MAX, HINT_SCREENS: HINT_SCREENS, hintCandidates: hintCandidates,
@@ -1977,7 +1984,7 @@ window.SUB_STR = {
       <div class="two"><div class="field"><label for="f-cat">${te("fCat")}</label>${sel("f-cat", "", C.CATS.map((c) => [c, catName(c)]), it ? it.cat : "other")}</div>
       <div class="field"><label for="f-paid">${te("fPaidBy")}</label><input class="input" id="f-paid" maxlength="60" list="paid-list" autocomplete="off" placeholder="${te("fPaidByPh")}" value="${esc(it ? it.paidBy : "")}" aria-describedby="f-paid-h">
         <datalist id="paid-list">${paidList.map((p) => `<option value="${esc(p)}"></option>`).join("")}</datalist><span class="hint" id="f-paid-h">${te("fPaidByHint")}</span></div></div>
-      <fieldset class="field plain"><legend class="lbl">${te("fStatus")}</legend><div class="seg-radio">${C.STATUSES.map((s) => `<label><input type="radio" name="f-status" value="${s}" ${status === s ? "checked" : ""}><span>${te("st_" + s)}</span></label>`).join("")}</div></fieldset>
+      <fieldset class="field plain" id="f-status-box"${it ? "" : ' data-new="1"'}><legend class="lbl">${te("fStatus")}</legend><div class="seg-radio">${C.STATUSES.map((s) => `<label><input type="radio" name="f-status" value="${s}" ${status === s ? "checked" : ""}><span>${te("st_" + s)}</span></label>`).join("")}</div></fieldset>
       <label class="toggle"><input type="checkbox" id="f-unused" ${it && it.unused ? "checked" : ""}>${te("fUnused")}</label>
       <div class="field"><label for="f-note">${te("fNote")}</label><textarea class="input note-in" id="f-note" maxlength="300" placeholder="${te("fNotePh")}">${esc(it ? it.note : "")}</textarea></div>
       ${prices}${extra}${foot()}`;
@@ -2263,10 +2270,17 @@ window.SUB_STR = {
         $("f-amt-l").textContent = t(el.checked ? "fAmountTrial" : "fAmount");
         if (el.checked && !val("f-tend") && val("f-next")) { $("f-tend").value = val("f-next"); $("f-tcb").value = C.defaultCancelBy(val("f-next"), S.settings.lead); }
         if (!el.checked && val("f-tend") && !val("f-next")) $("f-next").value = val("f-tend");
+        const box = $("f-status-box"), cur = document.querySelector("input[name=f-status]:checked");
+        if (box && cur) {
+          const nx = C.trialStatus(cur.value, box.getAttribute("data-touched") === "1", el.checked, box.getAttribute("data-new") === "1");
+          const r = document.querySelector("input[name=f-status][value=" + nx + "]");
+          if (r) r.checked = true;
+        }
         return;
       }
       if (el.id === "f-tend") { const cb = $("f-tcb"); if (cb && (cb.getAttribute("data-auto") === "1" || !cb.value)) { cb.value = C.defaultCancelBy(el.value, S.settings.lead); cb.setAttribute("data-auto", "1"); } return; }
       if (el.id === "f-tcb") { el.setAttribute("data-auto", ""); return; }
+      if (el.name === "f-status") { const box = $("f-status-box"); if (box) box.setAttribute("data-touched", "1"); return; }
       const set = el.getAttribute && el.getAttribute("data-set");
       if (set) setPath(set, el.type === "checkbox" ? el.checked : el.value);
     });
